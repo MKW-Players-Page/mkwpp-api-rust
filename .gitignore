@@ -1,0 +1,7 @@
+/target
+
+/.zed
+/.vscode
+
+# You should keep this private, back it up somewhere
+sql.cfg
