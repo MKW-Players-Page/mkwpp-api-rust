@@ -1,0 +1,322 @@
+[
+{
+    "model": "timetrials.track",
+    "pk": 1,
+    "fields": {
+        "name": "Luigi Circuit",
+        "abbr": "LC",
+        "cup": 1,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 2,
+    "fields": {
+        "name": "Moo Moo Meadows",
+        "abbr": "MMM",
+        "cup": 1,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 3,
+    "fields": {
+        "name": "Mushroom Gorge",
+        "abbr": "MG",
+        "cup": 1,
+        "categories": "0,1,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 4,
+    "fields": {
+        "name": "Toad's Factory",
+        "abbr": "TF",
+        "cup": 1,
+        "categories": "0,1"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 5,
+    "fields": {
+        "name": "Mario Circuit",
+        "abbr": "MC",
+        "cup": 2,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 6,
+    "fields": {
+        "name": "Coconut Mall",
+        "abbr": "CM",
+        "cup": 2,
+        "categories": "0,1,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 7,
+    "fields": {
+        "name": "DK's Snowboard Cross",
+        "abbr": "DKSC",
+        "cup": 2,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 8,
+    "fields": {
+        "name": "Wario's Gold Mine",
+        "abbr": "WGM",
+        "cup": 2,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 9,
+    "fields": {
+        "name": "Daisy Circuit",
+        "abbr": "DC",
+        "cup": 3,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 10,
+    "fields": {
+        "name": "Koopa Cape",
+        "abbr": "KC",
+        "cup": 3,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 11,
+    "fields": {
+        "name": "Maple Treeway",
+        "abbr": "MT",
+        "cup": 3,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 12,
+    "fields": {
+        "name": "Grumble Volcano",
+        "abbr": "GV",
+        "cup": 3,
+        "categories": "0,1,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 13,
+    "fields": {
+        "name": "Dry Dry Ruins",
+        "abbr": "DDR",
+        "cup": 4,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 14,
+    "fields": {
+        "name": "Moonview Highway",
+        "abbr": "MH",
+        "cup": 4,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 15,
+    "fields": {
+        "name": "Bowser's Castle",
+        "abbr": "BC",
+        "cup": 4,
+        "categories": "0,1"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 16,
+    "fields": {
+        "name": "Rainbow Road",
+        "abbr": "RR",
+        "cup": 4,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 17,
+    "fields": {
+        "name": "GCN Peach Beach",
+        "abbr": "rPB",
+        "cup": 5,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 18,
+    "fields": {
+        "name": "DS Yoshi Falls",
+        "abbr": "rYF",
+        "cup": 5,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 19,
+    "fields": {
+        "name": "SNES Ghost Valley 2",
+        "abbr": "rGV2",
+        "cup": 5,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 20,
+    "fields": {
+        "name": "N64 Mario Raceway",
+        "abbr": "rMR",
+        "cup": 5,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 21,
+    "fields": {
+        "name": "N64 Sherbet Land",
+        "abbr": "rSL",
+        "cup": 6,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 22,
+    "fields": {
+        "name": "GBA Shy Guy Beach",
+        "abbr": "rSGB",
+        "cup": 6,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 23,
+    "fields": {
+        "name": "DS Delfino Square",
+        "abbr": "rDS",
+        "cup": 6,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 24,
+    "fields": {
+        "name": "GCN Waluigi Stadium",
+        "abbr": "rWS",
+        "cup": 6,
+        "categories": "0,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 25,
+    "fields": {
+        "name": "DS Desert Hills",
+        "abbr": "rDH",
+        "cup": 7,
+        "categories": "0,1"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 26,
+    "fields": {
+        "name": "GBA Bowser Castle 3",
+        "abbr": "rBC3",
+        "cup": 7,
+        "categories": "0,1"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 27,
+    "fields": {
+        "name": "N64 DK's Jungle Parkway",
+        "abbr": "rDKJP",
+        "cup": 7,
+        "categories": "0,1,2"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 28,
+    "fields": {
+        "name": "GCN Mario Circuit",
+        "abbr": "rMC",
+        "cup": 7,
+        "categories": "0,1"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 29,
+    "fields": {
+        "name": "SNES Mario Circuit 3",
+        "abbr": "rMC3",
+        "cup": 8,
+        "categories": "0"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 30,
+    "fields": {
+        "name": "DS Peach Gardens",
+        "abbr": "rPG",
+        "cup": 8,
+        "categories": "0,1"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 31,
+    "fields": {
+        "name": "GCN DK Mountain",
+        "abbr": "rDKM",
+        "cup": 8,
+        "categories": "0,1"
+    }
+},
+{
+    "model": "timetrials.track",
+    "pk": 32,
+    "fields": {
+        "name": "N64 Bowser's Castle",
+        "abbr": "rBC",
+        "cup": 8,
+        "categories": "0,1,2"
+    }
+}
+]

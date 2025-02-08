@@ -91,11 +91,11 @@ impl PostgresConfig {
         let url = config.to_url();
         if stored_database_url != url {
             println!("DATABASE_URL doesn't match the config data.");
-            
-            if let Err(e) = cfg_file.set_len(0).and_then(| _ | {
-                cfg_file.rewind().and_then(| _ | {
-                    cfg_file.write_all(config.to_string().as_bytes())
-                })
+
+            if let Err(e) = cfg_file.set_len(0).and_then(|_| {
+                cfg_file
+                    .rewind()
+                    .and_then(|_| cfg_file.write_all(config.to_string().as_bytes()))
             }) {
                 println!("Error rewriting Config");
                 println!("{e}");

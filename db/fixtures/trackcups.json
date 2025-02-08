@@ -1,0 +1,66 @@
+[
+{
+    "model": "timetrials.trackcup",
+    "pk": 1,
+    "fields": {
+        "name": "Mushroom Cup",
+        "code": "mushroom"
+    }
+},
+{
+    "model": "timetrials.trackcup",
+    "pk": 2,
+    "fields": {
+        "name": "Flower Cup",
+        "code": "flower"
+    }
+},
+{
+    "model": "timetrials.trackcup",
+    "pk": 3,
+    "fields": {
+        "name": "Star Cup",
+        "code": "star"
+    }
+},
+{
+    "model": "timetrials.trackcup",
+    "pk": 4,
+    "fields": {
+        "name": "Special Cup",
+        "code": "special"
+    }
+},
+{
+    "model": "timetrials.trackcup",
+    "pk": 5,
+    "fields": {
+        "name": "Shell Cup",
+        "code": "shell"
+    }
+},
+{
+    "model": "timetrials.trackcup",
+    "pk": 6,
+    "fields": {
+        "name": "Banana Cup",
+        "code": "banana"
+    }
+},
+{
+    "model": "timetrials.trackcup",
+    "pk": 7,
+    "fields": {
+        "name": "Leaf Cup",
+        "code": "leaf"
+    }
+},
+{
+    "model": "timetrials.trackcup",
+    "pk": 8,
+    "fields": {
+        "name": "Lightning Cup",
+        "code": "lightning"
+    }
+}
+]

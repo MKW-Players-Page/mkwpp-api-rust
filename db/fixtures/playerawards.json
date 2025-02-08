@@ -1,0 +1,6802 @@
+[
+{
+    "model": "timetrials.playeraward",
+    "pk": 1,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2023-03-22",
+        "description": "For beating one of the oldest standing WRs, Sosis' 1:34.397 on rDH Non-SC, by a frame"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 2,
+    "fields": {
+        "player": 1662,
+        "type": "weekly",
+        "date": "2023-03-15",
+        "description": "For being the first German to sub 1:48 on DDR and getting to 7th EU with it. Honorable mention to the fact that he also took care of the Online TT Lounge Season 2 launch that week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 3,
+    "fields": {
+        "player": 498,
+        "type": "weekly",
+        "date": "2023-03-08",
+        "description": "For getting his first WRs on RR Glitch after a grind from a 2:06 to a 1:56, beating Justin"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 4,
+    "fields": {
+        "player": 464,
+        "type": "weekly",
+        "date": "2023-03-01",
+        "description": "For reclaiming his BC WR from Fox with a 2:08.697"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 5,
+    "fields": {
+        "player": 1431,
+        "type": "weekly",
+        "date": "2023-02-22",
+        "description": "For getting his 1st CR, on MG Glitch after a long grind"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 6,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2023-02-15",
+        "description": "For making the rMC Glitch and beating the 3lap WR with it for the first time in History"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 7,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2023-02-08",
+        "description": "For getting his first WR in 5 years on BC with a 2:08.813"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 8,
+    "fields": {
+        "player": 623,
+        "type": "weekly",
+        "date": "2023-02-01",
+        "description": "For getting 4 WRs in a row on Rainbow Road Glitch, using Rosalina as well"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 9,
+    "fields": {
+        "player": 617,
+        "type": "weekly",
+        "date": "2023-01-22",
+        "description": "For achieving the long-awaited sub 20 on MG Glitch, he also got 100$ from Phyz by winning his bounty for beating Bryce"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 10,
+    "fields": {
+        "player": 508,
+        "type": "weekly",
+        "date": "2023-01-15",
+        "description": "For his 11th WW time of 1:49.101 on rWS No-Glitch, starting his breakthrough from his first sub 1:50 and preceding his 1:48.978 set 2 weeks later, his first WW Top time"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 11,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2023-01-08",
+        "description": "For climbing up to the Combined podium (#3) for the first time in his amazing career. He took out Braixen for it."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 12,
+    "fields": {
+        "player": 210,
+        "type": "weekly",
+        "date": "2023-01-01",
+        "description": "For getting the first 1:44 on DK Summit. His dedication to it for so many years has finally paid off."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 13,
+    "fields": {
+        "player": 1202,
+        "type": "weekly",
+        "date": "2022-12-22",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 14,
+    "fields": {
+        "player": 273,
+        "type": "weekly",
+        "date": "2022-12-15",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 15,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2022-12-08",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 16,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2022-12-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 17,
+    "fields": {
+        "player": 635,
+        "type": "weekly",
+        "date": "2022-11-22",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 18,
+    "fields": {
+        "player": 271,
+        "type": "weekly",
+        "date": "2022-11-15",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 19,
+    "fields": {
+        "player": 177,
+        "type": "weekly",
+        "date": "2022-11-08",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 20,
+    "fields": {
+        "player": 985,
+        "type": "weekly",
+        "date": "2022-11-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 21,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2022-10-22",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 22,
+    "fields": {
+        "player": 1165,
+        "type": "weekly",
+        "date": "2022-10-15",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 23,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2022-10-08",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 24,
+    "fields": {
+        "player": 1507,
+        "type": "weekly",
+        "date": "2022-10-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 25,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2022-09-22",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 26,
+    "fields": {
+        "player": 242,
+        "type": "weekly",
+        "date": "2022-09-15",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 27,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2022-09-08",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 28,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2022-08-22",
+        "description": "For getting the long-awaited sub 1:50 on WGM Non-SC with a 1:49.965"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 29,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2022-08-15",
+        "description": "He literally shut Logan's mouth by stopping his WR-farming on KC, with the first ever sub 2 on the track. An insane 1:59.751 beating Logan by 8 seconds."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 30,
+    "fields": {
+        "player": 1588,
+        "type": "weekly",
+        "date": "2022-08-08",
+        "description": "For pulling through and getting his first ever WW Top time, a 1:18.403 on rSGB Glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 31,
+    "fields": {
+        "player": 910,
+        "type": "weekly",
+        "date": "2022-08-01",
+        "description": "For getting his first WR on KC Glitch with a 2:10.809"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 32,
+    "fields": {
+        "player": 1436,
+        "type": "weekly",
+        "date": "2022-07-22",
+        "description": "For getting yet another Glitch Flap WR, subbing 3 on GV with a 2.881"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 33,
+    "fields": {
+        "player": 497,
+        "type": "weekly",
+        "date": "2022-07-15",
+        "description": "For getting the most unexpected run for everyone (including himself) on MC, with a 1:21.440 that granted him WW Tops by a single millisecond"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 34,
+    "fields": {
+        "player": 244,
+        "type": "weekly",
+        "date": "2022-07-08",
+        "description": "For entering the Unrestricted AF Top 10 for the first time in his career, kicking out French Legend Thomas Petraud that had been on this Top 10 for years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 35,
+    "fields": {
+        "player": 985,
+        "type": "weekly",
+        "date": "2022-07-01",
+        "description": "For reclaiming his long lost Daisy Circuit crown, on Flap with a new WR of  28.110"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 36,
+    "fields": {
+        "player": 3,
+        "type": "weekly",
+        "date": "2022-06-22",
+        "description": "For getting his first Kart WR, on KC with a 2:21.637 beating one of Ivan's best runs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 37,
+    "fields": {
+        "player": 1436,
+        "type": "weekly",
+        "date": "2022-06-15",
+        "description": "For shooting his shot on the recent CM Glitch Flap discovery and taking the #1 spot there with a time of 4.158"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 38,
+    "fields": {
+        "player": 474,
+        "type": "weekly",
+        "date": "2022-06-08",
+        "description": "For getting his first WW Top on MC No-Glitch with a time of 1:21.372"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 39,
+    "fields": {
+        "player": 464,
+        "type": "weekly",
+        "date": "2022-06-01",
+        "description": "For getting his 2nd ever WR and becoming a multi-WR holder for the first time with a 2:08.951 on BC Shortcut, being the first person to sub 2:09 on this category"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 40,
+    "fields": {
+        "player": 458,
+        "type": "weekly",
+        "date": "2022-05-22",
+        "description": "For getting his first Country Tops, on MT Glitch with a 2:05.314. Using the wheel, he also got the 7th Wheel time when he didn't even think he could achieve that feat in the first place."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 41,
+    "fields": {
+        "player": 796,
+        "type": "weekly",
+        "date": "2022-05-15",
+        "description": "For getting yet another WR on MT No-Glitch, beating the previous one by almost a full second and going from a 2:14.0 to a 2:13.1, Demon almost skipped 2:13 entirely"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 42,
+    "fields": {
+        "player": 1605,
+        "type": "weekly",
+        "date": "2022-05-08",
+        "description": "For getting his 2nd ever WR, a crazy 1:14.513 on rSGB Glitch, beating Luke's previous WR by over a second"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 43,
+    "fields": {
+        "player": 1165,
+        "type": "weekly",
+        "date": "2022-05-01",
+        "description": "For heavily grinding CM Glitch and finishing with a time of 33.142, ranked 9th American as his first Continental Tops"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 44,
+    "fields": {
+        "player": 6,
+        "type": "weekly",
+        "date": "2022-04-22",
+        "description": "For reclaiming his Flap WR from Logan on GCN Mario Circuit after more than 200 days"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 45,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2022-04-15",
+        "description": "For discovering a new, 3lap viable way of glitching Shy Guy Beach, and introducing it to the community in the best possible way"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 46,
+    "fields": {
+        "player": 1132,
+        "type": "weekly",
+        "date": "2022-04-08",
+        "description": "For getting his 1st (and 2nd!) WR, on rSL Glitch, after weeks of grinding for a 2/3 run"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 47,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2022-04-01",
+        "description": "For being the first Karter to have 3 of his WRs last 1000+ days, with his CM Glitch, and casually beating it by .1 in like a week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 48,
+    "fields": {
+        "player": 665,
+        "type": "weekly",
+        "date": "2022-03-22",
+        "description": "For cutting an insane amount of AF this week and climbing deep into Top 250 when he wasn't even seeing himself getting to that level almost ever"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 49,
+    "fields": {
+        "player": 910,
+        "type": "weekly",
+        "date": "2022-03-15",
+        "description": "For being the 3rd person to successfully land the Rainbow Road Glitch in a run and getting 3rd WW with that"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 50,
+    "fields": {
+        "player": 373,
+        "type": "weekly",
+        "date": "2022-03-08",
+        "description": "For remembering his old ways, getting one last farewell WR on rSGB after more than 3 years without setting one"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 51,
+    "fields": {
+        "player": 1605,
+        "type": "weekly",
+        "date": "2022-03-01",
+        "description": "For overtaking Totom in Blue AF to reach a carrer high of #9, leaving the frenchie on the edge of losing the top for the first time in around 10 years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 52,
+    "fields": {
+        "player": 308,
+        "type": "weekly",
+        "date": "2022-02-22",
+        "description": "For getting a 1:47 on DKS... That's a Wii Wheel WR, the first sub 1:48 with the controller and his first American Top on top of that"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 53,
+    "fields": {
+        "player": 244,
+        "type": "weekly",
+        "date": "2022-02-15",
+        "description": "For improving on a bunch of 3laps to enter the Top 10 in No-SC Total Time"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 54,
+    "fields": {
+        "player": 609,
+        "type": "weekly",
+        "date": "2022-02-08",
+        "description": "For pulling off the rWS glitch 2/3 for the first time in history and cutting 8 seconds from his previous WR by doing so"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 55,
+    "fields": {
+        "player": 801,
+        "type": "weekly",
+        "date": "2022-02-01",
+        "description": "For climbing a whole 60 placements at once and cutting 65 AF with 30 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 56,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2022-01-22",
+        "description": "For getting back on KC's WW tops after so long, with a 5th WW nevertheless"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 57,
+    "fields": {
+        "player": 464,
+        "type": "weekly",
+        "date": "2022-01-15",
+        "description": "For getting his first WR, on BC3 Shortcut, 3 years after his outrageous choke on that very same category. Emil also was the first to get the shroomless ultra 2/3 in a WR run."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 58,
+    "fields": {
+        "player": 1605,
+        "type": "weekly",
+        "date": "2022-01-08",
+        "description": "For pulling though with a great PR streak and getting into the Combined Top 10"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 59,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2022-01-01",
+        "description": "For FINALLY playing some categories that he wasn't interested in at all like DKS, RR and especially rSL and climbing to #3 in No-Glitch by doing so"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 60,
+    "fields": {
+        "player": 273,
+        "type": "weekly",
+        "date": "2021-12-22",
+        "description": "For landing the glitch on DKJP and getting his first ever Country Top with it"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 61,
+    "fields": {
+        "player": 366,
+        "type": "weekly",
+        "date": "2021-12-15",
+        "description": "For reaching the Combined Top 10"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 62,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2021-12-08",
+        "description": "For pulling off KC glitch and getting WR as well as being the only karter to land every RTA-viable glitch with it"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 63,
+    "fields": {
+        "player": 829,
+        "type": "weekly",
+        "date": "2021-12-01",
+        "description": "For getting his first WR (on Grumble Volcano) and being the first person youger than the game to set a WR."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 64,
+    "fields": {
+        "player": 365,
+        "type": "weekly",
+        "date": "2021-11-01",
+        "description": "For pulling off the rWS glitch and getting his first WW top"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 65,
+    "fields": {
+        "player": 609,
+        "type": "weekly",
+        "date": "2021-10-22",
+        "description": "For getting his WR back and subbing 1:40 on rWS Glitch, twice"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 66,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2021-10-15",
+        "description": "For improving his RR Glitch WR by pulling it off again... Only 3 attempts after starting his session"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 67,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2021-10-08",
+        "description": "For his improvement on his TF WR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 68,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2021-10-01",
+        "description": "For improving his rDKJP No-Glitch WR and getting the last remaining 3lap God standard at the same time"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 69,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2021-09-22",
+        "description": "For getting 11 PRs in one week and cutting a great amount of AF for his level"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 70,
+    "fields": {
+        "player": 635,
+        "type": "weekly",
+        "date": "2021-09-15",
+        "description": "For getting WR on MMM Flap, being the first person to get a God standard on this category in the process"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 71,
+    "fields": {
+        "player": 1167,
+        "type": "weekly",
+        "date": "2021-09-08",
+        "description": "For reaching Top 100"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 72,
+    "fields": {
+        "player": 6,
+        "type": "weekly",
+        "date": "2021-09-01",
+        "description": "For getting his first WR, on rMC Flap"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 73,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2021-08-22",
+        "description": "Congratulations on Player of the Week, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 74,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2021-08-15",
+        "description": "Congratulations on Player of the Week, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 75,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2021-08-08",
+        "description": "Congratulations on Player of the Week, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 76,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2021-08-01",
+        "description": "Congratulations on Player of the Week, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 77,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2021-07-22",
+        "description": "Congratulations on Player of the Week, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 78,
+    "fields": {
+        "player": 145,
+        "type": "weekly",
+        "date": "2021-07-15",
+        "description": "Congratulations on Player of the Week, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 79,
+    "fields": {
+        "player": 1605,
+        "type": "weekly",
+        "date": "2021-07-08",
+        "description": "For getting his first 3lap WR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 80,
+    "fields": {
+        "player": 1538,
+        "type": "weekly",
+        "date": "2021-07-01",
+        "description": "For finally getting the WGM glitch CR after 4 months of grinding"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 81,
+    "fields": {
+        "player": 1480,
+        "type": "weekly",
+        "date": "2021-06-22",
+        "description": "For breaking into the unrestricted top 20"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 82,
+    "fields": {
+        "player": 244,
+        "type": "weekly",
+        "date": "2021-06-15",
+        "description": "For finally getting a 1:12.8xx on rPB"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 83,
+    "fields": {
+        "player": 699,
+        "type": "weekly",
+        "date": "2021-06-08",
+        "description": "Getting 2nd WW on rDS and 3rd WW on rDS flap"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 84,
+    "fields": {
+        "player": 796,
+        "type": "weekly",
+        "date": "2021-06-01",
+        "description": "for going the extra mile and getting a sick Maple Treeway glitch world record of 1:35!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 85,
+    "fields": {
+        "player": 514,
+        "type": "weekly",
+        "date": "2021-05-22",
+        "description": "for great work on improving the trash region of Oceania"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 86,
+    "fields": {
+        "player": 144,
+        "type": "weekly",
+        "date": "2021-05-15",
+        "description": "Finally achieving his long held admission and beating Kevin Borne in AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 87,
+    "fields": {
+        "player": 702,
+        "type": "weekly",
+        "date": "2021-05-08",
+        "description": "For subbing 1:40 on MT glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 88,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2021-05-01",
+        "description": "For getting a .3 on rBC3 nosc"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 89,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2021-04-22",
+        "description": "For getting double world record on rBC3."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 90,
+    "fields": {
+        "player": 738,
+        "type": "weekly",
+        "date": "2021-04-15",
+        "description": "For 01:45.385 - Joeblase - Toad's FactoryJoeblase finished Toad's Factory - Shortcut in 01:45.385, uploaded at 2021-04-25T23:44:30Z. Exact finish time 01:45.384559219927 Exact best split 00:33.287043297231 Exact splits 00:33.944495822132 - 00:38.15302010"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 91,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2021-04-08",
+        "description": "For getting one of the most incredible WRs in the history of the game with a 1:20.357 on MC NG. This is one for the history books."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 92,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2021-04-01",
+        "description": "For leaving his grinder ways in pursuit of some juicy AF and climbing to #40"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 93,
+    "fields": {
+        "player": 609,
+        "type": "weekly",
+        "date": "2021-03-22",
+        "description": "For his huge comeback WR after over 4 years of being stuck on 0"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 94,
+    "fields": {
+        "player": 244,
+        "type": "weekly",
+        "date": "2021-03-15",
+        "description": "For his large AF gains"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 95,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2021-03-08",
+        "description": "For getting the legendary 1:46 on DDR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 96,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2021-03-01",
+        "description": "For not getting 1:42 on MH"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 97,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2021-02-22",
+        "description": "For pioneering as well as being the first one to make the KC glitch RTA"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 98,
+    "fields": {
+        "player": 699,
+        "type": "weekly",
+        "date": "2021-02-15",
+        "description": "For getting GV2 no glitch WR after his long grind"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 99,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2021-02-08",
+        "description": "For reclaiming MC WR and sharing the WR count top spot alongside Lukey Brown"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 100,
+    "fields": {
+        "player": 1249,
+        "type": "weekly",
+        "date": "2021-02-01",
+        "description": "For improving his time on every single category this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 101,
+    "fields": {
+        "player": 1480,
+        "type": "weekly",
+        "date": "2021-01-22",
+        "description": "For getting his first ER and learning to glitch!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 102,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2021-01-15",
+        "description": "For getting 3 WRs in a single week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 103,
+    "fields": {
+        "player": 623,
+        "type": "weekly",
+        "date": "2021-01-08",
+        "description": "For getting his first ever WR, on rWS glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 104,
+    "fields": {
+        "player": 635,
+        "type": "weekly",
+        "date": "2021-01-01",
+        "description": "For a large amount of very impressive improvements."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 105,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2020-12-22",
+        "description": "For pushing his AF to biblical depths"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 106,
+    "fields": {
+        "player": 623,
+        "type": "weekly",
+        "date": "2020-12-15",
+        "description": "For making the rWS glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 107,
+    "fields": {
+        "player": 1523,
+        "type": "weekly",
+        "date": "2020-12-08",
+        "description": "For getting rYF 58"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 108,
+    "fields": {
+        "player": 738,
+        "type": "weekly",
+        "date": "2020-12-01",
+        "description": "For his big improvements on TF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 109,
+    "fields": {
+        "player": 635,
+        "type": "weekly",
+        "date": "2020-11-22",
+        "description": "For his absolutely majestic sub 17 on the best category on MKW (rSGB glitch flap)"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 110,
+    "fields": {
+        "player": 6,
+        "type": "weekly",
+        "date": "2020-11-15",
+        "description": "For his rMC push"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 111,
+    "fields": {
+        "player": 1372,
+        "type": "weekly",
+        "date": "2020-11-08",
+        "description": "For massive AF cuts"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 112,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2020-11-01",
+        "description": "For climbing up into the top 10 on red charts"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 113,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2020-10-22",
+        "description": "For his breakthrough on GV2 TAS glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 114,
+    "fields": {
+        "player": 451,
+        "type": "weekly",
+        "date": "2020-10-15",
+        "description": "For big AF cuts and active improvements"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 115,
+    "fields": {
+        "player": 1588,
+        "type": "weekly",
+        "date": "2020-10-08",
+        "description": "For making the top 100"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 116,
+    "fields": {
+        "player": 635,
+        "type": "weekly",
+        "date": "2020-09-01",
+        "description": "Jack cut off a ton of AF this week, reaching #15"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 117,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2020-06-08",
+        "description": "Braixen lowered the CM non-sc WR to a 1:55.5"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 118,
+    "fields": {
+        "player": 647,
+        "type": "weekly",
+        "date": "2020-06-01",
+        "description": "Invincible beat Braixen’s long-standing rDKJP glitch record"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 119,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2020-05-15",
+        "description": "Cole got the rPB no glitch WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 120,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2020-04-15",
+        "description": "Logan set two WRs on WGM glitch this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 121,
+    "fields": {
+        "player": 397,
+        "type": "weekly",
+        "date": "2020-04-08",
+        "description": "David set two WRs on rYF this week, lowering his time to 58.719"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 122,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2020-04-01",
+        "description": "Luke set two TF NonSC WRs this week, lowering his time to 1:49.245"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 123,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2020-03-01",
+        "description": "Luke further improved the rBC WR to 2:30.738"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 124,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2020-01-15",
+        "description": "Braixen claimed the WR on CM no-sc this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 125,
+    "fields": {
+        "player": 1202,
+        "type": "weekly",
+        "date": "2020-01-08",
+        "description": "Niyake once again improved the GV glitch WR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 126,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2020-01-01",
+        "description": "Logan set 2 WRs on TF glitch, including the first 2/3 run"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 127,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2019-12-01",
+        "description": "Justin got the first sub 2:18 on KC. Huge accomplishment"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 128,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2019-11-22",
+        "description": "Cole pushed his LC time down to the unthinkable 1:08.7. Mad man"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 129,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2019-11-08",
+        "description": "Luke achieved a time of 1:30.612 on rMC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 130,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2019-09-22",
+        "description": "Luke got the WR on DDR this week, ending Infi’s reign which dated back to early 2013."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 131,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2019-08-22",
+        "description": "Making another big time cut on MT glitch, this run being a 1:47.5, wins Justin this award."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 132,
+    "fields": {
+        "player": 1355,
+        "type": "weekly",
+        "date": "2019-08-15",
+        "description": "Ross achieved a huge milestone during this week, getting the first magi 2/3 on rSL glitch and beating the WR by nearly 7 seconds."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 133,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2019-08-01",
+        "description": "Luke continued to chip time off of his own DC WR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 134,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2019-07-15",
+        "description": "Luke improved the rMC WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 135,
+    "fields": {
+        "player": 242,
+        "type": "weekly",
+        "date": "2019-06-22",
+        "description": "Bryce reclaimed the MC glitch WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 136,
+    "fields": {
+        "player": 699,
+        "type": "weekly",
+        "date": "2019-06-15",
+        "description": "Sosis improved his own rSL no glitch WR time to a 2:03.870"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 137,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2019-06-01",
+        "description": "Blaze lowered the GV no-sc WR this week to a 1:51.7, not to mention he also got the rSL glitch WR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 138,
+    "fields": {
+        "player": 1355,
+        "type": "weekly",
+        "date": "2019-05-15",
+        "description": "During this week, Ross got his second WR on rSL glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 139,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2019-05-01",
+        "description": "Luke lowered the rBC3 sc WR by over .3 this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 140,
+    "fields": {
+        "player": 682,
+        "type": "weekly",
+        "date": "2019-04-22",
+        "description": "Jascha made a solid .1 cut off his own rMR WR this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 141,
+    "fields": {
+        "player": 617,
+        "type": "weekly",
+        "date": "2019-04-15",
+        "description": "Idriz reclaimed the MG glitch WR, with a time of 21.015."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 142,
+    "fields": {
+        "player": 520,
+        "type": "weekly",
+        "date": "2019-04-08",
+        "description": "Paul drove a strong 1:34.520 run on rDH no-sc."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 143,
+    "fields": {
+        "player": 1275,
+        "type": "weekly",
+        "date": "2019-04-01",
+        "description": "Phyz got his first WR in the game, with a 18.030 run on GV glitch."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 144,
+    "fields": {
+        "player": 912,
+        "type": "weekly",
+        "date": "2019-03-08",
+        "description": "Leaf beat his own record on rGV2 after over 1300 days, with a time of 50.862."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 145,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2019-03-01",
+        "description": "Logan lowered the MC glitch WR to the first sub-50 seconds run."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 146,
+    "fields": {
+        "player": 242,
+        "type": "weekly",
+        "date": "2019-02-22",
+        "description": "Bryce cut the MC glitch WR down to a 50.2"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 147,
+    "fields": {
+        "player": 804,
+        "type": "weekly",
+        "date": "2019-02-15",
+        "description": "Joshua got his first WR in the game this week, using the new quacker strats on GV glitch."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 148,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2019-02-08",
+        "description": "Luke obtained the rMC WR this week by .001, defeating Fox’s run which had lasted 1400+ days."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 149,
+    "fields": {
+        "player": 242,
+        "type": "weekly",
+        "date": "2019-02-01",
+        "description": "Bryce got his third MC glitch WR overall, but this time cut off 1.1 seconds from his previous time."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 150,
+    "fields": {
+        "player": 617,
+        "type": "weekly",
+        "date": "2019-01-22",
+        "description": "Idriz made a huge 2.3-second cut on the MG glitch WR, with a time of 22.406."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 151,
+    "fields": {
+        "player": 242,
+        "type": "weekly",
+        "date": "2019-01-08",
+        "description": "Bryce wins this award due to beating Guy’s MC glitch time, which had lasted as WR for nearly 4 years."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 152,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2018-12-22",
+        "description": "Justin wins this award for an impressive 1:31.759 run on rDH sc."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 153,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2018-12-08",
+        "description": "Braixen obtained the MT glitch WR this week, with a time of 1:50.955"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 154,
+    "fields": {
+        "player": 447,
+        "type": "weekly",
+        "date": "2018-10-22",
+        "description": "Chouy wins the award this week, as he finally achieved a 1:57 run on rBC3 sc"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 155,
+    "fields": {
+        "player": 397,
+        "type": "weekly",
+        "date": "2018-10-15",
+        "description": "David beat Braixen's rYF WR this week, getting the first 58.7"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 156,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2018-10-08",
+        "description": "Logan improved his rDKM glitch WR this week, getting a time of 1:59.776"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 157,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2018-10-01",
+        "description": "Justin wins this award for getting the first 2/3 on MT glitch, ending Demon's 5-year WR reign on the course."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 158,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2018-09-22",
+        "description": "This week, Blaze improved his rGV2 no-sc WR to 52.796"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 159,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2018-09-08",
+        "description": "Luke beat Firestone's DC WR with a time of 1:28.832"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 160,
+    "fields": {
+        "player": 373,
+        "type": "weekly",
+        "date": "2018-08-15",
+        "description": "Darragh improved his rPG WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 161,
+    "fields": {
+        "player": 682,
+        "type": "weekly",
+        "date": "2018-08-08",
+        "description": "Jascha improved his rMR WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 162,
+    "fields": {
+        "player": 733,
+        "type": "weekly",
+        "date": "2018-07-22",
+        "description": "Ace obtained his third WR, this time on KC with a time of 2:18.424"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 163,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2018-07-08",
+        "description": "Blaze improved his rGV2 no-sc WR this week with a time of 52.826"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 164,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2018-07-01",
+        "description": "Guy dethroned Liam's rPB no-sc WR this week, after it had lasted nearly 5 years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 165,
+    "fields": {
+        "player": 617,
+        "type": "weekly",
+        "date": "2018-06-22",
+        "description": "Idriz obtained his first WR in the game by making the first Quintuple on MG"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 166,
+    "fields": {
+        "player": 733,
+        "type": "weekly",
+        "date": "2018-06-15",
+        "description": "Ace beat Totom's nearly 5-year old WR on rWS this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 167,
+    "fields": {
+        "player": 699,
+        "type": "weekly",
+        "date": "2018-06-08",
+        "description": "Sosis got the first 2:04 sub on rSL no-sc this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 168,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2018-06-01",
+        "description": "Guy achieved the long-awaited 1:21 sub on MC no-sc"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 169,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2018-05-22",
+        "description": "Braixen obtained the first god time on rYF, with a time of 58.844"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 170,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2018-05-15",
+        "description": "Blaze obtained two no-sc WRs this week, getting a 1:41.256 on MG and a 52.837 on rGV2"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 171,
+    "fields": {
+        "player": 733,
+        "type": "weekly",
+        "date": "2018-05-08",
+        "description": "Ace got the first sub on CM no-sc with a 1:55.793, an incredible achievement"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 172,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2018-04-22",
+        "description": "Cole improved his LC WR to a 1:08.887, the first 1:08.8. This man is crazy"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 173,
+    "fields": {
+        "player": 699,
+        "type": "weekly",
+        "date": "2018-04-15",
+        "description": "Sosis took down Fox's long-standing MMM WR time, getting a solid 1:15.691"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 174,
+    "fields": {
+        "player": 733,
+        "type": "weekly",
+        "date": "2018-04-08",
+        "description": "Ace obtained his first ever WR with a 1:56.0 on CM no-sc"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 175,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2018-04-01",
+        "description": "Cole again improved his LC WR, this time to 1:08.926"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 176,
+    "fields": {
+        "player": 682,
+        "type": "weekly",
+        "date": "2018-03-22",
+        "description": "Jascha hit a strong 1:41.4 on rMR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 177,
+    "fields": {
+        "player": 825,
+        "type": "weekly",
+        "date": "2018-03-15",
+        "description": "Justin wins this award for his incredible 32.3 run set on WGM, ending MrBean's 2,772-day WR reign on the course"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 178,
+    "fields": {
+        "player": 242,
+        "type": "weekly",
+        "date": "2018-03-08",
+        "description": "Bryce got an impressive 25.0 time on MG glitch, beating the previous WR by almost a second"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 179,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2018-03-01",
+        "description": "Luke improved both his rMC3 and TF WR times this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 180,
+    "fields": {
+        "player": 945,
+        "type": "weekly",
+        "date": "2018-02-22",
+        "description": "Logan dominated on rDKM sc this week, getting three WRs on it, including the first ever sub 2:00 time"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 181,
+    "fields": {
+        "player": 682,
+        "type": "weekly",
+        "date": "2018-02-08",
+        "description": "Jascha obtained the CM non-SC WR this week, with a time of 1:56.117"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 182,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2018-02-01",
+        "description": "Blaze got an impressive 52.850 on rGV2 non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 183,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2018-01-15",
+        "description": "Liam got the KC WR, cutting off an impressive nearly .4 from the previous WR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 184,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2018-01-01",
+        "description": "Blaze improved his BC glitch WR to 2:09.669"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 185,
+    "fields": {
+        "player": 1659,
+        "type": "weekly",
+        "date": "2017-12-22",
+        "description": "Zane improved his rMR WR with a time of 1:41.595"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 186,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2017-12-01",
+        "description": "Guy obtained the rSL glitch WR this week, with a time of 1:43.1"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 187,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2017-11-22",
+        "description": "Luke got two TF WRs this week, and beat Fox's time which had lasted for almost 2 years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 188,
+    "fields": {
+        "player": 796,
+        "type": "weekly",
+        "date": "2017-11-15",
+        "description": "Demon got a 2:15.7 run on MT non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 189,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2017-11-08",
+        "description": "Braixen got the rYF WR this week, with a time of 58.903"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 190,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2017-11-01",
+        "description": "Liam achieved a 1:21.5 time on rSGB this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 191,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2017-10-15",
+        "description": "Blaze wins this award for taking down Cole's rYF WR, which had lasted 4 1/2 years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 192,
+    "fields": {
+        "player": 447,
+        "type": "weekly",
+        "date": "2017-09-01",
+        "description": "Chouy reclaimed the WR on rBC3 this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 193,
+    "fields": {
+        "player": 682,
+        "type": "weekly",
+        "date": "2017-08-15",
+        "description": "Jascha got an impressive 2:11.5 on rDKJP non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 194,
+    "fields": {
+        "player": 788,
+        "type": "weekly",
+        "date": "2017-08-08",
+        "description": "Havoc got the rBC3 sc WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 195,
+    "fields": {
+        "player": 1208,
+        "type": "weekly",
+        "date": "2017-08-01",
+        "description": "Nocky set the first Mach Bike WR on rMR while beating Zane's time that had lasted over 1300 days"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 196,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2017-06-22",
+        "description": "Braixen obtained the rPB WR, getting a time of 1:00.395"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 197,
+    "fields": {
+        "player": 985,
+        "type": "weekly",
+        "date": "2017-06-15",
+        "description": "Firestone achieved the WR on DC, beating Fox's long-standing time"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 198,
+    "fields": {
+        "player": 61,
+        "type": "weekly",
+        "date": "2017-06-01",
+        "description": "Alex got the first God time on GV glitch, getting the sub 19 using the tas strat opening"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 199,
+    "fields": {
+        "player": 1505,
+        "type": "weekly",
+        "date": "2017-05-08",
+        "description": "Suiryu notched the first ever sub 2:21 on BC non-SC, getting a 2:20.8"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 200,
+    "fields": {
+        "player": 373,
+        "type": "weekly",
+        "date": "2017-05-01",
+        "description": "Darragh improved his own rPG WR to 1:59.400"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 201,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2017-04-22",
+        "description": "Luke became the first player to sub 1:18 on rMC3"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 202,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2017-04-08",
+        "description": "Liam got the rSL non-SC WR this week, beating Sword's run which had lasted over 2 years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 203,
+    "fields": {
+        "player": 447,
+        "type": "weekly",
+        "date": "2017-03-22",
+        "description": "Chouy obtained his first WR on rBC3 in over 5 years this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 204,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2017-03-15",
+        "description": "Fox beat Troy's rDKM glitch WR after it had lasted over 2 years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 205,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2017-03-08",
+        "description": "Liam beat his former rSGB WR after it had lasted almost 2 years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 206,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2017-02-22",
+        "description": "Caleb obtained another MC non-SC WR, with a time of 1:21.024"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 207,
+    "fields": {
+        "player": 976,
+        "type": "weekly",
+        "date": "2017-02-08",
+        "description": "Luke beat Tyler's rMC3 WR, which had lasted over 1,000 days"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 208,
+    "fields": {
+        "player": 61,
+        "type": "weekly",
+        "date": "2017-01-08",
+        "description": "Alex beat Niyake's GV WR which was nearly 5 years old"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 209,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2017-01-01",
+        "description": "Guy got yet another MC non-SC WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 210,
+    "fields": {
+        "player": 397,
+        "type": "weekly",
+        "date": "2016-12-22",
+        "description": "David obtained the first sub 1:01 on rPB this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 211,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2016-12-01",
+        "description": "Fox got a small WR improvement on KC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 212,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2016-11-22",
+        "description": "Braixen set two WRs this week, another on rDKJP as well as one on CM, beating Takemi's time that lasted over 1300 days"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 213,
+    "fields": {
+        "player": 796,
+        "type": "weekly",
+        "date": "2016-11-15",
+        "description": "Demon reclaimed the MT non-SC WR from Kisaragi this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 214,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2016-11-08",
+        "description": "Fox beat Dane's rGV2 non-SC WR, which had lasted over two years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 215,
+    "fields": {
+        "player": 1603,
+        "type": "weekly",
+        "date": "2016-11-01",
+        "description": "Braixen set two rDKJP glitch WRs this week--the first two 3/3 runs ever set"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 216,
+    "fields": {
+        "player": 373,
+        "type": "weekly",
+        "date": "2016-10-22",
+        "description": "Darragh wins the award this week for his 1:59.435 set on rPG"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 217,
+    "fields": {
+        "player": 1505,
+        "type": "weekly",
+        "date": "2016-10-15",
+        "description": "Suiryu wins the award for his 2:21.0 set on BC non-SC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 218,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2016-09-08",
+        "description": "Fox became the first player to sub 2:19 on KC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 219,
+    "fields": {
+        "player": 850,
+        "type": "weekly",
+        "date": "2016-09-01",
+        "description": "Kenny set the MG glitch WR this week, beating Sam's record that lasted a year and a half"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 220,
+    "fields": {
+        "player": 211,
+        "type": "weekly",
+        "date": "2016-08-22",
+        "description": "Blaze set the first sub 1:44 time on rSL glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 221,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2016-08-08",
+        "description": "Caleb got a 1:21.1 run on MC non-SC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 222,
+    "fields": {
+        "player": 796,
+        "type": "weekly",
+        "date": "2016-08-01",
+        "description": "Demon set a 2:16.4 on MT non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 223,
+    "fields": {
+        "player": 644,
+        "type": "weekly",
+        "date": "2016-07-08",
+        "description": "Arrow obtained the rPB WR this week by beating Hunter's record which had lasted for over a year"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 224,
+    "fields": {
+        "player": 1440,
+        "type": "weekly",
+        "date": "2016-06-22",
+        "description": "Shawn set the WR on GV non-SC this week, getting a 1:52.403"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 225,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2016-06-15",
+        "description": "Guy set three MC non-SC WRs this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 226,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2016-06-01",
+        "description": "Fox set a 2:04.720 on rDS this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 227,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2016-05-22",
+        "description": "Liam set a 2:05.7 on rDKM non-SC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 228,
+    "fields": {
+        "player": 788,
+        "type": "weekly",
+        "date": "2016-05-15",
+        "description": "Havoc set a 2:16.8 on rBC3 non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 229,
+    "fields": {
+        "player": 1218,
+        "type": "weekly",
+        "date": "2016-04-15",
+        "description": "Olifré wins the award this week for getting the WR on KC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 230,
+    "fields": {
+        "player": 366,
+        "type": "weekly",
+        "date": "2016-03-08",
+        "description": "Danny continued to play rDKJP and made a 4-second WR cut"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 231,
+    "fields": {
+        "player": 366,
+        "type": "weekly",
+        "date": "2016-03-01",
+        "description": "Danny got the first 2/3 WR on rDKJP glitch this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 232,
+    "fields": {
+        "player": 210,
+        "type": "weekly",
+        "date": "2016-02-22",
+        "description": "Blake set yet another DKSC WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 233,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2016-02-15",
+        "description": "Guy wins this for his 1:44.1 time set on rSL"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 234,
+    "fields": {
+        "player": 1294,
+        "type": "weekly",
+        "date": "2016-02-08",
+        "description": "Ando wins the award for his 2:25.0 accomplished on RR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 235,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2016-02-01",
+        "description": "Liam became the first player to sub 1:35 on rDH non-SC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 236,
+    "fields": {
+        "player": 1374,
+        "type": "weekly",
+        "date": "2016-01-22",
+        "description": "Vex got the first 1:50 sub on rDKJP glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 237,
+    "fields": {
+        "player": 1294,
+        "type": "weekly",
+        "date": "2016-01-15",
+        "description": "Ando obtained the WR on RR, with a time of 2:25.247"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 238,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2016-01-08",
+        "description": "Liam got the WR on rDS, with a 2:04.7"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 239,
+    "fields": {
+        "player": 1505,
+        "type": "weekly",
+        "date": "2016-01-01",
+        "description": "Suiryu achieved a 1:56.6 on CM non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 240,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-12-08",
+        "description": "Fox beat Sword's time on rDS, getting a 2:04.828"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 241,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-10-22",
+        "description": "Fox continued his WR streak and beat Shaun's CM non-SC WR which had lasted over a year"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 242,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-10-15",
+        "description": "Fox set the WGM non-SC WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 243,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-10-01",
+        "description": "Fox obtained the rDH WR this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 244,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-09-08",
+        "description": "Fox beat Totom's KC time which had lasted as the WR for close to two years"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 245,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-09-01",
+        "description": "Fox achieved WRs on GV non-SC and MH this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 246,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-08-22",
+        "description": "Fox obtained WRs on TF and rBC3 this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 247,
+    "fields": {
+        "player": 796,
+        "type": "weekly",
+        "date": "2015-08-08",
+        "description": "Demon got a 1:58.5 run on MT this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 248,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2015-07-22",
+        "description": "Guy kept up the rSL glitch grind to notch the first sub 1:46 time"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 249,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2015-07-15",
+        "description": "Caleb obtained 3 rSL WRs this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 250,
+    "fields": {
+        "player": 609,
+        "type": "weekly",
+        "date": "2015-07-01",
+        "description": "Hunter reclaimed the rPB WR this week, with a time of 1:01.441"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 251,
+    "fields": {
+        "player": 339,
+        "type": "weekly",
+        "date": "2015-06-22",
+        "description": "Fulag got the first 1:49.6 on TF during this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 252,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2015-06-15",
+        "description": "Cole set two MC non-SC WRs this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 253,
+    "fields": {
+        "player": 1505,
+        "type": "weekly",
+        "date": "2015-06-01",
+        "description": "Suiryu wins this award for his WR on BC non-SC set this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 254,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2015-05-22",
+        "description": "Caleb managed to reclaim the WR on rPB this week in only a day after Hunter beat him"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 255,
+    "fields": {
+        "player": 1534,
+        "type": "weekly",
+        "date": "2015-05-15",
+        "description": "Totom got the rDS WR this week, with a time of 2:04.860"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 256,
+    "fields": {
+        "player": 373,
+        "type": "weekly",
+        "date": "2015-05-08",
+        "description": "Darragh got a time of 1:59.485 on rPG this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 257,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2015-04-22",
+        "description": "Cole achieved a 1:21.6 on MC non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 258,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-04-08",
+        "description": "Fox managed to reclaim the TF WR after not having held it for a year and a half"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 259,
+    "fields": {
+        "player": 788,
+        "type": "weekly",
+        "date": "2015-04-01",
+        "description": "Havoc became the first player to sub 2:17 on rBC3 non-SC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 260,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-03-22",
+        "description": "Fox achieved a time of 1:30.7 on rMC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 261,
+    "fields": {
+        "player": 788,
+        "type": "weekly",
+        "date": "2015-02-22",
+        "description": "Havoc wins this award for his two rBC3 non-SC WRs set this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 262,
+    "fields": {
+        "player": 1385,
+        "type": "weekly",
+        "date": "2015-02-01",
+        "description": "Sam got the 27 sub on MG by making a triple glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 263,
+    "fields": {
+        "player": 251,
+        "type": "weekly",
+        "date": "2015-01-22",
+        "description": "Caleb cut off 2 seconds from his previous MC WR, and got a 53.5"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 264,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2015-01-15",
+        "description": "Liam attained a time of 1:21.861 on rSGB this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 265,
+    "fields": {
+        "player": 1032,
+        "type": "weekly",
+        "date": "2015-01-01",
+        "description": "Fox attained the prestigious sub 1:29 on DC this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 266,
+    "fields": {
+        "player": 924,
+        "type": "weekly",
+        "date": "2014-12-22",
+        "description": "Leo took almost 10% from his AF with 14 PRs to land in the top 5"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 267,
+    "fields": {
+        "player": 1385,
+        "type": "weekly",
+        "date": "2014-12-15",
+        "description": "Sam used 4 PRs to pass 8 players this week, more than anyone else"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 268,
+    "fields": {
+        "player": 985,
+        "type": "weekly",
+        "date": "2014-12-08",
+        "description": "Ace wins his first POW award for cutting ~3.5% from his AF and passing 5 players"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 269,
+    "fields": {
+        "player": 1385,
+        "type": "weekly",
+        "date": "2014-12-01",
+        "description": "Sam passed 2 players with the largest AF cut of any player this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 270,
+    "fields": {
+        "player": 609,
+        "type": "weekly",
+        "date": "2014-11-22",
+        "description": "Hunter passed 7 players with 11 PRs, cutting 11 points/6% from his AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 271,
+    "fields": {
+        "player": 975,
+        "type": "weekly",
+        "date": "2014-11-15",
+        "description": "Luke passed 2 players and had the highest % AF cut this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 272,
+    "fields": {
+        "player": 1200,
+        "type": "weekly",
+        "date": "2014-11-08",
+        "description": "Roy made the largest AF cut this week, taking more than 6 points from his AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 273,
+    "fields": {
+        "player": 349,
+        "type": "weekly",
+        "date": "2014-11-01",
+        "description": "Dane cut more than 14% of his AF and passed 18 players all in one week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 274,
+    "fields": {
+        "player": 754,
+        "type": "weekly",
+        "date": "2014-10-22",
+        "description": "Jon passed 16 players with a 12 point cut, more than anyone else this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 275,
+    "fields": {
+        "player": 349,
+        "type": "weekly",
+        "date": "2014-10-15",
+        "description": "Dane M has a triumphant week despite his lack of a last name. Scoring 11 PRs and a 20 point AF cut, he was clearly the best of the week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 276,
+    "fields": {
+        "player": 349,
+        "type": "weekly",
+        "date": "2014-10-08",
+        "description": "With 8 PRs, Dane made an impressive ~26.6 point/~17.1% cut and passed 25 players."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 277,
+    "fields": {
+        "player": 1534,
+        "type": "weekly",
+        "date": "2014-10-01",
+        "description": "Thomas sent in just 2 PRs this week, but it was enough to cut more than 3% from his AF, more than any other player."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 278,
+    "fields": {
+        "player": 1546,
+        "type": "weekly",
+        "date": "2013-01-15",
+        "description": "In a particularly quiet week, Tim's solid ~2.2 point / ~2.7% AF cut stood out. He moved up 2 places to 50th with only 3 PR's."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 279,
+    "fields": {
+        "player": 299,
+        "type": "weekly",
+        "date": "2013-01-08",
+        "description": "A terrific string of a dozen PR's earned Christian this award. He cut ~3.2 points/~3.7% from his AF and moved up one place to 56th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 280,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2013-01-01",
+        "description": "Even though the other players were quite quiet this week, Thomas kept playing after taking the crown to secure his position, earning 2 more PR's and cutting another ~0.14 points, or ~1.03% from his AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 281,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2012-12-22",
+        "description": "With one last strong push, Thomas finally passed Shaun Tanney to become the new site champion. 6 PR's and an impressive ~.8 AF cut helped prove that his lack of SR's didn't mean that he hadn't earned his crown."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 282,
+    "fields": {
+        "player": 924,
+        "type": "weekly",
+        "date": "2012-12-15",
+        "description": "Leo had a solid 4 PRs and a 1.4 AF cut in the Top 10, moving from 8th to 7th. His continued activity has been a spark of light in the otherwise mostly dark top group."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 283,
+    "fields": {
+        "player": 299,
+        "type": "weekly",
+        "date": "2012-12-08",
+        "description": "A slow week in the Top 100 gave ever-active Christian a chance to shine. With an impressive 8 PR's, he cut ~2.3 points, or ~2.4% of his total AF, and improved from 64th to 62nd."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 284,
+    "fields": {
+        "player": 1331,
+        "type": "weekly",
+        "date": "2012-12-01",
+        "description": "Rob had one of the most impressive non-hoarded weeks of recent memory. He karted his way to 13 PRs, an 11.6 point AF cut, and a 13 place improvement from 132-> 119."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 285,
+    "fields": {
+        "player": 1331,
+        "type": "weekly",
+        "date": "2012-11-22",
+        "description": "Rob made an incredible amount of progress for just one week's time, PR'ing 14 times and moving from 146th to 132nd. He slashed almost 22 points, or ~11.1%, from his total AF, much more than anyone in the Top 100."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 286,
+    "fields": {
+        "player": 354,
+        "type": "weekly",
+        "date": "2012-11-15",
+        "description": "Daniel clearly took this award, with 4 PRs and an AF cut just over one point. He also moved up a spot from 50th to 49th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 287,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2012-11-08",
+        "description": "Liam was the only player to exceed a 4% cut in AF this week. 5 solid PR's knocked ~2.36 points off his AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 288,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2012-11-01",
+        "description": "Not content to stop at earning the bronze medal, Thomas continued to press on. He earned 5 PR's this week, cutting more than a full point of AF--a rarity at such a high level."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 289,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2012-10-22",
+        "description": "After persistent effort to continue his progress at the top, Thomas was finally rewarded with the #3 spot this week. He cut exactly 1 point of AF--no mean feat at this level--which was just enough to pass Marc Bas."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 290,
+    "fields": {
+        "player": 975,
+        "type": "weekly",
+        "date": "2012-10-15",
+        "description": "Large cut from 12 prs, and jumped up roughly 10 places!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 291,
+    "fields": {
+        "player": 1391,
+        "type": "weekly",
+        "date": "2012-10-08",
+        "description": "Karting 3 solid PRs earned him the coveted award this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 292,
+    "fields": {
+        "player": 429,
+        "type": "weekly",
+        "date": "2012-10-01",
+        "description": "Reasonable cut in a quiet field."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 293,
+    "fields": {
+        "player": 210,
+        "type": "weekly",
+        "date": "2012-09-22",
+        "description": "Great (albeit hoarded) jump into the top 100."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 294,
+    "fields": {
+        "player": 539,
+        "type": "weekly",
+        "date": "2012-09-08",
+        "description": "Activity was relatively high this week, but Franco still got the best non-hoarded percentage cut fairly easily, at ~4.6%. 4 PR's knocked 3.25 points off his AF and bumped him up 3 spots to 40th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 295,
+    "fields": {
+        "player": 354,
+        "type": "weekly",
+        "date": "2012-09-01",
+        "description": "Mr. Crutcher's activity crushed all competition this week. An outstanding 13 PR's cut ~9 points and ~9% from his AF, propelling him from #68 to #61."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 296,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2012-08-22",
+        "description": "With even greater progress than last week, Cole outperformed the non-hoarding field again. He cut ~2.45 AF, or ~5.6% of his total, with 8 PR's."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 297,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2012-08-15",
+        "description": "Cole's set of 5 PR's was one of the best earned this week. It netted him a ~1.73 AF cut and bumped him up a spot to 20th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 298,
+    "fields": {
+        "player": 61,
+        "type": "weekly",
+        "date": "2012-08-08",
+        "description": "Alex's push to cut AF paid off this week, earning him a solid 7 PR's. They resulted in a ~2.64 point cut and bumped him up 2 places to 16th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 299,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2012-07-22",
+        "description": "With his rivalry with Nick Meade reignited, Shaun found motivation to defend his crown this week. 5 PR's cut ~5.22% off his total AF, one of the best non-hoarded percentage cuts of the week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 300,
+    "fields": {
+        "player": 746,
+        "type": "weekly",
+        "date": "2012-07-15",
+        "description": "John wins this one by a landslide. 5 PRs to move from #19 -> #10, as well as a solid 18% AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 301,
+    "fields": {
+        "player": 215,
+        "type": "weekly",
+        "date": "2012-07-08",
+        "description": "Bob's impressive 11 PR string outshone the efforts of higher-ranked karters. He moved up a spot to #44 and cut ~3.3 points, or ~4.38%, from his AF, the best non-hoarded percentage cut of the week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 302,
+    "fields": {
+        "player": 354,
+        "type": "weekly",
+        "date": "2012-06-22",
+        "description": "While other players went off on summer vacations, Daniel kept up his activity with 9 PR's. Cutting ~5 points of AF, his encore performance was enough to earn the award for the second week in a row."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 303,
+    "fields": {
+        "player": 354,
+        "type": "weekly",
+        "date": "2012-06-15",
+        "description": "Daniel broke into the Top 100 in style, with an impressive 26 PR's. His ~14.4 AF cut was more than twice as large as his nearest competitors' by both points and percentage, propelling him forward 8 places to 100th on the dot."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 304,
+    "fields": {
+        "player": 1381,
+        "type": "weekly",
+        "date": "2012-05-22",
+        "description": "There was fierce competition among various top players this week, but Salvatore just barely edges out the others by virtue of more consistent updating. His massive 12 PR load took off ~1.95 points/~4.79% from his AF and bumped him up one spot to #16."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 305,
+    "fields": {
+        "player": 924,
+        "type": "weekly",
+        "date": "2012-05-15",
+        "description": "Despite neither earning the most PR's nor improving his rank, Leo had the best non-hoarded AF cut in the Top 100 by a comfortable margin, knocking off ~1.92 points/~4.11% with 5 PR's."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 306,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2012-05-08",
+        "description": "Another quiet week allowed Thomas to double up on POW's with just 4 PR's, cutting just short of a full point of AF and passing Jak Russo for the #8 spot."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 307,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2012-05-01",
+        "description": "With not a soul outside the Top 100 stirring, Thomas cruised to an easy victory this week. His 5 PR's allowed him to overtake Aruba for the #9 spot and earned him a hefty 1.5 AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 308,
+    "fields": {
+        "player": 746,
+        "type": "weekly",
+        "date": "2012-04-15",
+        "description": "With little activity and only a few hoarders as his competition, John stepped up this week. 4 PRs bringing a 1.7 AF cut and a two place improvement, he ran away with the award this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 309,
+    "fields": {
+        "player": 91,
+        "type": "weekly",
+        "date": "2012-04-08",
+        "description": "Though there was a good bit of activity among the top players, Andre outshined them all. 10 PR's netted him an 8 place improvement and an ~8.67 point/~9.46% AF cut, the best in the Top 100."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 310,
+    "fields": {
+        "player": 1381,
+        "type": "weekly",
+        "date": "2012-04-01",
+        "description": "Salvatore made a return to MKWii this week, quickly earning 6 PR's and cutting ~1.16 points of AF, enough to bump him up a spot to #20."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 311,
+    "fields": {
+        "player": 924,
+        "type": "weekly",
+        "date": "2012-03-22",
+        "description": "With 14 PR's, Leo easily takes this award, jumping forward 7 places to #24 and cutting ~9.83% of his total AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 312,
+    "fields": {
+        "player": 746,
+        "type": "weekly",
+        "date": "2012-03-15",
+        "description": "Brunn had the best non-hoarded week of all at the top. With 3 PRs, a .34 AF cut, and a one place improvement, he kept playing when others went silent."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 313,
+    "fields": {
+        "player": 1315,
+        "type": "weekly",
+        "date": "2012-03-08",
+        "description": "Rein hit 2 big PR's this week to simultaneously move up a spot and fend off John Brunn. His AF cut was ~1.45 points, ~3.32% of his total."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 314,
+    "fields": {
+        "player": 924,
+        "type": "weekly",
+        "date": "2012-03-01",
+        "description": "With a solid 5 PR's, Leo subbed 60 in AF and cut ~1.77 points of AF, almost half the gap to the karter ahead of him."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 315,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2012-02-22",
+        "description": "With almost no competition, Aruba easily wins this award, moving from #9 - #8 with 2 PR's. He cut ~1.5 points, or about ~5.1% off of his AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 316,
+    "fields": {
+        "player": 1315,
+        "type": "weekly",
+        "date": "2012-02-15",
+        "description": "In a week of overwhelming inactivity, Rein stood head and shoulders above the rest. With 4 PR's, he shaved off 4.375 AF, roughly ~9.18% of his total, and leaped from #23 to #18."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 317,
+    "fields": {
+        "player": 924,
+        "type": "weekly",
+        "date": "2012-02-08",
+        "description": "A strong 8 PR week allowed Leo to take this one despite solid competition from the other players. He moved from #44 to #37 and cut ~4.7 points/~6.8% from his AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 318,
+    "fields": {
+        "player": 1315,
+        "type": "weekly",
+        "date": "2012-02-01",
+        "description": "Reinier ran away with the award this week. With just 5 deft PR's, he jumped 9 places to 23rd and cut ~11.1 AF, nearly twice as much as the next biggest cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 319,
+    "fields": {
+        "player": 1315,
+        "type": "weekly",
+        "date": "2012-01-22",
+        "description": "Despite respectable activity from the rest of the field, 3 solid PR's were all it took for Rein to win this award. He moved up 4 spots to 32nd by cutting ~4.17 points of AF, ~6.55% of his total."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 320,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2012-01-15",
+        "description": "Thomas took advantage of a quiet week to break into the Top 10 with 6 PR's. ~2.81 points, or ~8.67% of his total AF, were enough to propel him forward 4 places to #8."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 321,
+    "fields": {
+        "player": 924,
+        "type": "weekly",
+        "date": "2012-01-08",
+        "description": "In all the Top 100, no one could keep up with Leo in any category this week. He made the most PR's (15), cut the most AF (9 points, or 10%), and gained the most positions (6 places, to 55th)."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 322,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2012-01-01",
+        "description": "Thomas got the biggest cut in the Top 20, with 5 PR's knocking almost 5% off his total, or ~1.83 AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 323,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2011-12-22",
+        "description": "Aruba finished the year with a flurry of activity, squeezing in 10 PR's to cut ~5.86% off his AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 324,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2011-12-15",
+        "description": "With a solid 5 PR's, Thomas finally made it past an AF gap and gained another place. He cut ~1.56 AF, just over 4% of his total."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 325,
+    "fields": {
+        "player": 746,
+        "type": "weekly",
+        "date": "2011-12-01",
+        "description": "For non-hoarded players, John Brunn stood above the rest. His two PRs netted him a 1.34% AF cut, which was better than the other regularly-active players could do."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 326,
+    "fields": {
+        "player": 947,
+        "type": "weekly",
+        "date": "2011-11-08",
+        "description": "Although not the highest-ranked player active, Marvin wins the award for being one of only two Top 50 players to gain places and for having the largest non-hoarded percentage cut at ~4.7%. Two Top 10 times among 9 PR's sealed the deal."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 327,
+    "fields": {
+        "player": 383,
+        "type": "weekly",
+        "date": "2011-10-22",
+        "description": "With 24 PRs, Dave tore it up this week with a great 12 point AF cut. They may be hoarded, but some Top 10 times combined with minimal activity elsewhere seals the award."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 328,
+    "fields": {
+        "player": 91,
+        "type": "weekly",
+        "date": "2011-10-15",
+        "description": "Very low activity at the top let Hoelscher take this. Moving from #90->#82 with 10 PRs, he dropped 10 AF points or 7.9% off of his score."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 329,
+    "fields": {
+        "player": 1256,
+        "type": "weekly",
+        "date": "2011-10-08",
+        "description": "MG glitchmaster Paul-Philipp showed his full range of skill this week, hitting 12 PRs for a 4.9 AF cut (8.5%), and a 4 place jump in the rankings."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 330,
+    "fields": {
+        "player": 383,
+        "type": "weekly",
+        "date": "2011-10-01",
+        "description": "Tandy hit a large 10 PRs this week, prompting a 6.56 AF cut and a 6 place ascention in the charts from 71->65"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 331,
+    "fields": {
+        "player": 84,
+        "type": "weekly",
+        "date": "2011-09-22",
+        "description": "Alvin Le had a decent 4 PRs, and a move from #18 -> #17 sealed the deal in this quiet week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 332,
+    "fields": {
+        "player": 215,
+        "type": "weekly",
+        "date": "2011-09-15",
+        "description": "Bob Holden's solid week beats everyone else's off week. 5 PRs and a 1.17 AF cut was the best anyone had to offer. Holden takes the POW and moves from #39 -> #38."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 333,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2011-09-08",
+        "description": "Spots #2-4 were all active, but the highest gets the POW. Meade comes back with 7 PRs and a 2.1 point AF cut (15%), to fight off Batten and Tanney. If he hadn't played, both would have passed him."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 334,
+    "fields": {
+        "player": 652,
+        "type": "weekly",
+        "date": "2011-08-22",
+        "description": "Jak Russo proves his slot in the Top 10. With 16 PRs an a 24% AF cut (Moving from #10 -> #6), he shut out any competition for the POW."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 335,
+    "fields": {
+        "player": 383,
+        "type": "weekly",
+        "date": "2011-08-15",
+        "description": "13 PRs and an 8.64 AF cut determined the score for Dave Tandy, and his jump from #78 -> #72 sealed up this POW."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 336,
+    "fields": {
+        "player": 504,
+        "type": "weekly",
+        "date": "2011-08-08",
+        "description": "With a 6.9% AF cut of 3.25 points (highest in the Top 25), Fabien deserves this record. 8 PRs and a jump from #19 -> #17 don't hurt either."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 337,
+    "fields": {
+        "player": 746,
+        "type": "weekly",
+        "date": "2011-08-01",
+        "description": "Brunn fights off almost no competition with less than 5 players active. 1 PR for a .68 AF cut was enough to seal it this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 338,
+    "fields": {
+        "player": 366,
+        "type": "weekly",
+        "date": "2011-07-15",
+        "description": "No one in the Top 50 cut more than 3% off their AF score, so Danny wins with his nice week. Moving from #76 to #72 with 8 PRs and a 3.5 AF cut, he proved he has more to come in the future."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 339,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2011-06-22",
+        "description": "As the activity reaches a low, Cole shines bright in the darkness. His 6 PRs brought a 3.12 AF cut that moved him up from 16th to 14th on the main charts."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 340,
+    "fields": {
+        "player": 1065,
+        "type": "weekly",
+        "date": "2011-06-15",
+        "description": "Matthias rises up again, this time jumping from #44 to #43. His 4.62% AF cut was the most among Top 50 karters, as he shaved off 3.4 AF with 6 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 341,
+    "fields": {
+        "player": 1539,
+        "type": "weekly",
+        "date": "2011-06-08",
+        "description": "Thomas ascended from #24 to #22 this week, helped by 8 PRs and a 2.25 AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 342,
+    "fields": {
+        "player": 1065,
+        "type": "weekly",
+        "date": "2011-06-01",
+        "description": "A move from #52 to #47 was the cause for the POW here. 10 PRs prompted a 2.84 AF cut, or a 3.69% portion off his old score."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 343,
+    "fields": {
+        "player": 1256,
+        "type": "weekly",
+        "date": "2011-05-22",
+        "description": "Paul-Philipp moved from #39 to #35 this week, with 9 PRs in his haul. Hit a 3.54 AF cut or 5.63%."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 344,
+    "fields": {
+        "player": 746,
+        "type": "weekly",
+        "date": "2011-05-15",
+        "description": "John fought his way out of an AF graveyard this week, with 7 PRs prompting a 3.29 AF cut, or 4.95%."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 345,
+    "fields": {
+        "player": 1637,
+        "type": "weekly",
+        "date": "2011-05-08",
+        "description": "21 PRs highlighted Yann's charge for the POW. Along with the copious amount of new records was a 10.1 AF cut, or 10.198% off his previous score."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 346,
+    "fields": {
+        "player": 861,
+        "type": "weekly",
+        "date": "2011-05-01",
+        "description": "In a week with small activity, Kevin stands out. With 5 PRs and a 1.34 AF cut, he knocked 2.7% off to lead the Top 100."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 347,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2011-04-22",
+        "description": "In a small return to the charts, Cole grabs 9 PRs with a 6.14 AF cut, and proving he's not done with MKW yet!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 348,
+    "fields": {
+        "player": 652,
+        "type": "weekly",
+        "date": "2011-04-15",
+        "description": "Sparse movement near the top makes Jak's move stand out. With a 10% cut, he hit 8 PRs to jump from #9 to #8"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 349,
+    "fields": {
+        "player": 729,
+        "type": "weekly",
+        "date": "2011-04-08",
+        "description": "Jimmy pushed aside some newcomers to the Top 10 this week. Standing his ground, he notched 9 PRs to cut 4.2 points of AF and move up a spot."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 350,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2011-04-01",
+        "description": "Tanney had a massive week, with 11 PRs and an 8% cut, by far the most of the week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 351,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2011-03-22",
+        "description": "Shaun stayed at #3, but he has a long graveyard ahead of him. He kept busy this week with 11PRs, a 10% cut, and 1.4AF lost off his score."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 352,
+    "fields": {
+        "player": 74,
+        "type": "weekly",
+        "date": "2011-03-08",
+        "description": "Alexandre hit 9 PRs to rocket from #29 -> #24, cutting 5 AF points and 10%."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 353,
+    "fields": {
+        "player": 674,
+        "type": "weekly",
+        "date": "2011-02-22",
+        "description": "Jimbo continues the list of MKW comebackers with a three place jump from #16 -> #13. 9 PRs followed suit with a 7.1% cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 354,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2011-02-15",
+        "description": "Tanney continued to rock the standings. This week he hit 13 PRs with a 7% cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 355,
+    "fields": {
+        "player": 933,
+        "type": "weekly",
+        "date": "2011-01-22",
+        "description": "Lash had the most impressive week out of the karters, with a 6.7% AF cut, and a very nice jump from 59 --> 54. He hit 10 PRs in this span as well."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 356,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2011-01-15",
+        "description": "Shaun makes a great comeback, hitting 18 PRs and passing ex-Site Champ Bubbles for fourth with an 18% cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 357,
+    "fields": {
+        "player": 674,
+        "type": "weekly",
+        "date": "2011-01-08",
+        "description": "Making a nice comeback to the game, Jamie jumped up 5 spots this week barely edging out Jay Batten. With it came an 8.5% cut and 6 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 358,
+    "fields": {
+        "player": 234,
+        "type": "weekly",
+        "date": "2011-01-01",
+        "description": "A quiet week meant that Brett could take the award being ranked lower. He had an 11.5% drop (2nd highest) and moved up 17 positions, stemming from 30 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 359,
+    "fields": {
+        "player": 1355,
+        "type": "weekly",
+        "date": "2010-12-22",
+        "description": "Ross finished the year in style, pulling out 13 PRs in the last week. His 12% cut was second-highest of the week, and he vaulted from #53 --> #45"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 360,
+    "fields": {
+        "player": 1659,
+        "type": "weekly",
+        "date": "2010-12-08",
+        "description": "A great 25 PRs provoked a #48 --> #31 place jump. Zane had a 21.9% cut, very impressive for the highly active holiday season."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 361,
+    "fields": {
+        "player": 466,
+        "type": "weekly",
+        "date": "2010-12-01",
+        "description": "Emmanuel had a great week highlighted by 21 PRs and an 11 point AF cut. It caused a jump from #83 --> #74."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 362,
+    "fields": {
+        "player": 1381,
+        "type": "weekly",
+        "date": "2010-11-01",
+        "description": "Salvatore jumped from #40 --> #31 with a massive 25 PRs and a great 12% cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 363,
+    "fields": {
+        "player": 1298,
+        "type": "weekly",
+        "date": "2010-10-22",
+        "description": "Rachel hit a smooth 10 PRs to jump three places from #47 --> #44."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 364,
+    "fields": {
+        "player": 300,
+        "type": "weekly",
+        "date": "2010-10-15",
+        "description": "Knocking off 32 points of AF this week was Christian Wild. He jumped over 20 places and made a great 15% AF cut, best of the week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 365,
+    "fields": {
+        "player": 1296,
+        "type": "weekly",
+        "date": "2010-10-08",
+        "description": "This mysteriously named karter was on a PR spree this week, hitting 18 separate PRs and cutting a lot of AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 366,
+    "fields": {
+        "player": 1025,
+        "type": "weekly",
+        "date": "2010-10-01",
+        "description": "Mark vaulted five players to move from #16 --> #11, a huge more for being high ranked in the charts. He hit 6 PRs and cut about 8 points of AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 367,
+    "fields": {
+        "player": 1215,
+        "type": "weekly",
+        "date": "2010-09-22",
+        "description": "Oliver gets the biggest cut seen in a while. With an 8% cut and 13 PRs, he went from #44 --> #40"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 368,
+    "fields": {
+        "player": 1423,
+        "type": "weekly",
+        "date": "2010-09-15",
+        "description": "Sebastian cut the most AF which made him the best player of the week. With a nice 3% cut and four place move (#74 --> #70), he gets the POW."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 369,
+    "fields": {
+        "player": 559,
+        "type": "weekly",
+        "date": "2010-09-08",
+        "description": "Gavin moved the most out of anyone in the Top 150. He gained 3% on AF and cut two spots from #50 --> #48"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 370,
+    "fields": {
+        "player": 1340,
+        "type": "weekly",
+        "date": "2010-09-01",
+        "description": "RVZ had the largest % cut AF of the week (4.1) and moved from #23 --> #21"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 371,
+    "fields": {
+        "player": 1566,
+        "type": "weekly",
+        "date": "2010-08-22",
+        "description": "Tony improved a quarter of his PRs to move from #24 --> #21 with a solid 8% cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 372,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2010-08-15",
+        "description": "In a week with almost no activity, the award goes to Nick Meade with several PRs at a high level."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 373,
+    "fields": {
+        "player": 1640,
+        "type": "weekly",
+        "date": "2010-08-08",
+        "description": "In a very quiet week, Yannick grabs the POW with a small cut. His 6 AF and three place jump (#65 --> #62), was the best of the week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 374,
+    "fields": {
+        "player": 179,
+        "type": "weekly",
+        "date": "2010-08-01",
+        "description": "Ben moved from #10 --> #7 this week, with 7 great PRs and a 7% cut. A multiple place move at such a high level is rare."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 375,
+    "fields": {
+        "player": 1639,
+        "type": "weekly",
+        "date": "2010-07-15",
+        "description": "25% AF Cut and a huge jump in the standings all the way from #72 --> #46."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 376,
+    "fields": {
+        "player": 670,
+        "type": "weekly",
+        "date": "2010-07-08",
+        "description": "Making a nice 10 PR comeback, James wins the POW with an 8% cut and a 5 place move (33 --> 28)"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 377,
+    "fields": {
+        "player": 352,
+        "type": "weekly",
+        "date": "2010-07-01",
+        "description": "Daniel made a great jump from #48 --> #42 with 10 PRs. His 10% cut was also the best of the week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 378,
+    "fields": {
+        "player": 1116,
+        "type": "weekly",
+        "date": "2010-06-22",
+        "description": "Mick pulls off the repeat with a three place jump from #13 --> #10. This time he hit 7 PRs and cut 7% of AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 379,
+    "fields": {
+        "player": 1116,
+        "type": "weekly",
+        "date": "2010-06-15",
+        "description": "Mick bumped himself form #17 --> #13 with 9 PRs and a great 13% AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 380,
+    "fields": {
+        "player": 1659,
+        "type": "weekly",
+        "date": "2010-06-08",
+        "description": "Zane moved from #62 --> #55 while cutting exactly 10 AF and snatching 19 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 381,
+    "fields": {
+        "player": 352,
+        "type": "weekly",
+        "date": "2010-06-01",
+        "description": "Daniel moved from #61 --> #53 with a 12 PR explosion. 8 AF cut and 8% overall."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 382,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2010-05-22",
+        "description": "Nick pushed out his lead massively this week, with 11 PRs he took a 4 AF lead over Bubbles and made an 11% cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 383,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2010-05-15",
+        "description": "Tyler moved up a spot from #9-->#8 when everyone stayed still."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 384,
+    "fields": {
+        "player": 1072,
+        "type": "weekly",
+        "date": "2010-05-01",
+        "description": "Max moved up five spots this week (#51 --> #46), while cutting 7 points of AF with 19 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 385,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2010-04-22",
+        "description": "Tyler grabbed this with a #11 --> #9 move since under 20 players were active."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 386,
+    "fields": {
+        "player": 1166,
+        "type": "weekly",
+        "date": "2010-04-15",
+        "description": "Nate moved 11 spots while the toppies moved one at most. His #74  --> #63 spurt was a great jump to earn him the POW"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 387,
+    "fields": {
+        "player": 1072,
+        "type": "weekly",
+        "date": "2010-04-08",
+        "description": "Max was the only one who made decent ground near the top. He moved from #55 --> #50 with 4.5AF cut and a near 5% drop."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 388,
+    "fields": {
+        "player": 1340,
+        "type": "weekly",
+        "date": "2010-04-01",
+        "description": "The second highest player active in a very quiet week, RVZ  moved from #27 --> #20 and cut 7AF points (15%)"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 389,
+    "fields": {
+        "player": 1566,
+        "type": "weekly",
+        "date": "2010-03-22",
+        "description": "Tony made a six place move, (#26 --> #20), while grabbing 2 Site Records and 21 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 390,
+    "fields": {
+        "player": 1355,
+        "type": "weekly",
+        "date": "2010-03-08",
+        "description": "Ross sticks out from #55 --> #46 with a 13 PR streak and a 10% cut. Impressive for the Top 50."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 391,
+    "fields": {
+        "player": 118,
+        "type": "weekly",
+        "date": "2010-03-01",
+        "description": "Two in a row for Andy, as he jumped from #31 --> #28 while only hitting three PRs. A place per PR is pretty impressive."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 392,
+    "fields": {
+        "player": 118,
+        "type": "weekly",
+        "date": "2010-02-22",
+        "description": "Andy had the most impressive cut to round out February. He moved up three from #34 --> #31 and hit 9 new marks."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 393,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2010-02-15",
+        "description": "Tyler made a bold move into the Top 10 with a jump from #12 --> #9 this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 394,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2010-02-08",
+        "description": "Nick took the site champion from David with 4 PRs and knocked down Bubbles for the second time in 2010."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 395,
+    "fields": {
+        "player": 1025,
+        "type": "weekly",
+        "date": "2010-02-01",
+        "description": "Mark made a daring three place move from #16 --> #13 with only 5 PRs.The 6% cut put him closer to the top."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 396,
+    "fields": {
+        "player": 504,
+        "type": "weekly",
+        "date": "2010-01-22",
+        "description": "Fabien strikes with a three place move (#32 --> #29), while hitting 10 new PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 397,
+    "fields": {
+        "player": 729,
+        "type": "weekly",
+        "date": "2010-01-15",
+        "description": "Jimmy's impressive move included 10 PRs and a three place jump(#17 --> #14)"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 398,
+    "fields": {
+        "player": 1566,
+        "type": "weekly",
+        "date": "2010-01-08",
+        "description": "Few moved this week, so Tony took advantage, with 12PRs, a 7% cut, and moving #30 -->#27"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 399,
+    "fields": {
+        "player": 477,
+        "type": "weekly",
+        "date": "2010-01-01",
+        "description": "Eric closely takes this from Brandon Sansui. He had 7 PRs and moved up five places, from #32 --> #27"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 400,
+    "fields": {
+        "player": 477,
+        "type": "weekly",
+        "date": "2009-12-22",
+        "description": "Eric jumped up #38 --> #32 after 21 PRs, and 12% of his AF came down, the best single week performance of the month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 401,
+    "fields": {
+        "player": 123,
+        "type": "weekly",
+        "date": "2009-12-15",
+        "description": "Two in a row for Anis, as he jumps from #33 --> #29, with an 8% cut and 8 new PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 402,
+    "fields": {
+        "player": 123,
+        "type": "weekly",
+        "date": "2009-12-08",
+        "description": "Not many cut spots, so Anis takes this one due to his 4% AF cut mixed with a small two place jump (#35 --> #33)"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 403,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2009-12-01",
+        "description": "Tyler made another five place cut, going from #21 --> #16 this time. With his jump he brought 21 PRs along for the ride."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 404,
+    "fields": {
+        "player": 350,
+        "type": "weekly",
+        "date": "2009-11-22",
+        "description": "Daniel struck back from last week, reclaiming his spot in the Top 10 and moving up to 9th with 9 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 405,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2009-11-15",
+        "description": "Cole made one of his random comebacks as usual, this time breaking the Top 10 from 12th. 8% AF cut as well."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 406,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2009-11-08",
+        "description": "Tyler came out of nowhere to grab this POW, with 32 PRs and a four place jump."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 407,
+    "fields": {
+        "player": 1340,
+        "type": "weekly",
+        "date": "2009-11-01",
+        "description": "RVZ made the largest jump near the top, from #36 --> #30, and a 9% decrease in his AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 408,
+    "fields": {
+        "player": 118,
+        "type": "weekly",
+        "date": "2009-10-22",
+        "description": "Lots of people cut AF, but Andy was the first to actually move up a spot, gaining three from #29 --> #26"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 409,
+    "fields": {
+        "player": 1546,
+        "type": "weekly",
+        "date": "2009-10-15",
+        "description": "With little activity near the top, Tim had an oppurtunity to show his talents, moving from #59 --> #55 with 10 new PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 410,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2009-10-08",
+        "description": "Only 10 players were active this week, but Nick took a great step towards Site Champ with a move from #3 --> #2"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 411,
+    "fields": {
+        "player": 689,
+        "type": "weekly",
+        "date": "2009-10-01",
+        "description": "In a quiet week, Jason stood out with a nice five place move from #32 --> #27"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 412,
+    "fields": {
+        "player": 1340,
+        "type": "weekly",
+        "date": "2009-09-22",
+        "description": "Robert continued his surge from last week, following it up with another move from #41 --> #37 and a 5 point AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 413,
+    "fields": {
+        "player": 1340,
+        "type": "weekly",
+        "date": "2009-09-15",
+        "description": "RVZ makes a huge move to barely beat out Benson from repeating. He ran from #53 --> #41 this time with 21 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 414,
+    "fields": {
+        "player": 729,
+        "type": "weekly",
+        "date": "2009-09-08",
+        "description": "Jimmy pushes his way closer to the top this week. With 32 records, he cut 20 points of AF and went from #49 --> #34 in the ranks."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 415,
+    "fields": {
+        "player": 674,
+        "type": "weekly",
+        "date": "2009-08-22",
+        "description": "Jamie kicked off 5% to his AF, and it was enough to run from #29 --> #24 on the charts."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 416,
+    "fields": {
+        "player": 1358,
+        "type": "weekly",
+        "date": "2009-08-15",
+        "description": "Tyler hurdled 20 players in a massive PR fest. Hitting 27 new times, he went from #65 --> #45 and cut 26 AF points."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 417,
+    "fields": {
+        "player": 353,
+        "type": "weekly",
+        "date": "2009-08-08",
+        "description": "Many moved, but Daniel's move stood out. He pushed from #45 --> #41 in style with seven PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 418,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2009-08-01",
+        "description": "Shaun pulled off something no one else in the top 50 did this week: pass a player. With four new PRs he moved up to second place on the charts."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 419,
+    "fields": {
+        "player": 394,
+        "type": "weekly",
+        "date": "2009-07-22",
+        "description": "David rallied to strengthen his lead, gaining 3 SRs as well as extending to a 6 point lead over #2 Meade"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 420,
+    "fields": {
+        "player": 1476,
+        "type": "weekly",
+        "date": "2009-07-15",
+        "description": "With a seven point cut and a five place move, Stacy cruises to the POW, jumping to 25th place."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 421,
+    "fields": {
+        "player": 253,
+        "type": "weekly",
+        "date": "2009-07-08",
+        "description": "James had an excellent week, moving from #14 --> #11, the most active in the top 50 players."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 422,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2009-07-01",
+        "description": "Nick made the months largest cut at a nice 10% and passed two players for the third spot."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 423,
+    "fields": {
+        "player": 846,
+        "type": "weekly",
+        "date": "2009-06-22",
+        "description": "Keiron toppled 5 players to go from #25 --> #20 with 16PRs and an 18% improvement."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 424,
+    "fields": {
+        "player": 400,
+        "type": "weekly",
+        "date": "2009-06-15",
+        "description": "While the top all moved together, David made an impact lower down, rising 7 places with only 6 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 425,
+    "fields": {
+        "player": 1116,
+        "type": "weekly",
+        "date": "2009-06-08",
+        "description": "Mick was the most active in a sleeper week, taking a nice 12% cut and moving from 13th --> 9th"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 426,
+    "fields": {
+        "player": 266,
+        "type": "weekly",
+        "date": "2009-06-01",
+        "description": "In a week with little activity, Carlos pushed ahead of 5 players to move from 40 --> 35 with 25 PRs and a 10 point AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 427,
+    "fields": {
+        "player": 860,
+        "type": "weekly",
+        "date": "2009-05-22",
+        "description": "Kevin bursts into the scene with a 27% AF cut and 42 new PRs, pushing him from 29 --> 21"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 428,
+    "fields": {
+        "player": 846,
+        "type": "weekly",
+        "date": "2009-05-15",
+        "description": "Keiron strikes again with the biggest AF cut of the week, knocking back 5 players in the 20s."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 429,
+    "fields": {
+        "player": 358,
+        "type": "weekly",
+        "date": "2009-05-08",
+        "description": "Dan played the most this week by cutting 14% off his AF and crushing 9 players on his trip through the 40s."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 430,
+    "fields": {
+        "player": 846,
+        "type": "weekly",
+        "date": "2009-05-01",
+        "description": "Keiron was the most active player in the first week of this month with a great 23% cut and 11 place move from #40 -> #29"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 431,
+    "fields": {
+        "player": 350,
+        "type": "weekly",
+        "date": "2009-04-22",
+        "description": "Daniel takes another award with a nice move that saw him quickly rise from #10 to #6"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 432,
+    "fields": {
+        "player": 118,
+        "type": "weekly",
+        "date": "2009-04-15",
+        "description": "Another new name this month. Andy did more than anyone else this week with a 7% cut which saw him rise 3 places."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 433,
+    "fields": {
+        "player": 556,
+        "type": "weekly",
+        "date": "2009-04-08",
+        "description": "Gary has a particularly strong week, adding 2 Site Records to his name, along with cutting 18% off his AF to break into the top 10 from #16"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 434,
+    "fields": {
+        "player": 917,
+        "type": "weekly",
+        "date": "2009-04-01",
+        "description": "Lief had a nice 10% AF cut that moved him from 14th to 12th, pursued by a few newbies nipping at his heels."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 435,
+    "fields": {
+        "player": 394,
+        "type": "weekly",
+        "date": "2009-03-22",
+        "description": "It's the clean sweep! 21% cut in his final week and the first new person to hold the #1 spot in over 200 days. Great job David!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 436,
+    "fields": {
+        "player": 394,
+        "type": "weekly",
+        "date": "2009-03-15",
+        "description": "There's no stopping him. Another 17% cut this week, and a further 2 Site Records sees him move to #2, and within breathing distance of Alvin."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 437,
+    "fields": {
+        "player": 394,
+        "type": "weekly",
+        "date": "2009-03-08",
+        "description": "David hit massively for the 2nd week in a row. An amazing 27% cut to add to last week, and he's up to #3!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 438,
+    "fields": {
+        "player": 394,
+        "type": "weekly",
+        "date": "2009-03-01",
+        "description": "David takes his first POW with a very impressive week. He managed to add a full 4 Site Records to his collection and moved up 2 spots to #4 with a 16% cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 439,
+    "fields": {
+        "player": 860,
+        "type": "weekly",
+        "date": "2009-02-22",
+        "description": "Kevin made a nice move this week passing a full 6 players to reach #21, with the best AF improvement of 17%."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 440,
+    "fields": {
+        "player": 1116,
+        "type": "weekly",
+        "date": "2009-02-15",
+        "description": "A decent week from Mickael sees him break into the top 10 and have the best AF improvement along with it."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 441,
+    "fields": {
+        "player": 1609,
+        "type": "weekly",
+        "date": "2009-02-08",
+        "description": "This was a quiet week for the top players and Virgil took full advantage. His 17% cut was enough to move up 14 places to #37"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 442,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2009-02-01",
+        "description": "Alvin has a huge week, taking a full 21% from his already impressive AF, and adding 2 more Site Records to his collection."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 443,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2009-01-22",
+        "description": "David was close to winning this one again, but Nick managed to beat him out. 23% cut to AF was the best this week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 444,
+    "fields": {
+        "player": 350,
+        "type": "weekly",
+        "date": "2009-01-15",
+        "description": "Daniel wins this in a close battle with David, but with a 15% cut and 2 Site Records he safely gets it this week!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 445,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2009-01-08",
+        "description": "Nick Meade wins the week with a strong move, passing 3 players in the top 10 to finish #7."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 446,
+    "fields": {
+        "player": 269,
+        "type": "weekly",
+        "date": "2009-01-01",
+        "description": "Carlos had a great week this week, Biggest AF cut of 25% and passed 17 people"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 447,
+    "fields": {
+        "player": 1187,
+        "type": "weekly",
+        "date": "2008-12-22",
+        "description": "Nick finished the year strongest of everyone with a 35% cut to his AF. He also broke into the top 10 for the first time at #10!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 448,
+    "fields": {
+        "player": 61,
+        "type": "weekly",
+        "date": "2008-12-15",
+        "description": "In a quiet week where a lot of people made small improvements, Alex made the biggest cut and was the only one to knock over 10% from their AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 449,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2008-12-08",
+        "description": "Cole is back for another POW.  He cut 21% in AF, and moved from #12 all the way to #5."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 450,
+    "fields": {
+        "player": 61,
+        "type": "weekly",
+        "date": "2008-12-01",
+        "description": "2 weeks in a row for Alex, who storms up the charts even stronger this week with a 37% cut in AF and passing 17 people to finish in 14th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 451,
+    "fields": {
+        "player": 61,
+        "type": "weekly",
+        "date": "2008-11-22",
+        "description": "A good week from Alex, as he starts his climb up the difficult part of the table. 7 spots this week with a cut of 19%"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 452,
+    "fields": {
+        "player": 1001,
+        "type": "weekly",
+        "date": "2008-11-15",
+        "description": "Marc wins 2 in a row with some great consistency. Up another 6 places to 26th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 453,
+    "fields": {
+        "player": 1001,
+        "type": "weekly",
+        "date": "2008-11-08",
+        "description": "With an 18% cut to AF, Marc wins this quiet week in style."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 454,
+    "fields": {
+        "player": 179,
+        "type": "weekly",
+        "date": "2008-11-01",
+        "description": "Ben starts the month off strongly, picking up his first SR, and passing 5 players to bring him to 15th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 455,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2008-10-22",
+        "description": "Alvin destroyed the competition, with the biggest AF cut, taking it under 4, and picking up an extra 2 Site Records"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 456,
+    "fields": {
+        "player": 1452,
+        "type": "weekly",
+        "date": "2008-10-15",
+        "description": "Simon's AF cut was the biggest of anyone this week, allowing him to pick up his first award and break into the top 5"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 457,
+    "fields": {
+        "player": 931,
+        "type": "weekly",
+        "date": "2008-10-08",
+        "description": "With a nice cut to AF, a site record and moving from 5th to 3rd, Lewis wins this week"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 458,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2008-10-01",
+        "description": "Alvin further lowered his AF and picked up an extra 3 Site Records to win week 1"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 459,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2008-09-22",
+        "description": "A quiet week sees Alvin pull further away from the field, adding 2 more records to make his total an impressive 7."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 460,
+    "fields": {
+        "player": 61,
+        "type": "weekly",
+        "date": "2008-09-15",
+        "description": "Alex had a great week, passing 17 players, 44 -> 27."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 461,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2008-09-08",
+        "description": "Site champion Alvin widened his lead impressively, adding 2 extra Site Records and making a nice 22% cut to his AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 462,
+    "fields": {
+        "player": 350,
+        "type": "weekly",
+        "date": "2008-09-01",
+        "description": "Daniel was an easy pick this week, passing 16 players and making a 32% AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 463,
+    "fields": {
+        "player": 229,
+        "type": "weekly",
+        "date": "2008-08-22",
+        "description": "Brendan finishes the month strongly, taking 2 Site Records, cutting 18% from his AF, and finishing the month in 3rd spot."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 464,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2008-08-15",
+        "description": "Alvin came back with avengeance this week, storming back to #1 with a 30% cut in AF and 2 extra Site Records."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 465,
+    "fields": {
+        "player": 229,
+        "type": "weekly",
+        "date": "2008-08-08",
+        "description": "Brendan continues his move to the top this week, making the strongest move and just edging the decision over Sam Hoar."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 466,
+    "fields": {
+        "player": 1116,
+        "type": "weekly",
+        "date": "2008-08-01",
+        "description": "Mickael wins 2 POWs in a row with another strong move this week, outpacing the rest of the field with the highest AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 467,
+    "fields": {
+        "player": 1116,
+        "type": "weekly",
+        "date": "2008-07-22",
+        "description": "A quiter week this week, but Mickael's strong times pulls him ahead. Two SR's and a cut of 18% to move him from 8th to 6th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 468,
+    "fields": {
+        "player": 229,
+        "type": "weekly",
+        "date": "2008-07-15",
+        "description": "A huge week for a number of players. Michael and Tim and Shaun all strong contenders. Brendan's best week this month, with an AF cut of almost 50% and moving from 27 -> 13 wins him the award"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 469,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2008-07-08",
+        "description": "Shaun is the first player to get 2 POW awards in a row. He cut even more from his AF this week (42%) and moved from 23rd to 11th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 470,
+    "fields": {
+        "player": 1438,
+        "type": "weekly",
+        "date": "2008-07-01",
+        "description": "Shaun made a great move this week. Cutting 27% from his AF, and moving from 33rd to 23rd. He also broke the BC3 Site Record."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 471,
+    "fields": {
+        "player": 1025,
+        "type": "weekly",
+        "date": "2008-06-22",
+        "description": "A close decision between Mark and Michael this week, but Mark just edges it, making an impressive move from 19th to 11th and taking 22% off his AF in the process"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 472,
+    "fields": {
+        "player": 1093,
+        "type": "weekly",
+        "date": "2008-06-15",
+        "description": "Quite a few people had large cuts for this one. Michael was the most consistently impressive throughout the week, bringing his AF from 12.06 to 8.39 and moving up to 4th"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 473,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2008-06-08",
+        "description": "Whilst Tim and Lewis battled it out for 2nd place, Alvin kept steadily improving and getting some great times to extend his lead in 1st place."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 474,
+    "fields": {
+        "player": 1093,
+        "type": "weekly",
+        "date": "2008-06-01",
+        "description": "Michael starts the month by claiming 4 Site Records, cutting 20% off his AF, and moving up to 8th place."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 475,
+    "fields": {
+        "player": 1222,
+        "type": "weekly",
+        "date": "2008-05-22",
+        "description": "Unbelievable movement this week, moving from 33rd all the way to 5th in just a few days, getting some nice Site Records along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 476,
+    "fields": {
+        "player": 382,
+        "type": "weekly",
+        "date": "2008-05-15",
+        "description": "Great week for Dave. Relentless PRing brought a very impressive cut 23.8 -> 14.1 taking him into the top 10 with ease."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 477,
+    "fields": {
+        "player": 320,
+        "type": "weekly",
+        "date": "2008-05-08",
+        "description": "Made the biggest cut of the week (7.1), climbing 8 places to finish 6th"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 478,
+    "fields": {
+        "player": 85,
+        "type": "weekly",
+        "date": "2008-05-01",
+        "description": "He came from a long way back, and made a great cut,  to pass several players and end up at #1 at the end of the first week."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 479,
+    "fields": {
+        "player": 568,
+        "type": "weekly",
+        "date": "2008-04-22",
+        "description": "A great battle with David Schiering to become Site Champ at the end of the first month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 480,
+    "fields": {
+        "player": 400,
+        "type": "weekly",
+        "date": "2008-04-15",
+        "description": "Easily the best player of the first week. Dominating for a full 6 days and setting the early pace."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 481,
+    "fields": {
+        "player": 1132,
+        "type": "monthly",
+        "date": "2023-03-01",
+        "description": "For big AF cuts from #42 to #29, improving in all areas of the game very quickly"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 482,
+    "fields": {
+        "player": 985,
+        "type": "monthly",
+        "date": "2023-02-01",
+        "description": "For climbing up to #14 in Combined and getting his first non-DC WW Top in RR Glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 483,
+    "fields": {
+        "player": 829,
+        "type": "monthly",
+        "date": "2023-01-01",
+        "description": "For huge AF cuts (-123 AF) and cutting more than 60 placements all the way into Top 70"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 484,
+    "fields": {
+        "player": 1436,
+        "type": "monthly",
+        "date": "2022-12-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 485,
+    "fields": {
+        "player": 630,
+        "type": "monthly",
+        "date": "2022-11-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 486,
+    "fields": {
+        "player": 985,
+        "type": "monthly",
+        "date": "2022-10-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 487,
+    "fields": {
+        "player": 976,
+        "type": "monthly",
+        "date": "2022-09-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 488,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2022-07-01",
+        "description": "rBC3 1:55.715 with 3/3 shroomless cuts, rMC 1:30.272 and the first successful glitch on rMC as well with a 28.269 Flap. That sums up Logan's craziness throughout this month pretty much I'd say."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 489,
+    "fields": {
+        "player": 1210,
+        "type": "monthly",
+        "date": "2022-06-01",
+        "description": "For completely blasting through the AF leaderboard and climbing all the way to Top 90 Unrestricted / Top 30 Non-SC. Not bad for a first month on the Player's Page."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 490,
+    "fields": {
+        "player": 617,
+        "type": "monthly",
+        "date": "2022-05-01",
+        "description": "For drastically improving his timesheet, going from barely Top 150 to entering Top 100 with 24 PRs including some that make it onto WW tops, and cutting a whole 43 AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 491,
+    "fields": {
+        "player": 145,
+        "type": "monthly",
+        "date": "2022-04-01",
+        "description": "For getting his first ever WR, and being the first Karter to pull off the Shy Guy Beach Glitch in a 3lap WR run. Arvo completely shocked the community."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 492,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2022-03-01",
+        "description": "For smashing the #1 No-SC ranking with loads of PRs and affirming himself as the Site Champ for good"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 493,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2022-02-01",
+        "description": "Way too many things to enumerate everything, but numerous WW top times and a few WRs were set by Logan this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 494,
+    "fields": {
+        "player": 825,
+        "type": "monthly",
+        "date": "2022-01-01",
+        "description": "For pioneering and discovering a new strat on WGM that saves around .2 per lap. Justin completely revolutionized the track with it, got 2 WRs for himself and brought it down with Luke to .3 ahead of the former record just days after the discovery."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 495,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2021-12-01",
+        "description": "For many big PRs, a #1 placement and two WRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 496,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2021-10-01",
+        "description": "For overtaking Justin as the #1, Site Champion"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 497,
+    "fields": {
+        "player": 251,
+        "type": "monthly",
+        "date": "2021-09-01",
+        "description": "For great AF cuts, jumping from 42nd to 24th"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 498,
+    "fields": {
+        "player": 145,
+        "type": "monthly",
+        "date": "2021-08-01",
+        "description": "Congratulations on Player of the Month, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 499,
+    "fields": {
+        "player": 145,
+        "type": "monthly",
+        "date": "2021-07-01",
+        "description": "Congratulations on Player of the Month, Arvo!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 500,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2021-06-01",
+        "description": "For finally getting a non-sc WR on a track people actually play"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 501,
+    "fields": {
+        "player": 914,
+        "type": "monthly",
+        "date": "2021-05-01",
+        "description": "Hydration told me to give him POM idk"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 502,
+    "fields": {
+        "player": 251,
+        "type": "monthly",
+        "date": "2021-04-01",
+        "description": "For nice AF cuts and a legendary 1:20.3 on MC no glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 503,
+    "fields": {
+        "player": 244,
+        "type": "monthly",
+        "date": "2021-03-01",
+        "description": "For his huge rise on the AF charts from #50 to #18"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 504,
+    "fields": {
+        "player": 825,
+        "type": "monthly",
+        "date": "2021-02-01",
+        "description": "For pioneering as well as being the first one to make the KC glitch RTA"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 505,
+    "fields": {
+        "player": 434,
+        "type": "monthly",
+        "date": "2021-01-01",
+        "description": "For his big AF gainz"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 506,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2020-12-01",
+        "description": "For being the first person to make rBC glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 507,
+    "fields": {
+        "player": 825,
+        "type": "monthly",
+        "date": "2020-11-01",
+        "description": "For a ton of different PRs as well as his glitch innovations on MC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 508,
+    "fields": {
+        "player": 635,
+        "type": "monthly",
+        "date": "2020-10-01",
+        "description": "For his consistent PRs and improvements on AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 509,
+    "fields": {
+        "player": 621,
+        "type": "monthly",
+        "date": "2020-09-01",
+        "description": "For an incredible month that cut him a ton of AF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 510,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2020-07-01",
+        "description": "Logan was the first player to pull off the rWS glitch and got 4 records on it during the month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 511,
+    "fields": {
+        "player": 397,
+        "type": "monthly",
+        "date": "2020-04-01",
+        "description": "David wins this award in a month full of WR activity. His 4 WRs, two on rYF and two on rDH sc, added to the total. He finished the month with an impressive 52.869 2nd WW run on gv2."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 512,
+    "fields": {
+        "player": 796,
+        "type": "monthly",
+        "date": "2020-03-01",
+        "description": "Demon came back to Maple Treeway and set 4 WRs on it this month, finally getting a 2:14"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 513,
+    "fields": {
+        "player": 976,
+        "type": "monthly",
+        "date": "2020-02-01",
+        "description": "Luke obtained 4 WR improvements this month, all on rBC"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 514,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2020-01-01",
+        "description": "Logan achieved 3 WRs this month; 2 on TF and 1 on rDH."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 515,
+    "fields": {
+        "player": 945,
+        "type": "monthly",
+        "date": "2019-12-01",
+        "description": "Logan obtained 5 WRs on the new TF glitch category this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 516,
+    "fields": {
+        "player": 976,
+        "type": "monthly",
+        "date": "2019-10-01",
+        "description": "Luke obtained 6 WRs this month, which included DDR and the first 1:17.8 on rMC3"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 517,
+    "fields": {
+        "player": 1355,
+        "type": "monthly",
+        "date": "2019-08-01",
+        "description": "Ross got the WR on rSL, with the first magi 2/3 glitch. He also got the GV glitch 3lap and flap WRs later in the month, and moved up 2 spots on the AF chart. A very impressive and productive month for him."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 518,
+    "fields": {
+        "player": 1355,
+        "type": "monthly",
+        "date": "2019-05-01",
+        "description": "In the thick of the new rSL glitch method, Ross notched 3 WRs on it. He finished the month with a solid 1:36.8 time"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 519,
+    "fields": {
+        "player": 242,
+        "type": "monthly",
+        "date": "2019-02-01",
+        "description": "Bryce set 5 MC glitch WR runs this month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 520,
+    "fields": {
+        "player": 976,
+        "type": "monthly",
+        "date": "2018-12-01",
+        "description": "Luke wins this award for the third consecutive time. He notched 4 WW tops times, two of which were WRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 521,
+    "fields": {
+        "player": 976,
+        "type": "monthly",
+        "date": "2018-11-01",
+        "description": "Luke once again impressed this month, beating Liam's MH time again after Liam returned and beat him. The big reason why Luke wins this award however is because he achieved a time of 2:30.980 on rBC, which finally took down Ruso's WR that lasted 3 years."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 522,
+    "fields": {
+        "player": 976,
+        "type": "monthly",
+        "date": "2018-10-01",
+        "description": "Luke was dominant this month. He lowered the DC WR three times, the final of which was a 1:28.675. Along with those three WRs, Luke also beat Liam's 965-day MH time, and improved that again to a 1:43.2, obtaining 5 WRs total for the month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 523,
+    "fields": {
+        "player": 211,
+        "type": "monthly",
+        "date": "2018-09-01",
+        "description": "Blaze lowered his rGV2 no-sc WR time to a 52.796 late in the month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 524,
+    "fields": {
+        "player": 682,
+        "type": "monthly",
+        "date": "2018-08-01",
+        "description": "Jascha acquired the most WRs of any player throughout this month, improving his rMR twice"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 525,
+    "fields": {
+        "player": 251,
+        "type": "monthly",
+        "date": "2018-07-01",
+        "description": "Guy beat Liam's long-standing rPB no-SC WR early in the month, then improved it twice more before the month's end"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 526,
+    "fields": {
+        "player": 1603,
+        "type": "monthly",
+        "date": "2018-06-01",
+        "description": "Braixen improved his CM WR 4 times this month making nearly a .5 time cut in total"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 527,
+    "fields": {
+        "player": 825,
+        "type": "monthly",
+        "date": "2018-05-01",
+        "description": "Justin had an impressive month of PRs, notching 33 of them for an impressive 12.7 AF cut, one of which was another WGM glitch WR. His improvements bumped him up 11 spots which placed him at #5 on the combined charts"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 528,
+    "fields": {
+        "player": 320,
+        "type": "monthly",
+        "date": "2018-04-01",
+        "description": "Cole improved his own LC WR three times this month, the last of which was the first 1:08.8"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 529,
+    "fields": {
+        "player": 1662,
+        "type": "monthly",
+        "date": "2018-03-01",
+        "description": "Zed wins this award due to his 15 PRs set this month, moving him into the top 10 at #7"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 530,
+    "fields": {
+        "player": 397,
+        "type": "monthly",
+        "date": "2018-02-01",
+        "description": "David made a huge jump, passing 43 players with 23 PRs, and landed himself in the top 100"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 531,
+    "fields": {
+        "player": 933,
+        "type": "monthly",
+        "date": "2018-01-01",
+        "description": "Liam wins this award for his 2:18.4 WR on KC, beating the previous record by nearly .4"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 532,
+    "fields": {
+        "player": 1603,
+        "type": "monthly",
+        "date": "2017-12-01",
+        "description": "Braixen wins this award in back-to-back months after passing 23 players with 22 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 533,
+    "fields": {
+        "player": 1603,
+        "type": "monthly",
+        "date": "2017-11-01",
+        "description": "Braixen finished his timesheet with 30 PRs, and got into the top 100. He also obtained the SR on rYF"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 534,
+    "fields": {
+        "player": 1487,
+        "type": "monthly",
+        "date": "2017-10-01",
+        "description": "Steffan passed 24 players with 23 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 535,
+    "fields": {
+        "player": 1049,
+        "type": "monthly",
+        "date": "2017-09-01",
+        "description": "Matt passed 19 players with 18 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 536,
+    "fields": {
+        "player": 682,
+        "type": "monthly",
+        "date": "2017-08-01",
+        "description": "Jascha achieved his 2:11.5 rDKJP non-sc WR this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 537,
+    "fields": {
+        "player": 82,
+        "type": "monthly",
+        "date": "2017-07-01",
+        "description": "Neuro passed 15 players with 14 PRs and got to #73 on the AF chart"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 538,
+    "fields": {
+        "player": 644,
+        "type": "monthly",
+        "date": "2017-06-01",
+        "description": "Jacob passed 15 players with 19 PRs, the most of the month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 539,
+    "fields": {
+        "player": 1355,
+        "type": "monthly",
+        "date": "2017-05-01",
+        "description": "Ross passed 10 players with 19 PRs, allowing him to win this award in back-to-back months"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 540,
+    "fields": {
+        "player": 1355,
+        "type": "monthly",
+        "date": "2017-04-01",
+        "description": "Scottish player Ross Coleman notched 41 PRs and passed 26 players by doing so"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 541,
+    "fields": {
+        "player": 1049,
+        "type": "monthly",
+        "date": "2017-03-01",
+        "description": "Matt sent in 23 PRs and cut off 40 AF points"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 542,
+    "fields": {
+        "player": 901,
+        "type": "monthly",
+        "date": "2017-01-01",
+        "description": "Lachlan achieved #53 by passing 13 players with 8 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 543,
+    "fields": {
+        "player": 1499,
+        "type": "monthly",
+        "date": "2016-12-01",
+        "description": "Steven passed 12 players with 16 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 544,
+    "fields": {
+        "player": 1603,
+        "type": "monthly",
+        "date": "2016-11-01",
+        "description": "Braixen obtained 7 WRs this month on two courses. He became the first to make rDKJP glitch 3/3 in a WR, and beat Takemi's 1300-day old CM WR."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 545,
+    "fields": {
+        "player": 558,
+        "type": "monthly",
+        "date": "2016-10-01",
+        "description": "Estaloy cut off 1.4 AF points with 5 PRs, the most of the month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 546,
+    "fields": {
+        "player": 699,
+        "type": "monthly",
+        "date": "2016-09-01",
+        "description": "Sosis passed 12 players with 16 PRs and got to #70 on the AF chart"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 547,
+    "fields": {
+        "player": 825,
+        "type": "monthly",
+        "date": "2016-08-01",
+        "description": "In actually a 5-month span, Justin completed his timesheet with 40 PRs which landed him in the top 15. In the process he also got 3 SRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 548,
+    "fields": {
+        "player": 644,
+        "type": "monthly",
+        "date": "2016-07-01",
+        "description": "Jacob wins this award for achieving his 1:01.0 on rPB, beating Hunter's record that lasted a year"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 549,
+    "fields": {
+        "player": 251,
+        "type": "monthly",
+        "date": "2016-06-01",
+        "description": "Caleb set 3 WRs on MC non-sc this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 550,
+    "fields": {
+        "player": 933,
+        "type": "monthly",
+        "date": "2016-05-01",
+        "description": "Liam set a 2:05.7 on rDKM non-sc this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 551,
+    "fields": {
+        "player": 1218,
+        "type": "monthly",
+        "date": "2016-04-01",
+        "description": "Olifré wins this award for getting the KC WR this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 552,
+    "fields": {
+        "player": 1135,
+        "type": "monthly",
+        "date": "2016-03-01",
+        "description": "In a time period much longer than a single month, Mo No made his way into the top 100 with an astounding 48 PRs cutting off 52 AF points for him"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 553,
+    "fields": {
+        "player": 1032,
+        "type": "monthly",
+        "date": "2016-02-01",
+        "description": "Fox set 3 WRs this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 554,
+    "fields": {
+        "player": 933,
+        "type": "monthly",
+        "date": "2016-01-01",
+        "description": "Liam wins this award for setting rDS and rDH WRs this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 555,
+    "fields": {
+        "player": 1032,
+        "type": "monthly",
+        "date": "2015-09-01",
+        "description": "Fox set 5 WRs this month in total"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 556,
+    "fields": {
+        "player": 349,
+        "type": "monthly",
+        "date": "2015-08-01",
+        "description": "Dane passed 15 players with 22 PRs and reached the #20 spot"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 557,
+    "fields": {
+        "player": 912,
+        "type": "monthly",
+        "date": "2015-07-01",
+        "description": "Leaf wins the award for being the first player to get a 2/3 WR on rGV2 glitch"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 558,
+    "fields": {
+        "player": 251,
+        "type": "monthly",
+        "date": "2015-06-01",
+        "description": "Caleb passed 10 players with only 3 PRs. He also claimed 2 SRs during the month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 559,
+    "fields": {
+        "player": 609,
+        "type": "monthly",
+        "date": "2015-05-01",
+        "description": "Hunter passed an impressive 21 players with 23 PRs, moving up to #73 on the AF chart"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 560,
+    "fields": {
+        "player": 788,
+        "type": "monthly",
+        "date": "2015-04-01",
+        "description": "Havoc wins the award for getting the first sub 2:17 on rBC3 non-sc"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 561,
+    "fields": {
+        "player": 1032,
+        "type": "monthly",
+        "date": "2015-03-01",
+        "description": "Fox wins this award due to his incredible WR on rMC set this month"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 562,
+    "fields": {
+        "player": 890,
+        "type": "monthly",
+        "date": "2015-02-01",
+        "description": "Kyle passed 28 players with 28 PRs this month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 563,
+    "fields": {
+        "player": 816,
+        "type": "monthly",
+        "date": "2015-01-01",
+        "description": "Julian sent in 24 PRs, which allowed him to pass 32 players"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 564,
+    "fields": {
+        "player": 890,
+        "type": "monthly",
+        "date": "2014-12-01",
+        "description": "Kyle didn’t stand out in any particular week, but he cut the most AF points over the course of the month and passed 17 players in the process"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 565,
+    "fields": {
+        "player": 349,
+        "type": "monthly",
+        "date": "2014-11-01",
+        "description": "Dane wins his 2nd consecutive POM award after passing 20 players with the help of 8 PRs, enough to cut ~14points/~15% of his AF  December"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 566,
+    "fields": {
+        "player": 349,
+        "type": "monthly",
+        "date": "2014-10-01",
+        "description": "Dane had a huge month in October, setting 23 PRs, cutting 64 points and taking more than 41% from his AF.  All of that was enough to pass 55 players and win him the award."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 567,
+    "fields": {
+        "player": 1539,
+        "type": "monthly",
+        "date": "2012-12-01",
+        "description": "Thomas completed his meteoric rise to the top in spectacular fashion, improving 14 times and cutting ~1.9 AF. Despite never claiming any SR's, he was still able to pass Shaun Tanney and Nick Meade to affirm his status as MKW's best all-around player."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 568,
+    "fields": {
+        "player": 1331,
+        "type": "monthly",
+        "date": "2012-11-01",
+        "description": "Constantly active throughout the month, Rob accumulated a terrific AF cut of ~38.9 points, approximately 18.1% of his total. He raced ahead 27 places, from #159 to #132, and improved 33 of his times along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 569,
+    "fields": {
+        "player": 1292,
+        "type": "monthly",
+        "date": "2012-08-01",
+        "description": "Constantly active throughout the month, Qi racked up a huge ~34.4 point cut, the best raw AF cut of August. Improvements to nearly half his timesheet resulted in an impressive ~21.8% cut and a move from #117 -> #89."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 570,
+    "fields": {
+        "player": 746,
+        "type": "monthly",
+        "date": "2012-07-01",
+        "description": "While it was a close battle between John Brunn and Leo Petiard, Brunn rose to the occasion. They both cut around the same AF (7 points), but Brunn did so at a higher ranking, catapulting 10 positions upwards from #18 -> #8."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 571,
+    "fields": {
+        "player": 354,
+        "type": "monthly",
+        "date": "2012-06-01",
+        "description": "Daniel was unstoppable this month, improving a whopping 46 of his times. He cut ~38.1 points of AF, or ~22.8% of his total, and shot forward from #123 to #94."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 572,
+    "fields": {
+        "player": 1539,
+        "type": "monthly",
+        "date": "2012-05-01",
+        "description": "Thomas was the only player in the Top 100 to push his percentage AF cut into double digits (~10.75%). He accomplished this with 13 PR's and a ~3.14 point cut, moving from #10 -> #7 in the rankings."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 573,
+    "fields": {
+        "player": 91,
+        "type": "monthly",
+        "date": "2012-04-01",
+        "description": "Andre managed to beat out several higher-ranked competitors for this award with improvements to a solid quarter of his timesheet. He cut ~12.1 AF and climbed 9 places to 54th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 574,
+    "fields": {
+        "player": 924,
+        "type": "monthly",
+        "date": "2012-03-01",
+        "description": "Several players made strides this month, but Leo still won out by a comfortable margin. Improvements to 27 of his times earned him a ~9.2/~14.9% AF cut, moving him from 32nd to 24th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 575,
+    "fields": {
+        "player": 1315,
+        "type": "monthly",
+        "date": "2012-02-01",
+        "description": "Some long overdue efforts to balance his timesheet paid off big time for Reinier this month. He cut ~15.9 points, or ~26.7%, off of his AF and moved from #32 to #18, leaving all other contenders for this award in the dust."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 576,
+    "fields": {
+        "player": 1539,
+        "type": "monthly",
+        "date": "2012-01-01",
+        "description": "Steady progress throughout the month finally saw Thomas through into the Top 10. With 18 PR's, he cut ~7.4 AF, almost 20% of his total, and moved from 13th to 8th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 577,
+    "fields": {
+        "player": 746,
+        "type": "monthly",
+        "date": "2011-10-01",
+        "description": "With large competition from Dave Tandy, Brunn takes the award. He was the only karter in the Top 50 to have a larger than 10% AF cut, and moved up 10 spots in the rakings."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 578,
+    "fields": {
+        "player": 1256,
+        "type": "monthly",
+        "date": "2011-09-01",
+        "description": "The top players weren't remarkable, so a lesser face steps up. Constant movement throughout all 4 weeks. 16 PRs, a 5.59 AF cut and a jump from #33 to #28 makes Baehr the big winner for the month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 579,
+    "fields": {
+        "player": 652,
+        "type": "monthly",
+        "date": "2011-08-01",
+        "description": "Concentrated towards the end of the month but still impressive, Russo takes the award with competition from Clement Rouchon. 19 PRs, and a 19% overall AF cut for the month was the second highest, but in the Top 10 is where AF really counts."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 580,
+    "fields": {
+        "player": 746,
+        "type": "monthly",
+        "date": "2011-06-01",
+        "description": "John closed out an amazing quarter with a great month. Moving from #42 -> #32 was highlighted by 13 PRs and an 8% cut off his AF, most of the month."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 581,
+    "fields": {
+        "player": 947,
+        "type": "monthly",
+        "date": "2011-05-01",
+        "description": "In a month with virtually no activity in the Top 25, Marvin Donjes emerges on top. With 30 PRs giving him a 8.06 AF cut, he shot from #57 to #47 and continued his upward climb."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 582,
+    "fields": {
+        "player": 652,
+        "type": "monthly",
+        "date": "2011-04-01",
+        "description": "Jak stood above the field with a massive month. 21 PRs prompted a 9.64 AF cut, with a huge 26% cut off his AF. With the entry in the Top 10, Jak stakes his name among the MKW greats."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 583,
+    "fields": {
+        "player": 1438,
+        "type": "monthly",
+        "date": "2011-03-01",
+        "description": "With 25 PRs in 3rd place, STanney storms to the award. He cut 2.5 AF, or 17% off of his AF score while fighting towards NMeade's score."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 584,
+    "fields": {
+        "player": 1659,
+        "type": "monthly",
+        "date": "2010-12-01",
+        "description": "A bunch of huge cuts to close out the year, but Zane Royal did it best. He moved from #48 --> #32 with 33 PRs, and cut 20.7 AF points. The massive 25.7% cut was best of the month where 4 people had 20+% cuts."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 585,
+    "fields": {
+        "player": 1256,
+        "type": "monthly",
+        "date": "2010-10-01",
+        "description": "Paul had a fantastic month, dropping 11 places and hitting 17 PRs, resulting in a 8 point AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 586,
+    "fields": {
+        "player": 1423,
+        "type": "monthly",
+        "date": "2010-09-01",
+        "description": "Sebastian not only had a great 3rd week, he consistently moved up throughout the month. He finished with a move from #73 --> #66 and hit 17 PRs along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 587,
+    "fields": {
+        "player": 559,
+        "type": "monthly",
+        "date": "2010-08-01",
+        "description": "A lot of nice moves, but Gavin stood out with a 10% AF cut, best of the month. His 30 PRs propelled him from #58 --> #49"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 588,
+    "fields": {
+        "player": 1116,
+        "type": "monthly",
+        "date": "2010-06-01",
+        "description": "Mick had an impressive month throughout, but sealed it in the last two weeks. #18 --> #10, with 19 PRs and a massive 22% AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 589,
+    "fields": {
+        "player": 1340,
+        "type": "monthly",
+        "date": "2010-04-01",
+        "description": "Even though his movement was mainly concentrated in one week, RVZ held tough as the karter with the largest percent cut (14%). He also moved up 7 places and maintained it (#27 --> #20)"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 590,
+    "fields": {
+        "player": 729,
+        "type": "monthly",
+        "date": "2010-03-01",
+        "description": "Jimmy had a great month, moving slowly from #10 --> #5 throughout with constant progress. 22 PRs came tagging along for the ride."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 591,
+    "fields": {
+        "player": 689,
+        "type": "monthly",
+        "date": "2010-02-01",
+        "description": "Jason was the most impressive this month in a few ways. He hit 17 PRs, most in the Top 25 and cut 10% of AF while moving from #21 --> #18"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 592,
+    "fields": {
+        "player": 729,
+        "type": "monthly",
+        "date": "2010-01-01",
+        "description": "Jimmy wins due to his 9 place move while already being in the Top 20. He went from #20 -->#11, and hit a massive 45 PRs along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 593,
+    "fields": {
+        "player": 674,
+        "type": "monthly",
+        "date": "2009-11-01",
+        "description": "27 of the top 30 played, but only one made a huge cut for that high of a position. Without one single strong week Jamie quietly made his way up 4 spots from #20 --> #16"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 594,
+    "fields": {
+        "player": 689,
+        "type": "monthly",
+        "date": "2009-10-01",
+        "description": "Jason was the one shining force in this quiet month. While others made two place moves, Jason jumped up from #32 --> #24, after breaking a quarter of his records."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 595,
+    "fields": {
+        "player": 1340,
+        "type": "monthly",
+        "date": "2009-09-01",
+        "description": "A quiet month at the top means that Robert could stand out just below. RVZ moved from #53 --> #37 with a 18 point AF cut."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 596,
+    "fields": {
+        "player": 1001,
+        "type": "monthly",
+        "date": "2009-08-01",
+        "description": "Marc was the best in a less active month than most. He moved from #6 --> #4 with 22 PRs and a new site record."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 597,
+    "fields": {
+        "player": 394,
+        "type": "monthly",
+        "date": "2009-07-01",
+        "description": "With tough competition from Nick Meade, David takes the POM for defending his title. 4 new SRs, a 3 point AF cut and a 35% change showed he was ready to stay on top."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 598,
+    "fields": {
+        "player": 1116,
+        "type": "monthly",
+        "date": "2009-06-01",
+        "description": "Although Keiron was in contention for this award again, Mick got it with a 5 place cut to make the top 10 while grabbing a site record along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 599,
+    "fields": {
+        "player": 846,
+        "type": "monthly",
+        "date": "2009-05-01",
+        "description": "Keiron started out the month with a bang and finished with one, gaining 14 spots with his 29% AF improvement."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 600,
+    "fields": {
+        "player": 556,
+        "type": "monthly",
+        "date": "2009-04-01",
+        "description": "Gary wins this one having made the best cut of the month (31%), and adding 2 Site Records to his name."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 601,
+    "fields": {
+        "player": 394,
+        "type": "monthly",
+        "date": "2009-03-01",
+        "description": "The most conclusive month for any player since these awards were started. David won every single POW, and richly deserves the POM, gaining 5 Site Records, making a 60% cut to AF, and becoming Site Champion!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 602,
+    "fields": {
+        "player": 394,
+        "type": "monthly",
+        "date": "2009-02-01",
+        "description": "David was consistent this month despite not winning any of the POW awards again. He steadily rose 7 places to #7 and notched up 3 Site Records."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 603,
+    "fields": {
+        "player": 394,
+        "type": "monthly",
+        "date": "2009-01-01",
+        "description": "David missed out on the POW awards this month, but is easily the best overall. Joining the site at #24 and cutting 44% in his first month to finish #14"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 604,
+    "fields": {
+        "player": 1187,
+        "type": "monthly",
+        "date": "2008-12-01",
+        "description": "In a really close battle between Nick and Alex, Nick just about clinches this award by passing 9 players, having a 44% AF cut, and getting a Site Record"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 605,
+    "fields": {
+        "player": 1187,
+        "type": "monthly",
+        "date": "2008-11-01",
+        "description": "Nick picks up his first monthly award in style with very little competition. 36% cut to AF, and a move from 33 to 19"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 606,
+    "fields": {
+        "player": 931,
+        "type": "monthly",
+        "date": "2008-10-01",
+        "description": "Lewis wins the month. He nearly picked up 3 POWs this month but was 2nd in 2 of those weeks to others. His cuts this month have left him in a strong 3rd place"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 607,
+    "fields": {
+        "player": 350,
+        "type": "monthly",
+        "date": "2008-09-01",
+        "description": "Daniel makes an impressive impact, cutting his average finish in half and passing 24 players to finish in 13th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 608,
+    "fields": {
+        "player": 229,
+        "type": "monthly",
+        "date": "2008-08-01",
+        "description": "Brendan takes this month by storm having narrowly missed out last month. His 50% cut in AF, and 5 Site Records to end up 3rd was enough to seal it this time around."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 609,
+    "fields": {
+        "player": 1438,
+        "type": "monthly",
+        "date": "2008-07-01",
+        "description": "Really close this month between Brendan and Shaun who put in a similar amazing effort this month. Shaun edges it by making a huge 75% cut and passing 28 players to finish in 5th."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 610,
+    "fields": {
+        "player": 1093,
+        "type": "monthly",
+        "date": "2008-06-01",
+        "description": "An easy decision this month. Michael has been far and away the best player, taking a massing 60% off his AF, and adding 5 SRs to his collection  to finish the month in the #2 spot."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 611,
+    "fields": {
+        "player": 320,
+        "type": "monthly",
+        "date": "2008-05-01",
+        "description": "Quite close this month (Alvin, Cole, Dave and Omer), Cole wins it with an impressive AF cut (49%) and gaining 7 Site Records."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 612,
+    "fields": {
+        "player": 568,
+        "type": "monthly",
+        "date": "2008-04-01",
+        "description": "We only have 3 weeks in this first month, but Giulio put in some great work to reach #1 at the end of April and to win this."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 613,
+    "fields": {
+        "player": 825,
+        "type": "quarterly",
+        "date": "2023-01-01",
+        "description": "He discovered RR Glitch was possible with Shooting Star, got 3 WRs with it including the first sub 2 minute time on the track, got a handful of other cracked PRs, almost got back to #1 on the site, and even worked on some crazy TASes. Man's done it all."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 614,
+    "fields": {
+        "player": 635,
+        "type": "quarterly",
+        "date": "2022-10-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 615,
+    "fields": {
+        "player": 180,
+        "type": "quarterly",
+        "date": "2022-07-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 616,
+    "fields": {
+        "player": 665,
+        "type": "quarterly",
+        "date": "2022-04-01",
+        "description": "Over this Quarter, I believe it's safe to say that James is the Karter who has improved the most. He started outside top 300, thinking he could only go as far as Top 250, ye now he's Top 150 and has some Oceanic Tops under his belt. Limits can be pushed."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 617,
+    "fields": {
+        "player": 1605,
+        "type": "quarterly",
+        "date": "2022-01-01",
+        "description": "For establishing himself as a true member of the AF Worldwide Top 10, getting several prestigious PRs and beating the legendary Totom in AF, leaving him at #10"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 618,
+    "fields": {
+        "player": 366,
+        "type": "quarterly",
+        "date": "2021-10-01",
+        "description": "Danny got huge AF cuts this quarter, going from outside of Top 50 to entering the Top 10 in just 3 months"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 619,
+    "fields": {
+        "player": 244,
+        "type": "quarterly",
+        "date": "2021-01-01",
+        "description": "For climbing from #78 to #18 in just 3 months"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 620,
+    "fields": {
+        "player": 945,
+        "type": "quarterly",
+        "date": "2020-10-01",
+        "description": "For his crazy strat implementation"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 621,
+    "fields": {
+        "player": 945,
+        "type": "quarterly",
+        "date": "2020-07-01",
+        "description": "For improving his rank from #100+ to #5"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 622,
+    "fields": {
+        "player": 378,
+        "type": "quarterly",
+        "date": "2020-04-01",
+        "description": "Daseia cut a massive amount of AF this quarter and climbed up quite high on the AF chart"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 623,
+    "fields": {
+        "player": 1605,
+        "type": "quarterly",
+        "date": "2020-01-01",
+        "description": "Vincent went from #61 to #28 this quarter, and achieved WW tops on TF sc and regionals on LC along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 624,
+    "fields": {
+        "player": 976,
+        "type": "quarterly",
+        "date": "2019-10-01",
+        "description": "Luke set 9 WRs total on 4 unique tracks this quarter."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 625,
+    "fields": {
+        "player": 1619,
+        "type": "quarterly",
+        "date": "2019-07-01",
+        "description": "Wilf again was a madman this quarter. He climbed up 33 spots with a 40.5 AF cut and also continued his great work on rDH glitch."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 626,
+    "fields": {
+        "player": 1619,
+        "type": "quarterly",
+        "date": "2019-04-01",
+        "description": "Wilf made the biggest AF cut during this quarter. He cut off 68.4 AF with 31 PR's climbing 66 spots, getting 6th WW on rDH glitch along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 627,
+    "fields": {
+        "player": 825,
+        "type": "quarterly",
+        "date": "2019-01-01",
+        "description": "Not only did Justin set one WR this quarter, he worked on his timesheet and finally dethroned Fox for site champ on March 24th. This ended Fox’s nearly 4-year reign."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 628,
+    "fields": {
+        "player": 976,
+        "type": "quarterly",
+        "date": "2018-10-01",
+        "description": "Luke was simply on a tear this quarter. 9 total WRs across 4 different tracks, which included DC, rDS, and ending long reigns on MH and rBC. Luke was a clear winner for this award."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 629,
+    "fields": {
+        "player": 211,
+        "type": "quarterly",
+        "date": "2018-07-01",
+        "description": "Blaze obtained WW top times on 5 different tracks this quarter, which included 3 WRs on two tracks, those being MMM and rGV2."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 630,
+    "fields": {
+        "player": 397,
+        "type": "quarterly",
+        "date": "2018-04-01",
+        "description": "David wins the award this quarter for cutting off  41 AF with 33 PRs to pass 28 people. Included in his activity were 4 WW tops times"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 631,
+    "fields": {
+        "player": 1662,
+        "type": "quarterly",
+        "date": "2018-01-01",
+        "description": "Zed made a significant jump this quarter, passing 10 players with 27 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 632,
+    "fields": {
+        "player": 699,
+        "type": "quarterly",
+        "date": "2017-10-01",
+        "description": "Sosis passed 4 players with 9 PRs this quarter, and also improved his own rSL no glitch WR"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 633,
+    "fields": {
+        "player": 339,
+        "type": "quarterly",
+        "date": "2017-07-01",
+        "description": "Fulag passed 5 players this quarter and moved up to #10"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 634,
+    "fields": {
+        "player": 1200,
+        "type": "quarterly",
+        "date": "2017-04-01",
+        "description": "Roy passed 7 players with 28 PRs this quarter, and landed himself in the top 10 at #9"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 635,
+    "fields": {
+        "player": 933,
+        "type": "quarterly",
+        "date": "2017-01-01",
+        "description": "Liam only set 6 PRs this quarter, but three of those were WW top times (including an rSGB WR improvement), and he maintained his #10 spot"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 636,
+    "fields": {
+        "player": 1480,
+        "type": "quarterly",
+        "date": "2016-10-01",
+        "description": "Steve made it up to #24 by cutting off an impressive 27 AF points this quarter"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 637,
+    "fields": {
+        "player": 1539,
+        "type": "quarterly",
+        "date": "2016-07-01",
+        "description": "Thomas cut 3 AF points with 24 PRs this quarter"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 638,
+    "fields": {
+        "player": 975,
+        "type": "quarterly",
+        "date": "2016-01-01",
+        "description": "Luke set 12 PRs and made a 1-point AF cut to maintain his #8 position"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 639,
+    "fields": {
+        "player": 349,
+        "type": "quarterly",
+        "date": "2015-07-01",
+        "description": "Dane passed 15 players with 22 PRs, and moved up to #20"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 640,
+    "fields": {
+        "player": 1032,
+        "type": "quarterly",
+        "date": "2015-04-01",
+        "description": "Fox wins POQ for the second time in a row, due to him achieving 17 PRs and becoming the new site champ"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 641,
+    "fields": {
+        "player": 1032,
+        "type": "quarterly",
+        "date": "2015-01-01",
+        "description": "Fox obtained 21 PRs and moved into the #2 spot"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 642,
+    "fields": {
+        "player": 975,
+        "type": "quarterly",
+        "date": "2014-10-01",
+        "description": "Luke made a huge jump this quarter, passing 13 players with 47 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 643,
+    "fields": {
+        "player": 1032,
+        "type": "quarterly",
+        "date": "2014-04-01",
+        "description": "Fox submitted 25 PRs during this quarter, which vaulted him up from 9th to 3rd on the AF chart"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 644,
+    "fields": {
+        "player": 1256,
+        "type": "quarterly",
+        "date": "2014-01-01",
+        "description": "Paul set 18 PRs this quarter, including a WR on MH"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 645,
+    "fields": {
+        "player": 1218,
+        "type": "quarterly",
+        "date": "2013-10-01",
+        "description": "Olifre set 19 PRs this quarter, and got himself into the top 10, at #9"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 646,
+    "fields": {
+        "player": 383,
+        "type": "quarterly",
+        "date": "2013-07-01",
+        "description": "Silver only moved up one spot this quarter, but that was due to a fierce summer PR battle with players such as Salvatore and Leo. Dave managed to stay active throughout however, and set 43 PRs"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 647,
+    "fields": {
+        "player": 1381,
+        "type": "quarterly",
+        "date": "2013-04-01",
+        "description": "Dashi improved 27 of his times during the quarter which moved him from #11 to #6"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 648,
+    "fields": {
+        "player": 924,
+        "type": "quarterly",
+        "date": "2013-01-01",
+        "description": "Zoan obtained 20 PRs this quarter and moved from #7 to #6"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 649,
+    "fields": {
+        "player": 1539,
+        "type": "quarterly",
+        "date": "2012-10-01",
+        "description": "Thomas started the quarter at #4, but with his steady rate of PRs, he managed to climb to #1 by the end of the year"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 650,
+    "fields": {
+        "player": 1381,
+        "type": "quarterly",
+        "date": "2012-04-01",
+        "description": "Dashi set so many PRs this quarter, and moved up a considerable amount, placing him at 16th place on the AF chart"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 651,
+    "fields": {
+        "player": 924,
+        "type": "quarterly",
+        "date": "2012-01-01",
+        "description": "Leo was on fire this quarter, cranking out PR's at an insane rate. In total, he improved 54 of his times; moved from #60 -> #24; and cut nearly 40% off his AF, more than any player above or below him."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 652,
+    "fields": {
+        "player": 383,
+        "type": "quarterly",
+        "date": "2011-10-01",
+        "description": "Although hoarding often disqualified Dave for smaller awards, the sum of his efforts far exceeded everyone else's this quarter. He improved 53/64 of his times, climbed 31 positions, and cut roughly 34 points and 34% from his AF."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 653,
+    "fields": {
+        "player": 746,
+        "type": "quarterly",
+        "date": "2011-04-01",
+        "description": "John destroyed this quater. He smashed 45 PRs, jumped all the way from #56 -> #32, and in the process cut 25 points of AF, or 30% of his score. Best of the quarter in all catergories."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 654,
+    "fields": {
+        "player": 1438,
+        "type": "quarterly",
+        "date": "2011-01-01",
+        "description": "Winning the poll amidst controversy (and partial nudity), Shaun was on fire this quarter. His comeback brought him all the way from #7 to #3, without ever slowing down the PR haul."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 655,
+    "fields": {
+        "player": 300,
+        "type": "quarterly",
+        "date": "2010-10-01",
+        "description": "In a very close POQ race, Chris takes the award. He moved from #218 to #146 throughout the three months, taking a 33% cut to his AF. He also hit 62/64 PRs and PRed on every course in one week during the span. A well deserved award."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 656,
+    "fields": {
+        "player": 477,
+        "type": "quarterly",
+        "date": "2010-04-01",
+        "description": "Eric had the best quarter out of anyone, without shining in one certain month. #24 --> #17 with a 24% AF cut, coupled with 28 PRs."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 657,
+    "fields": {
+        "player": 729,
+        "type": "quarterly",
+        "date": "2010-01-01",
+        "description": "Although Nick took the site crown, Jimmy made a greater move. He moved all the way from #20 --> #5 throughout the three months with 59 out of 64 PRs, never slowing down. A 41% AF cut means this was well deserved."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 658,
+    "fields": {
+        "player": 689,
+        "type": "quarterly",
+        "date": "2009-10-01",
+        "description": "Three were at the top with 30% AF cuts, Tyler McNell, Jimmy Benson and Jason Smith. The award goes to Smith because he took down the most AF overall, passed the most players (#32->#21) and PRed a massive 54 times. The other two were very close runners-up."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 659,
+    "fields": {
+        "player": 253,
+        "type": "quarterly",
+        "date": "2009-07-01",
+        "description": "James barely beats out Meade by making a huge move from #16 --> #7 in a very short time. He cut 12 points of AF and every player he passed was active, showing how he was just better this quarter."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 660,
+    "fields": {
+        "player": 1001,
+        "type": "quarterly",
+        "date": "2009-04-01",
+        "description": "Never falling victim to the treadmill, Marc took this quarter by steadily improving throughout the 3 months. Starting in 12th and moving into 5th by the end of the quarter came with a 10 point AF cut at a high rank."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 661,
+    "fields": {
+        "player": 394,
+        "type": "quarterly",
+        "date": "2009-01-01",
+        "description": "It's no surprise who the POQ goes to. David came from nowhere to become Site Champion and leads the way with 10 Site Records to his name."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 662,
+    "fields": {
+        "player": 1187,
+        "type": "quarterly",
+        "date": "2008-10-01",
+        "description": "In the end, there was no competition for this. Nick won November POM and December too. Overall, his 75% cut and 48 place gain was matched by nobody."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 663,
+    "fields": {
+        "player": 229,
+        "type": "quarterly",
+        "date": "2008-07-01",
+        "description": "In a close poll, Brendan wins out. His 84% AF cut, and his passing of 41 players to finish 3rd along with picking up some site records was enough to convince the voting public and win him the award!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 664,
+    "fields": {
+        "player": 85,
+        "type": "quarterly",
+        "date": "2008-04-01",
+        "description": "Alvin wins this in a close contest with Michael Fried. Alvin has consistently fought off all-comers and held on to the crown of Site Champion for the last 2 months. Often missing out on weekly and monthly awards, Alvin wins the Quarter!"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 665,
+    "fields": {
+        "player": 945,
+        "type": "yearly",
+        "date": "2023-01-01",
+        "description": "With 33.3% of the votes, Logan wins his third POTY title.  He hit 24 world records this year and continued his reign as Site Champion.  Arvo and Nara tied for 2nd, gaining 23.3% of the votes each."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 666,
+    "fields": {
+        "player": 635,
+        "type": "yearly",
+        "date": "2022-01-01",
+        "description": "With 32.1% of votes, Jack claims it for the first time, and that's deserved. He went from average to one of the best players in the world being World #5, and got his first WRs on rSL Glitch. Justin is 2nd of this poll with 28.6% and Logan 3rd with 21.4%."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 667,
+    "fields": {
+        "player": 945,
+        "type": "yearly",
+        "date": "2021-01-01",
+        "description": "With 30/42 votes (71.4%), Logan treats his competition as if it were dust. But this result doesn't surprise anyone... He dominated this year with 30 WRs and took out Justin as the Site Champion. Kasey is 2nd of this poll with 16.6% and Bynt 3rd with 4.7%."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 668,
+    "fields": {
+        "player": 945,
+        "type": "yearly",
+        "date": "2020-01-01",
+        "description": "For getting 66% of the popular vote thanks to his WRs on 7 different glitch categories, implementation of incredibly precise strategies and getting to #2 combined and #4 No-SC AF from outside of the top 100 on both."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 669,
+    "fields": {
+        "player": 825,
+        "type": "yearly",
+        "date": "2019-01-01",
+        "description": "With 44.6% of the majority vote, Justin wins this award. He was the top all-around player, setting regionals on 47/47 categories while also claiming 8 WRs, mostly notably his 2:17.990 on KC. Justin also took over as site champion and cut his AF down to 6."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 670,
+    "fields": {
+        "player": 976,
+        "type": "yearly",
+        "date": "2018-01-01",
+        "description": "Receiving 47/90 votes total from others in the community, Luke wins this award. On sheer quality and quantity of his times, it was easy to recognize Luke’s dominance of the game this year. His 14 total WRs on 6 different courses made him a clear winner."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 671,
+    "fields": {
+        "player": 211,
+        "type": "yearly",
+        "date": "2017-01-01",
+        "description": "Blaze achieved 5 WRs, as well as 9 other WW top times. The highlight was taking down Cole's rYF which had lasted over 1,000 days"
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 672,
+    "fields": {
+        "player": 1032,
+        "type": "yearly",
+        "date": "2016-01-01",
+        "description": "Fox carries the title for the second year in a row! With 9 impressive WRs and an ongoing #1 rank in the AF chart, Fox wins out against Braixen, Liam, Guy and Havoc."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 673,
+    "fields": {
+        "player": 1032,
+        "type": "yearly",
+        "date": "2015-01-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 674,
+    "fields": {
+        "player": 975,
+        "type": "yearly",
+        "date": "2014-01-01",
+        "description": "Luke started the year in 37th, and cut over 40% of his AF, ending the year in 16th, a clear winner for the award."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 675,
+    "fields": {
+        "player": 320,
+        "type": "yearly",
+        "date": "2013-01-01",
+        "description": ""
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 676,
+    "fields": {
+        "player": 1539,
+        "type": "yearly",
+        "date": "2012-01-01",
+        "description": "Thomas won the poll by a landslide, with 68.8% of the votes. He started the year at 13th and steadily worked his way to the top, improving 60 of his times and cutting ~23.6 AF/~63.4% of his AF. He finally took the crown just a week before the year's end."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 677,
+    "fields": {
+        "player": 1438,
+        "type": "yearly",
+        "date": "2011-01-01",
+        "description": "Shaun continued his domination near the top ranks, moving from #5 to #3 and cutting almost 40% of his AF. He grabbed two SRs throughout the year (KC and rGV2 flap) and PRed on all but three times."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 678,
+    "fields": {
+        "player": 1187,
+        "type": "yearly",
+        "date": "2010-01-01",
+        "description": "Nick had 75% of the votes for the POY. He finally grabbed the site crown from Bubbles in February and never looked back, holding it for the longest single span (that's still going), since the game's release. He also grabbed numerous SR's along the way."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 679,
+    "fields": {
+        "player": 394,
+        "type": "yearly",
+        "date": "2009-01-01",
+        "description": "A clear choice for this award. David joined in January, ousted Alvin for the title two months later, and never looked back, holding the title for the rest of the year and  277/365 days."
+    }
+},
+{
+    "model": "timetrials.playeraward",
+    "pk": 680,
+    "fields": {
+        "player": 85,
+        "type": "yearly",
+        "date": "2008-01-01",
+        "description": "Alvin doesn't just win this award, he storms to it. This never looked in any doubt. Lowest AF, Highest Record total, Highest activity, Longest time at #1. Winner by a clear mile."
+    }
+}
+]

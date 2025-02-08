@@ -1,0 +1,4248 @@
+[
+{
+    "model": "timetrials.region",
+    "pk": 1,
+    "fields": {
+        "type": "world",
+        "name": "World",
+        "code": "WORLD",
+        "parent": null,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 2,
+    "fields": {
+        "type": "continent",
+        "name": "America",
+        "code": "AME",
+        "parent": 1,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 3,
+    "fields": {
+        "type": "continent",
+        "name": "Europe",
+        "code": "EUR",
+        "parent": 1,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 4,
+    "fields": {
+        "type": "continent",
+        "name": "Asia",
+        "code": "ASI",
+        "parent": 1,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 5,
+    "fields": {
+        "type": "continent",
+        "name": "Oceania",
+        "code": "OCE",
+        "parent": 1,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 6,
+    "fields": {
+        "type": "continent",
+        "name": "Africa",
+        "code": "AFR",
+        "parent": 1,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 7,
+    "fields": {
+        "type": "continent",
+        "name": "Antarctica",
+        "code": "ANT",
+        "parent": 1,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 8,
+    "fields": {
+        "type": "country",
+        "name": "Afghanistan",
+        "code": "AF",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 9,
+    "fields": {
+        "type": "country",
+        "name": "Albania",
+        "code": "AL",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 12,
+    "fields": {
+        "type": "country",
+        "name": "Algeria",
+        "code": "DZ",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 13,
+    "fields": {
+        "type": "country",
+        "name": "American Samoa",
+        "code": "AS",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 14,
+    "fields": {
+        "type": "country",
+        "name": "Andorra",
+        "code": "AD",
+        "parent": 260,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 15,
+    "fields": {
+        "type": "country",
+        "name": "Angola",
+        "code": "AO",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 16,
+    "fields": {
+        "type": "country",
+        "name": "Antigua and Barbuda",
+        "code": "AG",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 17,
+    "fields": {
+        "type": "country",
+        "name": "Azerbaijan",
+        "code": "AZ",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 18,
+    "fields": {
+        "type": "country",
+        "name": "Argentina",
+        "code": "AR",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 19,
+    "fields": {
+        "type": "country",
+        "name": "Australia",
+        "code": "AU",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 20,
+    "fields": {
+        "type": "country",
+        "name": "Austria",
+        "code": "AT",
+        "parent": 262,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 21,
+    "fields": {
+        "type": "country",
+        "name": "Bahamas",
+        "code": "BS",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 22,
+    "fields": {
+        "type": "country",
+        "name": "Bahrain",
+        "code": "BH",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 23,
+    "fields": {
+        "type": "country",
+        "name": "Bangladesh",
+        "code": "BD",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 24,
+    "fields": {
+        "type": "country",
+        "name": "Armenia",
+        "code": "AM",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 25,
+    "fields": {
+        "type": "country",
+        "name": "Barbados",
+        "code": "BB",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 26,
+    "fields": {
+        "type": "country",
+        "name": "Belgium",
+        "code": "BE",
+        "parent": 263,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 27,
+    "fields": {
+        "type": "country",
+        "name": "Bermuda",
+        "code": "BM",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 28,
+    "fields": {
+        "type": "country",
+        "name": "Bhutan",
+        "code": "BT",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 29,
+    "fields": {
+        "type": "country",
+        "name": "Bolivia",
+        "code": "BO",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 30,
+    "fields": {
+        "type": "country",
+        "name": "Bosnia and Herzegovina",
+        "code": "BA",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 31,
+    "fields": {
+        "type": "country",
+        "name": "Botswana",
+        "code": "BW",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 32,
+    "fields": {
+        "type": "country",
+        "name": "Bouvet Island",
+        "code": "BV",
+        "parent": 7,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 33,
+    "fields": {
+        "type": "country",
+        "name": "Brazil",
+        "code": "BR",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 34,
+    "fields": {
+        "type": "country",
+        "name": "Belize",
+        "code": "BZ",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 35,
+    "fields": {
+        "type": "country",
+        "name": "British Indian Ocean Territory",
+        "code": "IO",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 36,
+    "fields": {
+        "type": "country",
+        "name": "Solomon Islands",
+        "code": "SB",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 37,
+    "fields": {
+        "type": "country",
+        "name": "British Virgin Islands",
+        "code": "VG",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 38,
+    "fields": {
+        "type": "country",
+        "name": "Brunei",
+        "code": "BN",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 39,
+    "fields": {
+        "type": "country",
+        "name": "Bulgaria",
+        "code": "BG",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 40,
+    "fields": {
+        "type": "country",
+        "name": "Myanmar",
+        "code": "MM",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 41,
+    "fields": {
+        "type": "country",
+        "name": "Burundi",
+        "code": "BI",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 42,
+    "fields": {
+        "type": "country",
+        "name": "Belarus",
+        "code": "BY",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 43,
+    "fields": {
+        "type": "country",
+        "name": "Cambodia",
+        "code": "KH",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 44,
+    "fields": {
+        "type": "country",
+        "name": "Cameroon",
+        "code": "CM",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 45,
+    "fields": {
+        "type": "country",
+        "name": "Canada",
+        "code": "CA",
+        "parent": 2,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 46,
+    "fields": {
+        "type": "country",
+        "name": "Cape Verde",
+        "code": "CV",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 47,
+    "fields": {
+        "type": "country",
+        "name": "Cayman Islands",
+        "code": "KY",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 48,
+    "fields": {
+        "type": "country",
+        "name": "Central African Republic",
+        "code": "CF",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 49,
+    "fields": {
+        "type": "country",
+        "name": "Sri Lanka",
+        "code": "LK",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 50,
+    "fields": {
+        "type": "country",
+        "name": "Chad",
+        "code": "TD",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 51,
+    "fields": {
+        "type": "country",
+        "name": "Chile",
+        "code": "CL",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 52,
+    "fields": {
+        "type": "country",
+        "name": "China",
+        "code": "CN",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 53,
+    "fields": {
+        "type": "country",
+        "name": "Taiwan",
+        "code": "TW",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 54,
+    "fields": {
+        "type": "country",
+        "name": "Christmas Island",
+        "code": "CX",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 55,
+    "fields": {
+        "type": "country",
+        "name": "Cocos Islands",
+        "code": "CC",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 56,
+    "fields": {
+        "type": "country",
+        "name": "Colombia",
+        "code": "CO",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 57,
+    "fields": {
+        "type": "country",
+        "name": "Comoros",
+        "code": "KM",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 58,
+    "fields": {
+        "type": "country",
+        "name": "Mayotte",
+        "code": "YT",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 59,
+    "fields": {
+        "type": "country",
+        "name": "Republic of the Congo",
+        "code": "CG",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 61,
+    "fields": {
+        "type": "country",
+        "name": "Cook Islands",
+        "code": "CK",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 62,
+    "fields": {
+        "type": "country",
+        "name": "Costa Rica",
+        "code": "CR",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 63,
+    "fields": {
+        "type": "country",
+        "name": "Croatia",
+        "code": "HR",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 64,
+    "fields": {
+        "type": "country",
+        "name": "Cuba",
+        "code": "CU",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 65,
+    "fields": {
+        "type": "country",
+        "name": "Cyprus",
+        "code": "CY",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 66,
+    "fields": {
+        "type": "country",
+        "name": "Czech Republic",
+        "code": "CZ",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 67,
+    "fields": {
+        "type": "country",
+        "name": "Benin",
+        "code": "BJ",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 68,
+    "fields": {
+        "type": "country",
+        "name": "Denmark",
+        "code": "DK",
+        "parent": 264,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 69,
+    "fields": {
+        "type": "country",
+        "name": "Dominica",
+        "code": "DM",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 70,
+    "fields": {
+        "type": "country",
+        "name": "Dominican Republic",
+        "code": "DO",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 71,
+    "fields": {
+        "type": "country",
+        "name": "Ecuador",
+        "code": "EC",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 72,
+    "fields": {
+        "type": "country",
+        "name": "El Salvador",
+        "code": "SV",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 73,
+    "fields": {
+        "type": "country",
+        "name": "Equatorial Guinea",
+        "code": "GQ",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 74,
+    "fields": {
+        "type": "country",
+        "name": "Ethiopia",
+        "code": "ET",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 75,
+    "fields": {
+        "type": "country",
+        "name": "Eritrea",
+        "code": "ER",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 76,
+    "fields": {
+        "type": "country",
+        "name": "Estonia",
+        "code": "EE",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 77,
+    "fields": {
+        "type": "country",
+        "name": "Faroe Islands",
+        "code": "FO",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 78,
+    "fields": {
+        "type": "country",
+        "name": "Falkland Islands",
+        "code": "FK",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 79,
+    "fields": {
+        "type": "country",
+        "name": "South Georgia and the South Sandwich Islands",
+        "code": "GS",
+        "parent": 7,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 80,
+    "fields": {
+        "type": "country",
+        "name": "Fiji",
+        "code": "FJ",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 81,
+    "fields": {
+        "type": "country",
+        "name": "Finland",
+        "code": "FI",
+        "parent": 264,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 82,
+    "fields": {
+        "type": "country",
+        "name": "Åland Islands",
+        "code": "AX",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 83,
+    "fields": {
+        "type": "country",
+        "name": "France",
+        "code": "FR",
+        "parent": 3,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 84,
+    "fields": {
+        "type": "country",
+        "name": "French Guiana",
+        "code": "GF",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 85,
+    "fields": {
+        "type": "country",
+        "name": "French Polynesia",
+        "code": "PF",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 86,
+    "fields": {
+        "type": "country",
+        "name": "French Southern Territories",
+        "code": "TF",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 87,
+    "fields": {
+        "type": "country",
+        "name": "Djibouti",
+        "code": "DJ",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 88,
+    "fields": {
+        "type": "country",
+        "name": "Gabon",
+        "code": "GA",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 89,
+    "fields": {
+        "type": "country",
+        "name": "Georgia",
+        "code": "GE",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 90,
+    "fields": {
+        "type": "country",
+        "name": "Gambia",
+        "code": "GM",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 91,
+    "fields": {
+        "type": "country",
+        "name": "Germany",
+        "code": "DE",
+        "parent": 262,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 92,
+    "fields": {
+        "type": "country",
+        "name": "Ghana",
+        "code": "GH",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 93,
+    "fields": {
+        "type": "country",
+        "name": "Gibraltar",
+        "code": "GI",
+        "parent": 260,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 94,
+    "fields": {
+        "type": "country",
+        "name": "Kiribati",
+        "code": "KI",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 95,
+    "fields": {
+        "type": "country",
+        "name": "Greece",
+        "code": "GR",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 96,
+    "fields": {
+        "type": "country",
+        "name": "Greenland",
+        "code": "GL",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 97,
+    "fields": {
+        "type": "country",
+        "name": "Grenada",
+        "code": "GD",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 98,
+    "fields": {
+        "type": "country",
+        "name": "Guadeloupe",
+        "code": "GP",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 99,
+    "fields": {
+        "type": "country",
+        "name": "Guam",
+        "code": "GU",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 100,
+    "fields": {
+        "type": "country",
+        "name": "Guatemala",
+        "code": "GT",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 101,
+    "fields": {
+        "type": "country",
+        "name": "Guinea",
+        "code": "GN",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 102,
+    "fields": {
+        "type": "country",
+        "name": "Guyana",
+        "code": "GY",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 103,
+    "fields": {
+        "type": "country",
+        "name": "Haiti",
+        "code": "HT",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 104,
+    "fields": {
+        "type": "country",
+        "name": "Heard Island and McDonald Islands",
+        "code": "HM",
+        "parent": 7,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 105,
+    "fields": {
+        "type": "country",
+        "name": "Vatican City",
+        "code": "VA",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 106,
+    "fields": {
+        "type": "country",
+        "name": "Honduras",
+        "code": "HN",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 107,
+    "fields": {
+        "type": "country",
+        "name": "Hong Kong",
+        "code": "HK",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 108,
+    "fields": {
+        "type": "country",
+        "name": "Hungary",
+        "code": "HU",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 109,
+    "fields": {
+        "type": "country",
+        "name": "Iceland",
+        "code": "IS",
+        "parent": 264,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 110,
+    "fields": {
+        "type": "country",
+        "name": "India",
+        "code": "IN",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 111,
+    "fields": {
+        "type": "country",
+        "name": "Indonesia",
+        "code": "ID",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 112,
+    "fields": {
+        "type": "country",
+        "name": "Iran",
+        "code": "IR",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 113,
+    "fields": {
+        "type": "country",
+        "name": "Iraq",
+        "code": "IQ",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 114,
+    "fields": {
+        "type": "country",
+        "name": "Ireland",
+        "code": "IE",
+        "parent": 259,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 115,
+    "fields": {
+        "type": "country",
+        "name": "Israel",
+        "code": "IL",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 116,
+    "fields": {
+        "type": "country",
+        "name": "Italy",
+        "code": "IT",
+        "parent": 3,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 117,
+    "fields": {
+        "type": "country",
+        "name": "Ivory Coast",
+        "code": "CI",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 118,
+    "fields": {
+        "type": "country",
+        "name": "Jamaica",
+        "code": "JM",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 119,
+    "fields": {
+        "type": "country",
+        "name": "Japan",
+        "code": "JP",
+        "parent": 4,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 120,
+    "fields": {
+        "type": "country",
+        "name": "Kazakhstan",
+        "code": "KZ",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 121,
+    "fields": {
+        "type": "country",
+        "name": "Jordan",
+        "code": "JO",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 122,
+    "fields": {
+        "type": "country",
+        "name": "Kenya",
+        "code": "KE",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 123,
+    "fields": {
+        "type": "country",
+        "name": "North Korea",
+        "code": "KP",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 124,
+    "fields": {
+        "type": "country",
+        "name": "South Korea",
+        "code": "KR",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 125,
+    "fields": {
+        "type": "country",
+        "name": "Kosovo",
+        "code": "XK",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 126,
+    "fields": {
+        "type": "country",
+        "name": "Kuwait",
+        "code": "KW",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 127,
+    "fields": {
+        "type": "country",
+        "name": "Kyrgyzstan",
+        "code": "KG",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 128,
+    "fields": {
+        "type": "country",
+        "name": "Laos",
+        "code": "LA",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 129,
+    "fields": {
+        "type": "country",
+        "name": "Lebanon",
+        "code": "LB",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 130,
+    "fields": {
+        "type": "country",
+        "name": "Lesotho",
+        "code": "LS",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 131,
+    "fields": {
+        "type": "country",
+        "name": "Latvia",
+        "code": "LV",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 132,
+    "fields": {
+        "type": "country",
+        "name": "Liberia",
+        "code": "LR",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 133,
+    "fields": {
+        "type": "country",
+        "name": "Libya",
+        "code": "LY",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 134,
+    "fields": {
+        "type": "country",
+        "name": "Liechtenstein",
+        "code": "LI",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 135,
+    "fields": {
+        "type": "country",
+        "name": "Lithuania",
+        "code": "LT",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 136,
+    "fields": {
+        "type": "country",
+        "name": "Luxembourg",
+        "code": "LU",
+        "parent": 263,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 137,
+    "fields": {
+        "type": "country",
+        "name": "Madagascar",
+        "code": "MG",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 138,
+    "fields": {
+        "type": "country",
+        "name": "Malawi",
+        "code": "MW",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 139,
+    "fields": {
+        "type": "country",
+        "name": "Malaysia",
+        "code": "MY",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 140,
+    "fields": {
+        "type": "country",
+        "name": "Maldives",
+        "code": "MV",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 141,
+    "fields": {
+        "type": "country",
+        "name": "Mali",
+        "code": "ML",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 142,
+    "fields": {
+        "type": "country",
+        "name": "Malta",
+        "code": "MT",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 143,
+    "fields": {
+        "type": "country",
+        "name": "Martinique",
+        "code": "MQ",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 144,
+    "fields": {
+        "type": "country",
+        "name": "Mauritania",
+        "code": "MR",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 145,
+    "fields": {
+        "type": "country",
+        "name": "Mauritius",
+        "code": "MU",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 146,
+    "fields": {
+        "type": "country",
+        "name": "Mexico",
+        "code": "MX",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 147,
+    "fields": {
+        "type": "country",
+        "name": "Monaco",
+        "code": "MC",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 148,
+    "fields": {
+        "type": "country",
+        "name": "Mongolia",
+        "code": "MN",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 149,
+    "fields": {
+        "type": "country",
+        "name": "Moldova",
+        "code": "MD",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 150,
+    "fields": {
+        "type": "country",
+        "name": "Montenegro",
+        "code": "ME",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 151,
+    "fields": {
+        "type": "country",
+        "name": "Montserrat",
+        "code": "MS",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 152,
+    "fields": {
+        "type": "country",
+        "name": "Morocco",
+        "code": "MA",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 153,
+    "fields": {
+        "type": "country",
+        "name": "Mozambique",
+        "code": "MZ",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 154,
+    "fields": {
+        "type": "country",
+        "name": "Oman",
+        "code": "OM",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 155,
+    "fields": {
+        "type": "country",
+        "name": "Namibia",
+        "code": "NA",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 156,
+    "fields": {
+        "type": "country",
+        "name": "Nauru",
+        "code": "NR",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 157,
+    "fields": {
+        "type": "country",
+        "name": "Nepal",
+        "code": "NP",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 158,
+    "fields": {
+        "type": "country",
+        "name": "Netherlands",
+        "code": "NL",
+        "parent": 263,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 159,
+    "fields": {
+        "type": "country",
+        "name": "Curaçao",
+        "code": "CW",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 160,
+    "fields": {
+        "type": "country",
+        "name": "Aruba",
+        "code": "AW",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 161,
+    "fields": {
+        "type": "country",
+        "name": "Sint Maarten",
+        "code": "SX",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 162,
+    "fields": {
+        "type": "country",
+        "name": "Bonaire",
+        "code": "BQ",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 163,
+    "fields": {
+        "type": "country",
+        "name": "New Caledonia",
+        "code": "NC",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 164,
+    "fields": {
+        "type": "country",
+        "name": "Vanuatu",
+        "code": "VU",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 165,
+    "fields": {
+        "type": "country",
+        "name": "New Zealand",
+        "code": "NZ",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 166,
+    "fields": {
+        "type": "country",
+        "name": "Nicaragua",
+        "code": "NI",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 167,
+    "fields": {
+        "type": "country",
+        "name": "Niger",
+        "code": "NE",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 168,
+    "fields": {
+        "type": "country",
+        "name": "Nigeria",
+        "code": "NG",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 169,
+    "fields": {
+        "type": "country",
+        "name": "Niue",
+        "code": "NU",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 170,
+    "fields": {
+        "type": "country",
+        "name": "Norfolk Island",
+        "code": "NF",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 171,
+    "fields": {
+        "type": "country",
+        "name": "Norway",
+        "code": "NO",
+        "parent": 264,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 172,
+    "fields": {
+        "type": "country",
+        "name": "Northern Mariana Islands",
+        "code": "MP",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 173,
+    "fields": {
+        "type": "country",
+        "name": "United States Minor Outlying Islands",
+        "code": "UM",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 174,
+    "fields": {
+        "type": "country",
+        "name": "Micronesia",
+        "code": "FM",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 175,
+    "fields": {
+        "type": "country",
+        "name": "Marshall Islands",
+        "code": "MH",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 176,
+    "fields": {
+        "type": "country",
+        "name": "Palau",
+        "code": "PW",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 177,
+    "fields": {
+        "type": "country",
+        "name": "Pakistan",
+        "code": "PK",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 178,
+    "fields": {
+        "type": "country",
+        "name": "Palestine",
+        "code": "PS",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 179,
+    "fields": {
+        "type": "country",
+        "name": "Panama",
+        "code": "PA",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 180,
+    "fields": {
+        "type": "country",
+        "name": "Papua New Guinea",
+        "code": "PG",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 181,
+    "fields": {
+        "type": "country",
+        "name": "Paraguay",
+        "code": "PY",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 182,
+    "fields": {
+        "type": "country",
+        "name": "Peru",
+        "code": "PE",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 183,
+    "fields": {
+        "type": "country",
+        "name": "Philippines",
+        "code": "PH",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 184,
+    "fields": {
+        "type": "country",
+        "name": "Pitcairn Islands",
+        "code": "PN",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 185,
+    "fields": {
+        "type": "country",
+        "name": "Poland",
+        "code": "PL",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 186,
+    "fields": {
+        "type": "country",
+        "name": "Portugal",
+        "code": "PT",
+        "parent": 260,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 187,
+    "fields": {
+        "type": "country",
+        "name": "Guinea-Bissau",
+        "code": "GW",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 188,
+    "fields": {
+        "type": "country",
+        "name": "East Timor",
+        "code": "TL",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 189,
+    "fields": {
+        "type": "country",
+        "name": "Puerto Rico",
+        "code": "PR",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 190,
+    "fields": {
+        "type": "country",
+        "name": "Qatar",
+        "code": "QA",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 191,
+    "fields": {
+        "type": "country",
+        "name": "Reunion",
+        "code": "RE",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 192,
+    "fields": {
+        "type": "country",
+        "name": "Romania",
+        "code": "RO",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 193,
+    "fields": {
+        "type": "country",
+        "name": "Russian Federation",
+        "code": "RU",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 194,
+    "fields": {
+        "type": "country",
+        "name": "Rwanda",
+        "code": "RW",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 195,
+    "fields": {
+        "type": "country",
+        "name": "Saint Barthelemy",
+        "code": "BL",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 196,
+    "fields": {
+        "type": "country",
+        "name": "Saint Helena",
+        "code": "SH",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 197,
+    "fields": {
+        "type": "country",
+        "name": "Saint Kitts and Nevis",
+        "code": "KN",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 198,
+    "fields": {
+        "type": "country",
+        "name": "Anguilla",
+        "code": "AI",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 199,
+    "fields": {
+        "type": "country",
+        "name": "Saint Lucia",
+        "code": "LC",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 200,
+    "fields": {
+        "type": "country",
+        "name": "Saint Martin",
+        "code": "MF",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 201,
+    "fields": {
+        "type": "country",
+        "name": "Saint Pierre and Miquelon",
+        "code": "PM",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 202,
+    "fields": {
+        "type": "country",
+        "name": "Saint Vincent and the Grenadines",
+        "code": "VC",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 203,
+    "fields": {
+        "type": "country",
+        "name": "San Marino",
+        "code": "SM",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 204,
+    "fields": {
+        "type": "country",
+        "name": "São Tomé and Príncipe",
+        "code": "ST",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 205,
+    "fields": {
+        "type": "country",
+        "name": "Saudi Arabia",
+        "code": "SA",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 206,
+    "fields": {
+        "type": "country",
+        "name": "Senegal",
+        "code": "SN",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 207,
+    "fields": {
+        "type": "country",
+        "name": "Serbia",
+        "code": "RS",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 208,
+    "fields": {
+        "type": "country",
+        "name": "Seychelles",
+        "code": "SC",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 209,
+    "fields": {
+        "type": "country",
+        "name": "Sierra Leone",
+        "code": "SL",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 210,
+    "fields": {
+        "type": "country",
+        "name": "Singapore",
+        "code": "SG",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 211,
+    "fields": {
+        "type": "country",
+        "name": "Slovakia",
+        "code": "SK",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 212,
+    "fields": {
+        "type": "country",
+        "name": "Vietnam",
+        "code": "VN",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 213,
+    "fields": {
+        "type": "country",
+        "name": "Slovenia",
+        "code": "SI",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 214,
+    "fields": {
+        "type": "country",
+        "name": "Somalia",
+        "code": "SO",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 215,
+    "fields": {
+        "type": "country",
+        "name": "South Africa",
+        "code": "ZA",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 216,
+    "fields": {
+        "type": "country",
+        "name": "Zimbabwe",
+        "code": "ZW",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 217,
+    "fields": {
+        "type": "country",
+        "name": "Spain",
+        "code": "ES",
+        "parent": 260,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 218,
+    "fields": {
+        "type": "country",
+        "name": "South Sudan",
+        "code": "SS",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 219,
+    "fields": {
+        "type": "country",
+        "name": "Sudan",
+        "code": "SD",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 220,
+    "fields": {
+        "type": "country",
+        "name": "Sahrawi Arab Democratic Republic",
+        "code": "EH",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 221,
+    "fields": {
+        "type": "country",
+        "name": "Suriname",
+        "code": "SR",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 222,
+    "fields": {
+        "type": "country",
+        "name": "Svalbard & Jan Mayen Islands",
+        "code": "SJ",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 223,
+    "fields": {
+        "type": "country",
+        "name": "Eswatini",
+        "code": "SZ",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 224,
+    "fields": {
+        "type": "country",
+        "name": "Sweden",
+        "code": "SE",
+        "parent": 264,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 225,
+    "fields": {
+        "type": "country",
+        "name": "Switzerland",
+        "code": "CH",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 226,
+    "fields": {
+        "type": "country",
+        "name": "Syrian Arab Republic",
+        "code": "SY",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 227,
+    "fields": {
+        "type": "country",
+        "name": "Tajikistan",
+        "code": "TJ",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 228,
+    "fields": {
+        "type": "country",
+        "name": "Thailand",
+        "code": "TH",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 229,
+    "fields": {
+        "type": "country",
+        "name": "Togo",
+        "code": "TG",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 230,
+    "fields": {
+        "type": "country",
+        "name": "Tokelau",
+        "code": "TK",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 231,
+    "fields": {
+        "type": "country",
+        "name": "Tonga",
+        "code": "TO",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 232,
+    "fields": {
+        "type": "country",
+        "name": "Trinidad and Tobago",
+        "code": "TT",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 233,
+    "fields": {
+        "type": "country",
+        "name": "United Arab Emirates",
+        "code": "AE",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 234,
+    "fields": {
+        "type": "country",
+        "name": "Tunisia",
+        "code": "TN",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 235,
+    "fields": {
+        "type": "country",
+        "name": "Turkey",
+        "code": "TR",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 236,
+    "fields": {
+        "type": "country",
+        "name": "Turkmenistan",
+        "code": "TM",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 237,
+    "fields": {
+        "type": "country",
+        "name": "Turks and Caicos Islands",
+        "code": "TC",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 238,
+    "fields": {
+        "type": "country",
+        "name": "Tuvalu",
+        "code": "TV",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 239,
+    "fields": {
+        "type": "country",
+        "name": "Uganda",
+        "code": "UG",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 240,
+    "fields": {
+        "type": "country",
+        "name": "Ukraine",
+        "code": "UA",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 241,
+    "fields": {
+        "type": "country",
+        "name": "North Macedonia",
+        "code": "MK",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 242,
+    "fields": {
+        "type": "country",
+        "name": "Egypt",
+        "code": "EG",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 243,
+    "fields": {
+        "type": "country",
+        "name": "United Kingdom",
+        "code": "GB",
+        "parent": 259,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 244,
+    "fields": {
+        "type": "country",
+        "name": "Guernsey",
+        "code": "GG",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 245,
+    "fields": {
+        "type": "country",
+        "name": "Jersey",
+        "code": "JE",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 246,
+    "fields": {
+        "type": "country",
+        "name": "Isle of Man",
+        "code": "IM",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 247,
+    "fields": {
+        "type": "country",
+        "name": "Tanzania",
+        "code": "TZ",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 248,
+    "fields": {
+        "type": "country",
+        "name": "United States",
+        "code": "US",
+        "parent": 2,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 249,
+    "fields": {
+        "type": "country",
+        "name": "United States Virgin Islands",
+        "code": "VI",
+        "parent": 2,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 250,
+    "fields": {
+        "type": "country",
+        "name": "Burkina Faso",
+        "code": "BF",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 251,
+    "fields": {
+        "type": "country",
+        "name": "Uruguay",
+        "code": "UY",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 252,
+    "fields": {
+        "type": "country",
+        "name": "Uzbekistan",
+        "code": "UZ",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 253,
+    "fields": {
+        "type": "country",
+        "name": "Venezuela",
+        "code": "VE",
+        "parent": 258,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 254,
+    "fields": {
+        "type": "country",
+        "name": "Wallis and Futuna",
+        "code": "WF",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 255,
+    "fields": {
+        "type": "country",
+        "name": "Samoa",
+        "code": "WS",
+        "parent": 5,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 256,
+    "fields": {
+        "type": "country",
+        "name": "Yemen",
+        "code": "YE",
+        "parent": 4,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 257,
+    "fields": {
+        "type": "country",
+        "name": "Zambia",
+        "code": "ZM",
+        "parent": 6,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 258,
+    "fields": {
+        "type": "country_group",
+        "name": "Latin America",
+        "code": "LATAM",
+        "parent": 2,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 259,
+    "fields": {
+        "type": "country_group",
+        "name": "UK & Ireland",
+        "code": "GBIE",
+        "parent": 3,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 260,
+    "fields": {
+        "type": "country_group",
+        "name": "Hiberia",
+        "code": "ESPT",
+        "parent": 3,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 262,
+    "fields": {
+        "type": "country_group",
+        "name": "Germany & Austria",
+        "code": "DEAT",
+        "parent": 3,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 263,
+    "fields": {
+        "type": "country_group",
+        "name": "Benelux",
+        "code": "BENELUX",
+        "parent": 3,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 264,
+    "fields": {
+        "type": "country_group",
+        "name": "Nordic",
+        "code": "NORDIC",
+        "parent": 3,
+        "is_ranked": true
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 265,
+    "fields": {
+        "type": "subnational",
+        "name": "Aosta Valley",
+        "code": "IT23",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 266,
+    "fields": {
+        "type": "subnational",
+        "name": "Piedmont",
+        "code": "IT21",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 267,
+    "fields": {
+        "type": "subnational",
+        "name": "Lombardy",
+        "code": "IT25",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 268,
+    "fields": {
+        "type": "subnational",
+        "name": "Trentino-Südtirol",
+        "code": "IT32",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 269,
+    "fields": {
+        "type": "subnational",
+        "name": "Veneto",
+        "code": "IT34",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 270,
+    "fields": {
+        "type": "subnational",
+        "name": "Friuli-Venezia Giulia",
+        "code": "IT36",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 271,
+    "fields": {
+        "type": "subnational",
+        "name": "Liguria",
+        "code": "IT42",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 272,
+    "fields": {
+        "type": "subnational",
+        "name": "Emilia-Romagna",
+        "code": "IT45",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 273,
+    "fields": {
+        "type": "subnational",
+        "name": "Tuscany",
+        "code": "IT52",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 274,
+    "fields": {
+        "type": "subnational",
+        "name": "Umbria",
+        "code": "IT55",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 275,
+    "fields": {
+        "type": "subnational",
+        "name": "Marche",
+        "code": "IT57",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 276,
+    "fields": {
+        "type": "subnational",
+        "name": "Lazio",
+        "code": "IT62",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 277,
+    "fields": {
+        "type": "subnational",
+        "name": "Abruzzo",
+        "code": "IT65",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 278,
+    "fields": {
+        "type": "subnational",
+        "name": "Molise",
+        "code": "IT67",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 279,
+    "fields": {
+        "type": "subnational",
+        "name": "Campania",
+        "code": "IT72",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 280,
+    "fields": {
+        "type": "subnational",
+        "name": "Apulia",
+        "code": "IT75",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 281,
+    "fields": {
+        "type": "subnational",
+        "name": "Basilicata",
+        "code": "IT77",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 282,
+    "fields": {
+        "type": "subnational",
+        "name": "Calabria",
+        "code": "IT78",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 283,
+    "fields": {
+        "type": "subnational",
+        "name": "Sicily",
+        "code": "IT82",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 284,
+    "fields": {
+        "type": "subnational",
+        "name": "Sardinia",
+        "code": "IT88",
+        "parent": 116,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 285,
+    "fields": {
+        "type": "subnational",
+        "name": "Alberta",
+        "code": "CAAB",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 286,
+    "fields": {
+        "type": "subnational",
+        "name": "British Columbia",
+        "code": "CABC",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 287,
+    "fields": {
+        "type": "subnational",
+        "name": "Manitoba",
+        "code": "CAMB",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 288,
+    "fields": {
+        "type": "subnational",
+        "name": "New Brunswick",
+        "code": "CANB",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 289,
+    "fields": {
+        "type": "subnational",
+        "name": "Newfoundland and Labrador",
+        "code": "CANL",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 290,
+    "fields": {
+        "type": "subnational",
+        "name": "Northwest Territories",
+        "code": "CANT",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 291,
+    "fields": {
+        "type": "subnational",
+        "name": "Nova Scotia",
+        "code": "CANS",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 292,
+    "fields": {
+        "type": "subnational",
+        "name": "Nunavut",
+        "code": "CANU",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 293,
+    "fields": {
+        "type": "subnational",
+        "name": "Ontario",
+        "code": "CAON",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 294,
+    "fields": {
+        "type": "subnational",
+        "name": "Prince Edward Island",
+        "code": "CAPE",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 295,
+    "fields": {
+        "type": "subnational",
+        "name": "Quebec",
+        "code": "CAQC",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 296,
+    "fields": {
+        "type": "subnational",
+        "name": "Saskatchewan",
+        "code": "CASK",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 297,
+    "fields": {
+        "type": "subnational",
+        "name": "Yukon",
+        "code": "CAYT",
+        "parent": 45,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 298,
+    "fields": {
+        "type": "subnational",
+        "name": "Alabama",
+        "code": "USAL",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 299,
+    "fields": {
+        "type": "subnational",
+        "name": "Alaska",
+        "code": "USAK",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 300,
+    "fields": {
+        "type": "subnational",
+        "name": "Arizona",
+        "code": "USAZ",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 301,
+    "fields": {
+        "type": "subnational",
+        "name": "Arkansas",
+        "code": "USAR",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 302,
+    "fields": {
+        "type": "subnational",
+        "name": "California",
+        "code": "USCA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 303,
+    "fields": {
+        "type": "subnational",
+        "name": "Colorado",
+        "code": "USCO",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 304,
+    "fields": {
+        "type": "subnational",
+        "name": "Connecticut",
+        "code": "USCT",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 305,
+    "fields": {
+        "type": "subnational",
+        "name": "Delaware",
+        "code": "USDE",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 306,
+    "fields": {
+        "type": "subnational",
+        "name": "Florida",
+        "code": "USFL",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 307,
+    "fields": {
+        "type": "subnational",
+        "name": "Georgia (US)",
+        "code": "USGA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 308,
+    "fields": {
+        "type": "subnational",
+        "name": "Hawaii",
+        "code": "USHI",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 309,
+    "fields": {
+        "type": "subnational",
+        "name": "Idaho",
+        "code": "USID",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 310,
+    "fields": {
+        "type": "subnational",
+        "name": "Illinois",
+        "code": "USIL",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 311,
+    "fields": {
+        "type": "subnational",
+        "name": "Indiana",
+        "code": "USIN",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 312,
+    "fields": {
+        "type": "subnational",
+        "name": "Iowa",
+        "code": "USIA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 313,
+    "fields": {
+        "type": "subnational",
+        "name": "Kansas",
+        "code": "USKS",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 314,
+    "fields": {
+        "type": "subnational",
+        "name": "Kentucky",
+        "code": "USKY",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 315,
+    "fields": {
+        "type": "subnational",
+        "name": "Louisiana",
+        "code": "USLA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 316,
+    "fields": {
+        "type": "subnational",
+        "name": "Maine",
+        "code": "USME",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 317,
+    "fields": {
+        "type": "subnational",
+        "name": "Maryland",
+        "code": "USMD",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 318,
+    "fields": {
+        "type": "subnational",
+        "name": "Massachusetts",
+        "code": "USMA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 319,
+    "fields": {
+        "type": "subnational",
+        "name": "Michigan",
+        "code": "USMI",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 320,
+    "fields": {
+        "type": "subnational",
+        "name": "Minnesota",
+        "code": "USMN",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 321,
+    "fields": {
+        "type": "subnational",
+        "name": "Mississippi",
+        "code": "USMS",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 322,
+    "fields": {
+        "type": "subnational",
+        "name": "Missouri",
+        "code": "USMO",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 323,
+    "fields": {
+        "type": "subnational",
+        "name": "Montana",
+        "code": "USMT",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 324,
+    "fields": {
+        "type": "subnational",
+        "name": "Nebraska",
+        "code": "USNE",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 325,
+    "fields": {
+        "type": "subnational",
+        "name": "Nevada",
+        "code": "USNV",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 326,
+    "fields": {
+        "type": "subnational",
+        "name": "New Hampshire",
+        "code": "USNH",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 327,
+    "fields": {
+        "type": "subnational",
+        "name": "New Jersey",
+        "code": "USNJ",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 328,
+    "fields": {
+        "type": "subnational",
+        "name": "New Mexico",
+        "code": "USNM",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 329,
+    "fields": {
+        "type": "subnational",
+        "name": "New York",
+        "code": "USNY",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 330,
+    "fields": {
+        "type": "subnational",
+        "name": "North Carolina",
+        "code": "USNC",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 331,
+    "fields": {
+        "type": "subnational",
+        "name": "North Dakota",
+        "code": "USND",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 332,
+    "fields": {
+        "type": "subnational",
+        "name": "Ohio",
+        "code": "USOH",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 333,
+    "fields": {
+        "type": "subnational",
+        "name": "Oklahoma",
+        "code": "USOK",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 334,
+    "fields": {
+        "type": "subnational",
+        "name": "Oregon",
+        "code": "USOR",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 335,
+    "fields": {
+        "type": "subnational",
+        "name": "Pennsylvania",
+        "code": "USPA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 336,
+    "fields": {
+        "type": "subnational",
+        "name": "Rhode Island",
+        "code": "USRI",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 337,
+    "fields": {
+        "type": "subnational",
+        "name": "South Carolina",
+        "code": "USSC",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 338,
+    "fields": {
+        "type": "subnational",
+        "name": "South Dakota",
+        "code": "USSD",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 339,
+    "fields": {
+        "type": "subnational",
+        "name": "Tennessee",
+        "code": "USTN",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 340,
+    "fields": {
+        "type": "subnational",
+        "name": "Texas",
+        "code": "USTX",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 341,
+    "fields": {
+        "type": "subnational",
+        "name": "Utah",
+        "code": "USUT",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 342,
+    "fields": {
+        "type": "subnational",
+        "name": "Vermont",
+        "code": "USVT",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 343,
+    "fields": {
+        "type": "subnational",
+        "name": "Virginia",
+        "code": "USVA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 344,
+    "fields": {
+        "type": "subnational",
+        "name": "Washington",
+        "code": "USWA",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 345,
+    "fields": {
+        "type": "subnational",
+        "name": "West Virginia",
+        "code": "USWV",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 346,
+    "fields": {
+        "type": "subnational",
+        "name": "Wisconsin",
+        "code": "USWI",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 347,
+    "fields": {
+        "type": "subnational",
+        "name": "Wyoming",
+        "code": "USWY",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 348,
+    "fields": {
+        "type": "subnational",
+        "name": "District of Columbia",
+        "code": "USDC",
+        "parent": 248,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 349,
+    "fields": {
+        "type": "subnational",
+        "name": "Aargau",
+        "code": "CHAG",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 350,
+    "fields": {
+        "type": "subnational",
+        "name": "Appenzell Outer-Rhodes",
+        "code": "CHAR",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 351,
+    "fields": {
+        "type": "subnational",
+        "name": "Appenzell Inner-Rhodes",
+        "code": "CHAI",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 352,
+    "fields": {
+        "type": "subnational",
+        "name": "Basel-Country",
+        "code": "CHBL",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 353,
+    "fields": {
+        "type": "subnational",
+        "name": "Basel-City",
+        "code": "CHBS",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 354,
+    "fields": {
+        "type": "subnational",
+        "name": "Bern",
+        "code": "CHBE",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 355,
+    "fields": {
+        "type": "subnational",
+        "name": "Fribourg",
+        "code": "CHFR",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 356,
+    "fields": {
+        "type": "subnational",
+        "name": "Geneva",
+        "code": "CHGE",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 357,
+    "fields": {
+        "type": "subnational",
+        "name": "Glarus",
+        "code": "CHGL",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 358,
+    "fields": {
+        "type": "subnational",
+        "name": "Grisons",
+        "code": "CHGR",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 359,
+    "fields": {
+        "type": "subnational",
+        "name": "Jura",
+        "code": "CHJU",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 360,
+    "fields": {
+        "type": "subnational",
+        "name": "Lucerne",
+        "code": "CHLU",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 361,
+    "fields": {
+        "type": "subnational",
+        "name": "Neuchâtel",
+        "code": "CHNE",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 362,
+    "fields": {
+        "type": "subnational",
+        "name": "Nidwalden",
+        "code": "CHNW",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 363,
+    "fields": {
+        "type": "subnational",
+        "name": "Obwalden",
+        "code": "CHOW",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 364,
+    "fields": {
+        "type": "subnational",
+        "name": "St. Gallen",
+        "code": "CHSG",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 365,
+    "fields": {
+        "type": "subnational",
+        "name": "Schaffhausen",
+        "code": "CHSH",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 366,
+    "fields": {
+        "type": "subnational",
+        "name": "Schwyz",
+        "code": "CHSZ",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 367,
+    "fields": {
+        "type": "subnational",
+        "name": "Solothurn",
+        "code": "CHSO",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 368,
+    "fields": {
+        "type": "subnational",
+        "name": "Thurgau",
+        "code": "CHTG",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 369,
+    "fields": {
+        "type": "subnational",
+        "name": "Ticino",
+        "code": "CHTI",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 370,
+    "fields": {
+        "type": "subnational",
+        "name": "Uri",
+        "code": "CHUR",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 371,
+    "fields": {
+        "type": "subnational",
+        "name": "Valais",
+        "code": "CHVS",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 372,
+    "fields": {
+        "type": "subnational",
+        "name": "Vaud",
+        "code": "CHVD",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 373,
+    "fields": {
+        "type": "subnational",
+        "name": "Zug",
+        "code": "CHZG",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 374,
+    "fields": {
+        "type": "subnational",
+        "name": "Zurich",
+        "code": "CHZH",
+        "parent": 225,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 375,
+    "fields": {
+        "type": "subnational",
+        "name": "Baden-Württemberg",
+        "code": "DEBW",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 376,
+    "fields": {
+        "type": "subnational",
+        "name": "Bayern",
+        "code": "DEBY",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 377,
+    "fields": {
+        "type": "subnational",
+        "name": "Berlin",
+        "code": "DEBE",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 378,
+    "fields": {
+        "type": "subnational",
+        "name": "Brandenburg",
+        "code": "DEBB",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 379,
+    "fields": {
+        "type": "subnational",
+        "name": "Bremen",
+        "code": "DEHB",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 380,
+    "fields": {
+        "type": "subnational",
+        "name": "Hamburg",
+        "code": "DEHH",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 381,
+    "fields": {
+        "type": "subnational",
+        "name": "Hessen",
+        "code": "DEHE",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 382,
+    "fields": {
+        "type": "subnational",
+        "name": "Mecklenburg-Vorpommern",
+        "code": "DEMV",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 383,
+    "fields": {
+        "type": "subnational",
+        "name": "Niedersachsen",
+        "code": "DENI",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 384,
+    "fields": {
+        "type": "subnational",
+        "name": "Nordrhein-Westfalen",
+        "code": "DENW",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 385,
+    "fields": {
+        "type": "subnational",
+        "name": "Rheinland-Pfalz",
+        "code": "DERP",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 386,
+    "fields": {
+        "type": "subnational",
+        "name": "Saarland",
+        "code": "DESL",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 387,
+    "fields": {
+        "type": "subnational",
+        "name": "Sachsen",
+        "code": "DESN",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 388,
+    "fields": {
+        "type": "subnational",
+        "name": "Sachsen-Anhalt",
+        "code": "DEST",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 389,
+    "fields": {
+        "type": "subnational",
+        "name": "Schleswig-Holstein",
+        "code": "DESH",
+        "parent": 91,
+        "is_ranked": false
+    }
+},
+{
+    "model": "timetrials.region",
+    "pk": 390,
+    "fields": {
+        "type": "subnational",
+        "name": "Thüringen",
+        "code": "DETH",
+        "parent": 91,
+        "is_ranked": false
+    }
+}
+]

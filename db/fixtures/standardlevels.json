@@ -1,0 +1,342 @@
+[
+{
+    "model": "timetrials.standardlevel",
+    "pk": 1,
+    "fields": {
+        "name": "God",
+        "code": "GD",
+        "value": 0,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 2,
+    "fields": {
+        "name": "Myth A",
+        "code": "MA",
+        "value": 1,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 3,
+    "fields": {
+        "name": "Myth B",
+        "code": "MB",
+        "value": 2,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 4,
+    "fields": {
+        "name": "Myth C",
+        "code": "MC",
+        "value": 3,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 5,
+    "fields": {
+        "name": "Myth D",
+        "code": "MD",
+        "value": 4,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 6,
+    "fields": {
+        "name": "Legend A",
+        "code": "LA",
+        "value": 5,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 7,
+    "fields": {
+        "name": "Legend B",
+        "code": "LB",
+        "value": 6,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 8,
+    "fields": {
+        "name": "Legend C",
+        "code": "LC",
+        "value": 7,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 9,
+    "fields": {
+        "name": "Legend D",
+        "code": "LD",
+        "value": 8,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 10,
+    "fields": {
+        "name": "King A",
+        "code": "KA",
+        "value": 9,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 11,
+    "fields": {
+        "name": "King B",
+        "code": "KB",
+        "value": 10,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 12,
+    "fields": {
+        "name": "King C",
+        "code": "KC",
+        "value": 11,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 13,
+    "fields": {
+        "name": "King D",
+        "code": "KD",
+        "value": 12,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 14,
+    "fields": {
+        "name": "Hero A",
+        "code": "HA",
+        "value": 13,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 15,
+    "fields": {
+        "name": "Hero B",
+        "code": "HB",
+        "value": 14,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 16,
+    "fields": {
+        "name": "Hero C",
+        "code": "HC",
+        "value": 15,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 17,
+    "fields": {
+        "name": "Hero D",
+        "code": "HD",
+        "value": 16,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 18,
+    "fields": {
+        "name": "Expert A",
+        "code": "EA",
+        "value": 17,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 19,
+    "fields": {
+        "name": "Expert B",
+        "code": "EB",
+        "value": 18,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 20,
+    "fields": {
+        "name": "Expert C",
+        "code": "EC",
+        "value": 19,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 21,
+    "fields": {
+        "name": "Expert D",
+        "code": "ED",
+        "value": 20,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 22,
+    "fields": {
+        "name": "Intermediate A",
+        "code": "IA",
+        "value": 21,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 23,
+    "fields": {
+        "name": "Intermediate B",
+        "code": "IB",
+        "value": 22,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 24,
+    "fields": {
+        "name": "Intermediate C",
+        "code": "IC",
+        "value": 23,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 25,
+    "fields": {
+        "name": "Intermediate D",
+        "code": "ID",
+        "value": 24,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 26,
+    "fields": {
+        "name": "Apprentice A",
+        "code": "AA",
+        "value": 25,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 27,
+    "fields": {
+        "name": "Apprentice B",
+        "code": "AB",
+        "value": 26,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 28,
+    "fields": {
+        "name": "Apprentice C",
+        "code": "AC",
+        "value": 27,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 29,
+    "fields": {
+        "name": "Apprentice D",
+        "code": "AD",
+        "value": 28,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 30,
+    "fields": {
+        "name": "Beginner A",
+        "code": "BA",
+        "value": 29,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 31,
+    "fields": {
+        "name": "Beginner B",
+        "code": "BB",
+        "value": 30,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 32,
+    "fields": {
+        "name": "Beginner C",
+        "code": "BC",
+        "value": 31,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 33,
+    "fields": {
+        "name": "Beginner D",
+        "code": "BD",
+        "value": 32,
+        "is_legacy": true
+    }
+},
+{
+    "model": "timetrials.standardlevel",
+    "pk": 34,
+    "fields": {
+        "name": "Newbie",
+        "code": "NW",
+        "value": 33,
+        "is_legacy": true
+    }
+}
+]
