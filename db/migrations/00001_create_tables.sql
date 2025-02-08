@@ -1,20 +1,20 @@
-CREATE TABLE players (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(64) NOT NULL,
-    alias VARCHAR(64),
-    bio VARCHAR(1024),
-    region_id INTEGER,
-    joined_date DATE NOT NULL DEFAULT NOW(),
-    last_activity DATE NOT NULL DEFAULT NOW()
-);
-
 CREATE TYPE region_type AS ENUM ('world', 'country_group', 'country', 'subnational_group', 'subnational');
 CREATE TABLE regions (
     id SERIAL PRIMARY KEY,
     code VARCHAR(32) NOT NULL,
     type region_type,
-    parent_id INTEGER,
+    parent_id INTEGER REFERENCES regions(id),
     is_ranked BOOL DEFAULT FALSE
+);
+
+CREATE TABLE players (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    alias VARCHAR(64),
+    bio VARCHAR(1024),
+    region_id INTEGER REFERENCES regions(id),
+    joined_date DATE NOT NULL DEFAULT NOW(),
+    last_activity DATE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE users (
@@ -28,7 +28,7 @@ CREATE TABLE users (
     is_active BOOL DEFAULT FALSE NOT NULL,
     is_verified BOOL DEFAULT FALSE NOT NULL,
     date_joined TIMESTAMP WITH TIME ZONE NOT NULL,
-    profile_id INTEGER
+    player_id INTEGER REFERENCES players(id)
 );
 
 -- nonsc = 0
@@ -49,8 +49,8 @@ CREATE TABLE scores (
     value INTEGER NOT NULL,
     category category NOT NULL,
     is_lap BOOL NOT NULL,
-    player_id INTEGER NOT NULL,
-    track_id INTEGER NOT NULL,
+    player_id INTEGER NOT NULL REFERENCES players(id),
+    track_id INTEGER NOT NULL REFERENCES tracks(id),
     date DATE,
     video_link VARCHAR(255),
     ghost_link VARCHAR(255),
@@ -71,18 +71,18 @@ CREATE TABLE submissions (
     value INTEGER NOT NULL,
     category category NOT NULL,
     is_lap BOOL NOT NULL,
-    player_id INTEGER NOT NULL,
-    track_id INTEGER NOT NULL,
+    player_id INTEGER NOT NULL REFERENCES players(id),
+    track_id INTEGER NOT NULL REFERENCES tracks(id),
     date DATE,
     video_link VARCHAR(255),
     ghost_link VARCHAR(255),
     comment VARCHAR(128),
     admin_note VARCHAR(255),
     status submission_status,
-    submitter_id INTEGER NOT NULL,
+    submitter_id INTEGER NOT NULL REFERENCES users(id),
     submitter_note VARCHAR(255),
     submitted_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    reviewer_id INTEGER NOT NULL,
+    reviewer_id INTEGER NOT NULL REFERENCES users(id),
     reviewer_note VARCHAR(255),
     reviewed_at TIMESTAMP WITH TIME ZONE NOT NULL,
     score_id INTEGER
@@ -99,13 +99,13 @@ CREATE TABLE editsubmission (
     comment_edited BOOL DEFAULT FALSE NOT NULL,
     admin_note VARCHAR(255),
     status submission_status,
-    submitter_id INTEGER NOT NULL,
+    submitter_id INTEGER NOT NULL REFERENCES users(id),
     submitter_note VARCHAR(255),
     submitted_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    reviewer_id INTEGER NOT NULL,
+    reviewer_id INTEGER NOT NULL REFERENCES users(id),
     reviewer_note VARCHAR(255),
     reviewed_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    score_id INTEGER NOT NULL
+    score_id INTEGER NOT NULL REFERENCES scores(id)
 );
 
 CREATE TABLE standardlevels (
@@ -118,15 +118,15 @@ CREATE TABLE standardlevels (
 CREATE TABLE standards (
     id SERIAL PRIMARY KEY,
     value INTEGER NOT NULL,
-    standardlevel_id INTEGER NOT NULL,
-    track_id INTEGER NOT NULL,
+    standardlevel_id INTEGER NOT NULL REFERENCES standardlevels(id),
+    track_id INTEGER NOT NULL REFERENCES tracks(id),
     category category NOT NULL,
     is_lap BOOL NOT NULL
 );
 
 CREATE TABLE sitechamps (
     id SERIAL PRIMARY KEY,
-    player_id INTEGER NOT NULL,
+    player_id INTEGER NOT NULL REFERENCES players(id),
     category category NOT NULL,
     date_instated DATE NOT NULL
 );
@@ -135,7 +135,7 @@ CREATE TYPE playerawardtype AS ENUM ('weekly', 'monthly', 'quarterly', 'yearly')
 
 CREATE TABLE playerawards (
     id SERIAL PRIMARY KEY,
-    player_id INTEGER NOT NULL,
+    player_id INTEGER NOT NULL REFERENCES players(id),
     type playerawardtype NOT NULL,
     date DATE NOT NULL,
     description VARCHAR(1024)
