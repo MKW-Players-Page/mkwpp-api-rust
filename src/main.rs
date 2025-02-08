@@ -1,7 +1,7 @@
 mod api;
 mod sql;
 
-use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{middleware, App, HttpServer};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -10,8 +10,28 @@ async fn main() -> std::io::Result<()> {
 
     println!("Starting Backend");
 
-    HttpServer::new(|| App::new().wrap(middleware::Logger::default()).service(api::v1::v1()))
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    let _ = clear_terminal().status(); // silent error
+
+    // Need this to enable the Logger middleware
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
+    HttpServer::new(|| {
+        return App::new()
+            .wrap(middleware::NormalizePath::new(middleware::TrailingSlash::Trim))
+            .wrap(middleware::Logger::default())
+            .service(api::v1::v1())
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+
+#[cfg(target_family="unix")]
+fn clear_terminal() -> std::process::Command {
+    return std::process::Command::new("clear");
+}
+
+#[cfg(target_family="windows")]
+fn clear_terminal() -> std::process::Command {
+    return std::process::Command::new("cls");
 }
