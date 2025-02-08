@@ -17,6 +17,17 @@ With `cargo` (to install it, visit [this link](https://rustup.rs/)) you want to 
 cargo install sqlx-cli
 ```
 
+To run migrations, you'll have to type
+```bash
+sqlx database setup --source db/migrations
+```
+
+To import Fixtures instead, you should run the executable with the arguments 'tables old' for Fixtures created by the old Django Database
+
+```bash
+./mkwpp-api-rust tables old
+```
+
 ## Extra info
 Not everything is actually stored in PSQL like the Python+Django backend, as that's not actually needed (how often will we actually change the `cups` table, lets be real).
 

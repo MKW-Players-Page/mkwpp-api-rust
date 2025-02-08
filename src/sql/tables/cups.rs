@@ -10,35 +10,35 @@ impl Cups {
     pub fn reg_track_cups() -> Vec<Self> {
         return vec![
             Cups {
-                id: 0,
+                id: 1,
                 code: "mushroom",
             },
             Cups {
-                id: 1,
+                id: 2,
                 code: "flower",
             },
             Cups {
-                id: 2,
+                id: 3,
                 code: "star",
             },
             Cups {
-                id: 3,
+                id: 4,
                 code: "special",
             },
             Cups {
-                id: 4,
+                id: 5,
                 code: "shell",
             },
             Cups {
-                id: 5,
+                id: 6,
                 code: "banana",
             },
             Cups {
-                id: 6,
+                id: 7,
                 code: "leaf",
             },
             Cups {
-                id: 7,
+                id: 8,
                 code: "lightning",
             },
         ];
