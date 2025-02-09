@@ -54,6 +54,14 @@ impl Regions {
     //     sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await
     // }
 
+    pub async fn select_star_query(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        return sqlx::query("SELECT * FROM regions;")
+            .execute(executor)
+            .await;
+    }
+
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

@@ -1,7 +1,11 @@
 mod api;
 mod sql;
 
-use actix_web::{middleware, App, HttpServer};
+use actix_web::{middleware, web, App, HttpServer};
+
+struct AppState {
+    pg_pool: sqlx::Pool<sqlx::Postgres>,
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -45,12 +49,15 @@ async fn main() -> std::io::Result<()> {
     // Need this to enable the Logger middleware
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         return App::new()
             .wrap(middleware::NormalizePath::new(
                 middleware::TrailingSlash::Trim,
             ))
             .wrap(middleware::Logger::default())
+            .app_data(web::Data::new(AppState {
+                pg_pool: pg_pool.clone(),
+            }))
             .service(api::v1::v1());
     })
     .bind(("127.0.0.1", 8080))?

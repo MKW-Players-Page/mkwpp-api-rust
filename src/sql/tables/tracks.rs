@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, sqlx::FromRow, serde::Serialize)]
 pub struct Tracks {
     pub id: i32,
     pub abbr: String,
@@ -19,6 +19,14 @@ impl Tracks {
     //         .execute(executor)
     //         .await
     // }
+
+    pub async fn select_star_query(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+        return sqlx::query("SELECT * FROM tracks;")
+            .fetch_all(executor)
+            .await;
+    }
 
     pub async fn insert_or_replace_query(
         &self,

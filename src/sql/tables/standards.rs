@@ -16,6 +16,14 @@ impl Standards {
     //     sqlx::query("INSERT INTO standards (id, standard_level_id, track_id, category, is_lap, value) VALUES($1, $2, $3, $4, $5, $6);").bind(self.id).bind(self.standard_level_id).bind(self.track_id).bind(&self.category).bind(self.is_lap).bind(self.value).execute(executor).await
     // }
 
+    pub async fn select_star_query(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        return sqlx::query("SELECT * FROM standards;")
+            .execute(executor)
+            .await;
+    }
+
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

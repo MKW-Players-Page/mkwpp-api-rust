@@ -26,6 +26,14 @@ impl EditSubmissions {
     //     sqlx::query("INSERT INTO edit_submissions (id, video_link_edited, ghost_link_edited, comment_edited, video_link, ghost_link, comment, admin_note, status, submitter_id, submitter_note, submitted_at, reviewer_id, reviewer_note, reviewed_at, score_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16);").bind(self.id).bind(self.video_link_edited).bind(&self.ghost_link_edited).bind(self.comment_edited).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(&self.status).bind(self.submitter_id).bind(&self.submitter_note).bind(self.submitted_at).bind(self.reviewer_id).bind(&self.reviewer_note).bind(self.reviewed_at).bind(self.score_id).execute(executor).await
     // }
 
+    pub async fn select_star_query(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        return sqlx::query("SELECT * FROM edit_submissions;")
+            .execute(executor)
+            .await;
+    }
+
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

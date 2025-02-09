@@ -37,6 +37,14 @@ impl Awards {
     //     sqlx::query("INSERT INTO player_awards (id, player_id, date, description, player_award_type) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(self.player_id).bind(self.date).bind(&self.description).bind(&self.player_award_type).execute(executor).await
     // }
 
+    pub async fn select_star_query(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        return sqlx::query("SELECT * FROM player_awards;")
+            .execute(executor)
+            .await;
+    }
+
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

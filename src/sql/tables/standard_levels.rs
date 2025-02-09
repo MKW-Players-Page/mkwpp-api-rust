@@ -21,6 +21,14 @@ impl StandardLevels {
     //     .await
     // }
 
+    pub async fn select_star_query(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        return sqlx::query("SELECT * FROM standard_levels;")
+            .execute(executor)
+            .await;
+    }
+
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

@@ -10,7 +10,7 @@ pub mod standards;
 pub mod submissions;
 pub mod tracks;
 
-#[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
+#[derive(sqlx::Type, serde::Deserialize, Debug)]
 #[sqlx(type_name = "category", rename_all = "lowercase")]
 pub enum Category {
     NonSc,
@@ -28,6 +28,34 @@ impl TryFrom<u8> for Category {
             _ => Err(()),
         };
     }
+}
+
+impl Into<u8> for Category {
+fn into(self) -> u8 {
+    return match self {
+         Self::NonSc=> 0,
+         Self::Sc=> 1,
+         Self::Unres=> 2,
+    };
+}
+}
+
+impl<'a> Into<u8> for &'a Category {
+fn into(self) -> u8 {
+    return match self {
+         Category::NonSc=> 0,
+         Category::Sc=> 1,
+         Category::Unres=> 2,
+    };
+}
+}
+
+impl serde::Serialize for Category {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer {
+            serializer.serialize_u8(self.into())
+        }
 }
 
 #[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
