@@ -1,8 +1,8 @@
-CREATE TYPE region_type AS ENUM ('world', 'country_group', 'country', 'subnational_group', 'subnational');
+CREATE TYPE region_type AS ENUM ('world', 'continent', 'country_group', 'country', 'subnational_group', 'subnational');
 CREATE TABLE regions (
     id SERIAL PRIMARY KEY,
     code VARCHAR(32) NOT NULL,
-    type region_type,
+    region_type region_type,
     parent_id INTEGER REFERENCES regions(id),
     is_ranked BOOL DEFAULT FALSE
 );
@@ -40,7 +40,7 @@ CREATE TYPE category AS ENUM ('nonsc', 'sc', 'unres');
 CREATE TABLE tracks (
     id SERIAL PRIMARY KEY,
     abbr VARCHAR(16) NOT NULL,
-    cup_id INTEGER NOT NULL,
+    cup_id INTEGER NOT NULL, -- "fake", REFERENCES cups(id)
     categories category[]
 );
 
@@ -88,7 +88,7 @@ CREATE TABLE submissions (
     score_id INTEGER
 );
 
-CREATE TABLE editsubmission (
+CREATE TABLE edit_submission (
     id SERIAL PRIMARY KEY,
     date DATE,
     video_link VARCHAR(255),
@@ -108,7 +108,7 @@ CREATE TABLE editsubmission (
     score_id INTEGER NOT NULL REFERENCES scores(id)
 );
 
-CREATE TABLE standardlevels (
+CREATE TABLE standard_levels (
     id SERIAL PRIMARY KEY,
     code VARCHAR(32) NOT NULL,
     value INTEGER NOT NULL,
@@ -117,26 +117,26 @@ CREATE TABLE standardlevels (
 
 CREATE TABLE standards (
     id SERIAL PRIMARY KEY,
-    value INTEGER NOT NULL,
-    standardlevel_id INTEGER NOT NULL REFERENCES standardlevels(id),
+    value INTEGER,
+    standard_level_id INTEGER NOT NULL REFERENCES standard_levels(id),
     track_id INTEGER NOT NULL REFERENCES tracks(id),
     category category NOT NULL,
     is_lap BOOL NOT NULL
 );
 
-CREATE TABLE sitechamps (
+CREATE TABLE site_champs (
     id SERIAL PRIMARY KEY,
     player_id INTEGER NOT NULL REFERENCES players(id),
     category category NOT NULL,
     date_instated DATE NOT NULL
 );
 
-CREATE TYPE playerawardtype AS ENUM ('weekly', 'monthly', 'quarterly', 'yearly');
+CREATE TYPE player_award_type AS ENUM ('weekly', 'monthly', 'quarterly', 'yearly');
 
-CREATE TABLE playerawards (
+CREATE TABLE player_awards (
     id SERIAL PRIMARY KEY,
     player_id INTEGER NOT NULL REFERENCES players(id),
-    type playerawardtype NOT NULL,
+    player_award_type player_award_type NOT NULL,
     date DATE NOT NULL,
     description VARCHAR(1024)
 );

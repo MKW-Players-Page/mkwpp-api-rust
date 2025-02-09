@@ -25,7 +25,7 @@ sqlx database setup --source db/migrations
 To import Fixtures instead, you should run the executable with the arguments 'tables old' for Fixtures created by the old Django Database
 
 ```bash
-./mkwpp-api-rust tables old
+./mkwpp-api-rust import old
 ```
 
 ## Extra info

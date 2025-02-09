@@ -1,0 +1,36 @@
+#[derive(serde::Deserialize, Debug)]
+pub struct Players {
+    name: String,
+    alias: Option<String>,
+    bio: Option<String>,
+    region: Option<i32>,
+    joined_date: Option<String>,
+    last_activity: Option<String>,
+}
+
+#[async_trait::async_trait]
+impl super::OldFixtureJson for Players {
+    async fn add_to_db<'c>(
+        self,
+        key: i32,
+        transaction: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        return crate::sql::tables::players::Players {
+            id: key,
+            name: self.name,
+            alias: self.alias,
+            bio: self.bio,
+            region_id: self.region,
+            joined_date: self
+                .joined_date
+                .map(|time_str| chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
+                .unwrap_or_default(),
+            last_activity: self
+                .last_activity
+                .map(|time_str| chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
+                .unwrap_or_default(),
+        }
+        .insert_or_replace_query(transaction)
+        .await;
+    }
+}

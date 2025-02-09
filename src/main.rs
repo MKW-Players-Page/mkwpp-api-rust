@@ -6,14 +6,41 @@ use actix_web::{middleware, App, HttpServer};
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let _ = clear_terminal().status(); // silent error
-    
+
     println!("Loading Config");
-    let sql_client_config = sql::config::PostgresConfig::load_from_file();
+    let config = sql::config::PostgresConfig::load_from_file().to_url();
+    let pg_pool = match sqlx::postgres::PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&config)
+        .await
+    {
+        Ok(v) => v,
+        Err(e) => {
+            println!("Couldn't load Postgres Connection Pool");
+            println!("{e}");
+            println!();
+            println!("Exiting the process");
+            std::process::exit(0);
+        }
+    };
 
-    let args = std::env::args();
+    {
+        // These braces force args to go out of scope before the server is ran.
+        // Effectively working as std::mem::drop(args);
+        let args: Vec<String> = std::env::args().collect();
+        let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
 
-    
-    
+        match args.as_slice() {
+            [_, "import", "old", last] => {
+                sql::migrate::old::load_data(&pg_pool).await;
+                if *last == "exit" {
+                    std::process::exit(0);
+                }
+            }
+            _ => (),
+        }
+    }
+
     println!("Starting Backend");
 
     // Need this to enable the Logger middleware
