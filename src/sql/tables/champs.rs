@@ -7,14 +7,14 @@ pub struct Champs {
 }
 
 impl Champs {
-    pub async fn insert_query<'c>(
-        &self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        sqlx::query("INSERT INTO site_champs (id, player_id, category, date_instated) VALUES($1, $2, $3, $4);").bind(self.id).bind(self.player_id).bind(&self.category).bind(self.date_instated).execute(executor).await
-    }
+    // pub async fn insert_query(
+    //     &self,
+    //     executor: &mut sqlx::PgConnection,
+    // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    //     sqlx::query("INSERT INTO site_champs (id, player_id, category, date_instated) VALUES($1, $2, $3, $4);").bind(self.id).bind(self.player_id).bind(&self.category).bind(self.date_instated).execute(executor).await
+    // }
 
-    pub async fn insert_or_replace_query<'c>(
+    pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {

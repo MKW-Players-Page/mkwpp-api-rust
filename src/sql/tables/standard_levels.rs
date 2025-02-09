@@ -6,22 +6,22 @@ pub struct StandardLevels {
 }
 
 impl StandardLevels {
-    pub async fn insert_query<'c>(
-        &self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        sqlx::query(
-            "INSERT INTO standard_levels (id, code, value, is_legacy) VALUES($1, $2, $3, $4);",
-        )
-        .bind(self.id)
-        .bind(&self.code)
-        .bind(self.value)
-        .bind(self.is_legacy)
-        .execute(executor)
-        .await
-    }
+    // pub async fn insert_query(
+    //     &self,
+    //     executor: &mut sqlx::PgConnection,
+    // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    //     sqlx::query(
+    //         "INSERT INTO standard_levels (id, code, value, is_legacy) VALUES($1, $2, $3, $4);",
+    //     )
+    //     .bind(self.id)
+    //     .bind(&self.code)
+    //     .bind(self.value)
+    //     .bind(self.is_legacy)
+    //     .execute(executor)
+    //     .await
+    // }
 
-    pub async fn insert_or_replace_query<'c>(
+    pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {

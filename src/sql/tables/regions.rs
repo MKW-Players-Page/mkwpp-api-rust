@@ -12,7 +12,7 @@ pub enum RegionType {
 impl TryFrom<&str> for RegionType {
     type Error = ();
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
+        return match value {
             "world" => Ok(Self::World),
             "continent" => Ok(Self::Continent),
             "country_group" => Ok(Self::CountryGroup),
@@ -20,20 +20,20 @@ impl TryFrom<&str> for RegionType {
             "subnational_group" => Ok(Self::SubnationalGroup),
             "subnational" => Ok(Self::Subnational),
             _ => Err(()),
-        }
+        };
     }
 }
 
 impl From<RegionType> for u8 {
     fn from(value: RegionType) -> Self {
-        match value {
+        return match value {
             RegionType::World => 0,
             RegionType::Continent => 1,
             RegionType::CountryGroup => 2,
             RegionType::Country => 3,
             RegionType::SubnationalGroup => 4,
             RegionType::Subnational => 5,
-        }
+        };
     }
 }
 
@@ -47,14 +47,14 @@ pub struct Regions {
 }
 
 impl Regions {
-    pub async fn insert_query<'c>(
-        &self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await
-    }
+    // pub async fn insert_query(
+    //     &self,
+    //     executor: &mut sqlx::PgConnection,
+    // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    //     sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await
+    // }
 
-    pub async fn insert_or_replace_query<'c>(
+    pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {

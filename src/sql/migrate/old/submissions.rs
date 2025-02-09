@@ -22,7 +22,7 @@ pub struct Submissions {
 
 #[async_trait::async_trait]
 impl super::OldFixtureJson for Submissions {
-    async fn add_to_db<'c>(
+    async fn add_to_db(
         mut self,
         key: i32,
         transaction: &mut sqlx::PgConnection,

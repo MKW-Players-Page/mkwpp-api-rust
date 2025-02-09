@@ -208,7 +208,7 @@ trait OldFixtureJson: std::fmt::Debug {
         return |a, b| a.pk.cmp(&b.pk);
     }
 
-    async fn add_to_db<'c>(
+    async fn add_to_db(
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
@@ -222,7 +222,7 @@ struct OldFixtureWrapper<T: OldFixtureJson> {
 }
 
 impl<T: OldFixtureJson + std::marker::Sync + std::marker::Send> OldFixtureWrapper<T> {
-    async fn add_to_db<'c>(
+    async fn add_to_db(
         self,
         transaction: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {

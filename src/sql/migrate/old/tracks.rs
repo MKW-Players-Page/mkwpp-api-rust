@@ -7,7 +7,7 @@ pub struct Tracks {
 
 #[async_trait::async_trait]
 impl super::OldFixtureJson for Tracks {
-    async fn add_to_db<'c>(
+    async fn add_to_db(
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,

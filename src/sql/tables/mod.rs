@@ -21,12 +21,12 @@ pub enum Category {
 impl TryFrom<u8> for Category {
     type Error = ();
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
+        return match value {
             0 => Ok(Self::NonSc),
             1 => Ok(Self::Sc),
             2 => Ok(Self::Unres),
             _ => Err(()),
-        }
+        };
     }
 }
 
@@ -42,12 +42,12 @@ pub enum SubmissionStatus {
 impl TryFrom<u8> for SubmissionStatus {
     type Error = ();
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
+        return match value {
             0 => Ok(Self::Pending),
             1 => Ok(Self::Accepted),
             2 => Ok(Self::Rejected),
             3 => Ok(Self::OnHold),
             _ => Err(()),
-        }
+        };
     }
 }

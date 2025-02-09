@@ -28,16 +28,15 @@ async fn main() -> std::io::Result<()> {
         // These braces force args to go out of scope before the server is ran.
         // Effectively working as std::mem::drop(args);
         let args: Vec<String> = std::env::args().collect();
-        let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
+        let args: Vec<&str> = args.iter().map(|v| return v.as_str()).collect();
 
-        match args.as_slice() {
-            [_, "import", "old", last] => {
+        if args.contains(&"import") {
+            if args.contains(&"old") {
                 sql::migrate::old::load_data(&pg_pool).await;
-                if *last == "exit" {
-                    std::process::exit(0);
-                }
             }
-            _ => (),
+        }
+        if args.contains(&"exit") {
+            std::process::exit(0);
         }
     }
 

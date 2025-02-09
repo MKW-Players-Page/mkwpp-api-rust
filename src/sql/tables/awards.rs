@@ -10,13 +10,13 @@ pub enum AwardType {
 impl TryFrom<&str> for AwardType {
     type Error = ();
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
+        return match value {
             "weekly" => Ok(Self::Weekly),
             "monthly" => Ok(Self::Monthly),
             "quarterly" => Ok(Self::Quarterly),
             "yearly" => Ok(Self::Yearly),
             _ => Err(()),
-        }
+        };
     }
 }
 
@@ -30,14 +30,14 @@ pub struct Awards {
 }
 
 impl Awards {
-    pub async fn insert_query<'c>(
-        &self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        sqlx::query("INSERT INTO player_awards (id, player_id, date, description, player_award_type) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(self.player_id).bind(self.date).bind(&self.description).bind(&self.player_award_type).execute(executor).await
-    }
+    // pub async fn insert_query(
+    //     &self,
+    //     executor: &mut sqlx::PgConnection,
+    // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    //     sqlx::query("INSERT INTO player_awards (id, player_id, date, description, player_award_type) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(self.player_id).bind(self.date).bind(&self.description).bind(&self.player_award_type).execute(executor).await
+    // }
 
-    pub async fn insert_or_replace_query<'c>(
+    pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
