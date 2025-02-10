@@ -15,20 +15,22 @@ impl super::OldFixtureJson for Players {
         key: i32,
         transaction: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        let joined_date = self
+            .joined_date
+            .map(|time_str| return chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
+            .unwrap_or_default();
+
         return crate::sql::tables::players::Players {
             id: key,
             name: self.name,
             alias: self.alias,
             bio: self.bio,
             region_id: self.region,
-            joined_date: self
-                .joined_date
-                .map(|time_str| return chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
-                .unwrap_or_default(),
+            joined_date,
             last_activity: self
                 .last_activity
                 .map(|time_str| return chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
-                .unwrap_or_default(),
+                .unwrap_or(joined_date),
         }
         .insert_or_replace_query(transaction)
         .await;

@@ -1,4 +1,4 @@
-#[derive(sqlx::Type)]
+#[derive(sqlx::Type, Debug, serde::Deserialize)]
 #[sqlx(type_name = "region_type", rename_all = "snake_case")]
 pub enum RegionType {
     World,
@@ -61,7 +61,7 @@ impl serde::Serialize for RegionType {
     }
 }
 
-#[derive(sqlx::FromRow, serde::Serialize)]
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Regions {
     pub id: i32,
     pub code: String,

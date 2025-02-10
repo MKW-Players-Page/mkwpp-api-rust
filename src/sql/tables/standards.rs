@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Standards {
     pub id: i32,
     pub standard_level_id: i32,

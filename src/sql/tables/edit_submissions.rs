@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct EditSubmissions {
     pub id: i32,
     pub video_link: Option<String>,

@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Scores {
     pub id: i32,
     pub value: i32,

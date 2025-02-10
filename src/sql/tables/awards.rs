@@ -20,7 +20,7 @@ impl TryFrom<&str> for AwardType {
     }
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Awards {
     pub id: i32,
     pub player_id: i32,
