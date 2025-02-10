@@ -14,7 +14,7 @@ impl AppState {
         return self.pg_pool.acquire().await.map_err(|e| {
             return HttpResponse::InternalServerError()
                 .content_type("application/json")
-                .body(api::v1::generate_error_json_string(
+                .body(api::generate_error_json_string(
                     "Couldn't get connection from data pool",
                     e.to_string().as_str(),
                 ));
