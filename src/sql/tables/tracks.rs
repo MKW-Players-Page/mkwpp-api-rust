@@ -6,6 +6,12 @@ pub struct Tracks {
     pub categories: Vec<super::Category>,
 }
 
+impl super::BasicTableQueries for Tracks {
+    fn table_name() -> &'static str {
+        return "tracks";
+    }
+}
+
 impl Tracks {
     // pub async fn insert_query(
     //     &self,
@@ -19,14 +25,6 @@ impl Tracks {
     //         .execute(executor)
     //         .await
     // }
-
-    pub async fn select_star_query(
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        return sqlx::query("SELECT * FROM tracks;")
-            .fetch_all(executor)
-            .await;
-    }
 
     pub async fn insert_or_replace_query(
         &self,

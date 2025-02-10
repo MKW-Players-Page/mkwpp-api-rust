@@ -34,14 +34,14 @@ impl super::OldFixtureJson for Regions {
         return |a, b| {
             let a_parent = a.fields.parent.unwrap_or(0);
             let b_parent = b.fields.parent.unwrap_or(0);
-            let a_type_num = u8::from(
+            let a_type_num: u8 =
                 crate::sql::tables::regions::RegionType::try_from(a.fields.region_type.as_str())
-                    .unwrap(),
-            );
-            let b_type_num = u8::from(
+                    .unwrap()
+                    .into();
+            let b_type_num: u8 =
                 crate::sql::tables::regions::RegionType::try_from(b.fields.region_type.as_str())
-                    .unwrap(),
-            );
+                    .unwrap()
+                    .into();
             if a_type_num != b_type_num {
                 a_type_num.cmp(&b_type_num)
             } else if a_parent != b_parent {

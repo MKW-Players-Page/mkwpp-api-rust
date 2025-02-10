@@ -5,6 +5,12 @@ pub struct StandardLevels {
     pub is_legacy: bool,
 }
 
+impl super::BasicTableQueries for StandardLevels {
+    fn table_name() -> &'static str {
+        return "standard_levels";
+    }
+}
+
 impl StandardLevels {
     // pub async fn insert_query(
     //     &self,
@@ -20,14 +26,6 @@ impl StandardLevels {
     //     .execute(executor)
     //     .await
     // }
-
-    pub async fn select_star_query(
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        return sqlx::query("SELECT * FROM standard_levels;")
-            .execute(executor)
-            .await;
-    }
 
     pub async fn insert_or_replace_query(
         &self,

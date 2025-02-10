@@ -6,6 +6,12 @@ pub struct Champs {
     pub date_instated: chrono::NaiveDate,
 }
 
+impl super::BasicTableQueries for Champs {
+    fn table_name() -> &'static str {
+        return "site_champs";
+    }
+}
+
 impl Champs {
     // pub async fn insert_query(
     //     &self,

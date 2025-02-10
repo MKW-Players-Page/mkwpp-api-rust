@@ -29,6 +29,12 @@ pub struct Awards {
     pub player_award_type: AwardType,
 }
 
+impl super::BasicTableQueries for Awards {
+    fn table_name() -> &'static str {
+        return "player_awards";
+    }
+}
+
 impl Awards {
     // pub async fn insert_query(
     //     &self,
@@ -36,14 +42,6 @@ impl Awards {
     // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
     //     sqlx::query("INSERT INTO player_awards (id, player_id, date, description, player_award_type) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(self.player_id).bind(self.date).bind(&self.description).bind(&self.player_award_type).execute(executor).await
     // }
-
-    pub async fn select_star_query(
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        return sqlx::query("SELECT * FROM player_awards;")
-            .execute(executor)
-            .await;
-    }
 
     pub async fn insert_or_replace_query(
         &self,

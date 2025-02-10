@@ -1,10 +1,25 @@
 mod api;
 mod sql;
 
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 
 struct AppState {
     pg_pool: sqlx::Pool<sqlx::Postgres>,
+}
+
+impl AppState {
+    pub async fn acquire_pg_connection(
+        &self,
+    ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, HttpResponse> {
+        return self.pg_pool.acquire().await.map_err(|e| {
+            return HttpResponse::InternalServerError()
+                .content_type("application/json")
+                .body(api::v1::generate_error_json_string(
+                    "Couldn't get connection from data pool",
+                    e.to_string().as_str(),
+                ));
+        });
+    }
 }
 
 #[actix_web::main]

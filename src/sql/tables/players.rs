@@ -9,6 +9,12 @@ pub struct Players {
     pub last_activity: chrono::NaiveDate,
 }
 
+impl super::BasicTableQueries for Players {
+    fn table_name() -> &'static str {
+        return "players";
+    }
+}
+
 impl Players {
     // pub async fn insert_query(
     //     &self,
@@ -16,14 +22,6 @@ impl Players {
     // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
     //     sqlx::query("INSERT INTO players (id, name, alias, bio, region_id, joined_date, last_activity) VALUES($1, $2, $3, $4, $5, $6, $7);").bind(self.id).bind(&self.name).bind(&self.alias).bind(&self.bio).bind(&self.region_id).bind(self.joined_date).bind(self.last_activity).execute(executor).await
     // }
-
-    pub async fn select_star_query(
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        return sqlx::query("SELECT * FROM players;")
-            .execute(executor)
-            .await;
-    }
 
     pub async fn insert_or_replace_query(
         &self,

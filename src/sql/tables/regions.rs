@@ -1,4 +1,4 @@
-#[derive(sqlx::Type, serde::Serialize)]
+#[derive(sqlx::Type)]
 #[sqlx(type_name = "region_type", rename_all = "snake_case")]
 pub enum RegionType {
     World,
@@ -13,20 +13,22 @@ impl TryFrom<&str> for RegionType {
     type Error = ();
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         return match value {
-            "world" => Ok(Self::World),
-            "continent" => Ok(Self::Continent),
-            "country_group" => Ok(Self::CountryGroup),
-            "country" => Ok(Self::Country),
-            "subnational_group" => Ok(Self::SubnationalGroup),
-            "subnational" => Ok(Self::Subnational),
+            "world" | "World" | "WORLD" => Ok(Self::World),
+            "continent" | "Continent" | "CONTINENT" => Ok(Self::Continent),
+            "country_group" | "COUNTRYGROUP" | "COUNTRY_GROUP" | "CountryGroup"
+            | "countryGroup" => Ok(Self::CountryGroup),
+            "country" | "Country" | "COUNTRY" => Ok(Self::Country),
+            "subnational_group" | "SUBNATIONALGROUP" | "SUBNATIONAL_GROUP" | "SubnationalGroup"
+            | "subnationalGroup" => Ok(Self::SubnationalGroup),
+            "subnational" | "Subnational" | "SUBNATIONAL" => Ok(Self::Subnational),
             _ => Err(()),
         };
     }
 }
 
-impl From<RegionType> for u8 {
-    fn from(value: RegionType) -> Self {
-        return match value {
+impl Into<u8> for RegionType {
+    fn into(self) -> u8 {
+        return match self {
             RegionType::World => 0,
             RegionType::Continent => 1,
             RegionType::CountryGroup => 2,
@@ -34,6 +36,28 @@ impl From<RegionType> for u8 {
             RegionType::SubnationalGroup => 4,
             RegionType::Subnational => 5,
         };
+    }
+}
+
+impl<'a> Into<u8> for &'a RegionType {
+    fn into(self) -> u8 {
+        return match self {
+            RegionType::World => 0,
+            RegionType::Continent => 1,
+            RegionType::CountryGroup => 2,
+            RegionType::Country => 3,
+            RegionType::SubnationalGroup => 4,
+            RegionType::Subnational => 5,
+        };
+    }
+}
+
+impl serde::Serialize for RegionType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_u8(self.into())
     }
 }
 
@@ -46,6 +70,12 @@ pub struct Regions {
     pub is_ranked: bool,
 }
 
+impl super::BasicTableQueries for Regions {
+    fn table_name() -> &'static str {
+        return "regions";
+    }
+}
+
 impl Regions {
     // pub async fn insert_query(
     //     &self,
@@ -53,14 +83,6 @@ impl Regions {
     // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
     //     sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await
     // }
-
-    pub async fn select_star_query(
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        return sqlx::query("SELECT * FROM regions;")
-            .execute(executor)
-            .await;
-    }
 
     pub async fn insert_or_replace_query(
         &self,

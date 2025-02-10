@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize,serde::Serialize, Debug, sqlx::FromRow)]
 pub struct Submissions {
     pub id: i32,
     pub value: i32,
@@ -21,6 +21,12 @@ pub struct Submissions {
     pub score_id: Option<i32>,
 }
 
+impl super::BasicTableQueries for Submissions {
+    fn table_name() -> &'static str {
+        return "submissions";
+    }
+}
+
 impl Submissions {
     // pub async fn insert_query(
     //     &self,
@@ -28,14 +34,6 @@ impl Submissions {
     // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
     //     sqlx::query("INSERT INTO submissions (id, value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, status, submitter_id, submitter_note, submitted_at, reviewer_id, reviewer_note, reviewed_at, score_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19);").bind(self.id).bind(self.value).bind(&self.category).bind(self.is_lap).bind(self.player_id).bind(self.track_id).bind(self.date).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(&self.status).bind(self.submitter_id).bind(&self.submitter_note).bind(self.submitted_at).bind(self.reviewer_id).bind(&self.reviewer_note).bind(self.reviewed_at).bind(self.score_id).execute(executor).await
     // }
-
-    pub async fn select_star_query(
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        return sqlx::query("SELECT * FROM submissions;")
-            .execute(executor)
-            .await;
-    }
 
     pub async fn insert_or_replace_query(
         &self,
