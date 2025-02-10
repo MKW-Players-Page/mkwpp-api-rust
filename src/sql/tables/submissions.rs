@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize,serde::Serialize, Debug, sqlx::FromRow)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, sqlx::FromRow)]
 pub struct Submissions {
     pub id: i32,
     pub value: i32,

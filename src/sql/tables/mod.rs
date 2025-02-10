@@ -30,19 +30,19 @@ impl TryFrom<u8> for Category {
     }
 }
 
-impl Into<u8> for Category {
-    fn into(self) -> u8 {
-        return match self {
-            Self::NonSc => 0,
-            Self::Sc => 1,
-            Self::Unres => 2,
+impl From<Category> for u8 {
+    fn from(val: Category) -> Self {
+        return match val {
+            Category::NonSc => 0,
+            Category::Sc => 1,
+            Category::Unres => 2,
         };
     }
 }
 
-impl<'a> Into<u8> for &'a Category {
-    fn into(self) -> u8 {
-        return match self {
+impl From<&Category> for u8 {
+    fn from(val: &Category) -> Self {
+        return match val {
             Category::NonSc => 0,
             Category::Sc => 1,
             Category::Unres => 2,
@@ -55,7 +55,7 @@ impl serde::Serialize for Category {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_u8(self.into())
+        return serializer.serialize_u8(self.into());
     }
 }
 

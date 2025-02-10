@@ -49,5 +49,5 @@ fn escape_char_for_json(src: &str) -> String {
             }
         }
     }
-    escaped
+    return escaped;
 }

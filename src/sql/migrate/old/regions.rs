@@ -43,11 +43,11 @@ impl super::OldFixtureJson for Regions {
                     .unwrap()
                     .into();
             if a_type_num != b_type_num {
-                a_type_num.cmp(&b_type_num)
+                return a_type_num.cmp(&b_type_num);
             } else if a_parent != b_parent {
-                a_parent.cmp(&b_parent)
+                return a_parent.cmp(&b_parent);
             } else {
-                a.pk.cmp(&b.pk)
+                return a.pk.cmp(&b.pk);
             }
         };
     }

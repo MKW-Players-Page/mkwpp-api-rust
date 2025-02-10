@@ -26,9 +26,9 @@ impl TryFrom<&str> for RegionType {
     }
 }
 
-impl Into<u8> for RegionType {
-    fn into(self) -> u8 {
-        return match self {
+impl From<RegionType> for u8 {
+    fn from(val: RegionType) -> Self {
+        return match val {
             RegionType::World => 0,
             RegionType::Continent => 1,
             RegionType::CountryGroup => 2,
@@ -39,9 +39,9 @@ impl Into<u8> for RegionType {
     }
 }
 
-impl<'a> Into<u8> for &'a RegionType {
-    fn into(self) -> u8 {
-        return match self {
+impl From<&RegionType> for u8 {
+    fn from(val: &RegionType) -> Self {
+        return match val {
             RegionType::World => 0,
             RegionType::Continent => 1,
             RegionType::CountryGroup => 2,
@@ -57,7 +57,7 @@ impl serde::Serialize for RegionType {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_u8(self.into())
+        return serializer.serialize_u8(self.into());
     }
 }
 

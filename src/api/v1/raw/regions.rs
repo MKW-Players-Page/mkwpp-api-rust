@@ -27,7 +27,7 @@ pub async fn get(data: web::Data<crate::AppState>) -> impl Responder {
 
     let regions = region_rows
         .into_iter()
-        .map(|r| regions::Regions::from_row(&r).unwrap())
+        .map(|r| return regions::Regions::from_row(&r).unwrap())
         .collect::<Vec<regions::Regions>>();
 
     match serde_json::to_string(&regions) {

@@ -23,11 +23,11 @@ impl super::OldFixtureJson for Players {
             region_id: self.region,
             joined_date: self
                 .joined_date
-                .map(|time_str| chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
+                .map(|time_str| return chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
                 .unwrap_or_default(),
             last_activity: self
                 .last_activity
-                .map(|time_str| chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
+                .map(|time_str| return chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
                 .unwrap_or_default(),
         }
         .insert_or_replace_query(transaction)

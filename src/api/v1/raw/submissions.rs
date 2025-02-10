@@ -27,7 +27,7 @@ pub async fn get(data: web::Data<crate::AppState>) -> impl Responder {
 
     let submissions = submission_rows
         .into_iter()
-        .map(|r| submissions::Submissions::from_row(&r).unwrap())
+        .map(|r| return submissions::Submissions::from_row(&r).unwrap())
         .collect::<Vec<submissions::Submissions>>();
 
     match serde_json::to_string(&submissions) {

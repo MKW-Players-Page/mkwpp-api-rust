@@ -49,10 +49,8 @@ async fn main() -> std::io::Result<()> {
         let args: Vec<String> = std::env::args().collect();
         let args: Vec<&str> = args.iter().map(|v| return v.as_str()).collect();
 
-        if args.contains(&"import") {
-            if args.contains(&"old") {
-                sql::migrate::old::load_data(&pg_pool).await;
-            }
+        if args.contains(&"import") && args.contains(&"old") {
+            sql::migrate::old::load_data(&pg_pool).await;
         }
         if args.contains(&"exit") {
             std::process::exit(0);
