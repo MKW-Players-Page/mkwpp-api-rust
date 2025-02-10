@@ -1,26 +1,25 @@
 use actix_web::{dev::HttpServiceFactory, web};
 
-mod cups;
-mod tracks;
+mod raw;
 
 pub fn v1() -> impl HttpServiceFactory {
     return web::scope("/v1").service(
         web::scope("/raw")
-            .route("/player_awards", web::get().to(cups::get))
-            .route("/site_champs", web::get().to(cups::get))
-            .route("/cups", web::get().to(cups::get))
-            .route("/edit_submissions", web::get().to(cups::get))
-            .route("/players", web::get().to(cups::get))
-            .route("/regions", web::get().to(cups::get))
-            .route("/scores", web::get().to(cups::get))
-            .route("/standard_levels", web::get().to(cups::get))
-            .route("/standards", web::get().to(cups::get))
-            .route("/submissions", web::get().to(cups::get))
-            .route("/tracks", web::get().to(tracks::get)),
+            .route("/player_awards", web::get().to(raw::cups::get))
+            .route("/site_champs", web::get().to(raw::cups::get))
+            .route("/cups", web::get().to(raw::cups::get))
+            .route("/edit_submissions", web::get().to(raw::cups::get))
+            .route("/players", web::get().to(raw::cups::get))
+            .route("/regions", web::get().to(raw::regions::get))
+            .route("/scores", web::get().to(raw::cups::get))
+            .route("/standard_levels", web::get().to(raw::cups::get))
+            .route("/standards", web::get().to(raw::cups::get))
+            .route("/submissions", web::get().to(raw::submissions::get))
+            .route("/tracks", web::get().to(raw::tracks::get)),
     );
 }
 
-fn generate_error_json_string(personal_err: &str, lib_err: &str) -> String {
+pub fn generate_error_json_string(personal_err: &str, lib_err: &str) -> String {
     return format!(
         "{{\"error\":\"{}\",\"server_error\":\"{}\"}}",
         escape_char_for_json(personal_err),
