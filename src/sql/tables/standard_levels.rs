@@ -1,8 +1,15 @@
+#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
 pub struct StandardLevels {
     pub id: i32,
     pub code: String,
     pub value: i32,
     pub is_legacy: bool,
+}
+
+impl super::BasicTableQueries for StandardLevels {
+    fn table_name() -> &'static str {
+        return "standard_levels";
+    }
 }
 
 impl StandardLevels {

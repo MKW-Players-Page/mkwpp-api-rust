@@ -9,22 +9,22 @@ mod standards;
 mod submissions;
 mod tracks;
 
-const OLD_FIXTURES_PATH: &'static str = "./db/fixtures/old/";
+const OLD_FIXTURES_PATH: &str = "./db/fixtures/old/";
 
 fn enforce_file_order(file_name: &str) -> u8 {
     match file_name {
-        "regions.json" => 0,
-        "players.json" => 1,
-        "trackcups.json" => 2,
-        "tracks.json" => 3,
-        "scores.json" => 4,
-        "scoresubmissions.json" => 5,
-        "editscoresubmissions.json" => 6,
-        "standardlevels.json" => 7,
-        "standards.json" => 8,
-        "sitechampions.json" => 9,
-        "playerawards.json" => 10,
-        _ => 11,
+        "regions.json" => return 0,
+        "players.json" => return 1,
+        "trackcups.json" => return 2,
+        "tracks.json" => return 3,
+        "scores.json" => return 4,
+        "scoresubmissions.json" => return 5,
+        "editscoresubmissions.json" => return 6,
+        "standardlevels.json" => return 7,
+        "standards.json" => return 8,
+        "sitechampions.json" => return 9,
+        "playerawards.json" => return 10,
+        _ => return 11,
     }
 }
 
@@ -67,7 +67,7 @@ pub async fn load_data(pool: &sqlx::Pool<sqlx::Postgres>) {
             .collect::<Vec<String>>(),
     };
 
-    file_paths.sort_by(|a, b| enforce_file_order(a).cmp(&enforce_file_order(b)));
+    file_paths.sort_by(|a, b| return enforce_file_order(a).cmp(&enforce_file_order(b)));
 
     let mut transaction = match transaction.await {
         Ok(v) => v,
@@ -173,7 +173,7 @@ trait OldFixtureJson: std::fmt::Debug {
             Err(e) => {
                 println!("Error reading file {file_path} from old fixtures");
                 println!("{e}");
-                println!("");
+                println!();
                 println!("Exiting the process");
                 std::process::exit(0);
             }
@@ -183,7 +183,7 @@ trait OldFixtureJson: std::fmt::Debug {
             Err(e) => {
                 println!("Error converting fixture {file_path} from JSON");
                 println!("{e}");
-                println!("");
+                println!();
                 println!("Exiting the process");
                 std::process::exit(0);
             }
@@ -192,9 +192,7 @@ trait OldFixtureJson: std::fmt::Debug {
         vec.sort_by(Self::get_sort());
 
         for wrapper in vec {
-            if let Err(e) = wrapper.add_to_db(transaction).await {
-                return Err(e);
-            }
+            wrapper.add_to_db(transaction).await?;
         }
 
         return Ok(());
@@ -205,7 +203,7 @@ trait OldFixtureJson: std::fmt::Debug {
     where
         Self: Sized,
     {
-        return |a, b| a.pk.cmp(&b.pk);
+        return |a, b| return a.pk.cmp(&b.pk);
     }
 
     async fn add_to_db(

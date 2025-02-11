@@ -16,7 +16,7 @@ impl super::OldFixtureJson for Champs {
             id: key,
             category: crate::sql::tables::Category::try_from(self.category).unwrap(),
             date_instated: chrono::NaiveDate::parse_from_str(
-                &self.date_instated.split('T').next().unwrap(),
+                self.date_instated.split('T').next().unwrap(),
                 "%F",
             )
             .unwrap(),

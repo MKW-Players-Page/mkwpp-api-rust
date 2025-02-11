@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Standards {
     pub id: i32,
     pub standard_level_id: i32,
@@ -6,6 +6,12 @@ pub struct Standards {
     pub category: super::Category,
     pub is_lap: bool,
     pub value: Option<i32>,
+}
+
+impl super::BasicTableQueries for Standards {
+    fn table_name() -> &'static str {
+        return "standards";
+    }
 }
 
 impl Standards {

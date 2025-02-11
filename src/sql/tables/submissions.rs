@@ -1,4 +1,4 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, sqlx::FromRow)]
 pub struct Submissions {
     pub id: i32,
     pub value: i32,
@@ -19,6 +19,12 @@ pub struct Submissions {
     pub reviewer_note: Option<String>,
     pub reviewed_at: chrono::DateTime<chrono::Utc>,
     pub score_id: Option<i32>,
+}
+
+impl super::BasicTableQueries for Submissions {
+    fn table_name() -> &'static str {
+        return "submissions";
+    }
 }
 
 impl Submissions {

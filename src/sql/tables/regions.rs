@@ -1,4 +1,4 @@
-#[derive(sqlx::Type, serde::Serialize)]
+#[derive(sqlx::Type, Debug, serde::Deserialize)]
 #[sqlx(type_name = "region_type", rename_all = "snake_case")]
 pub enum RegionType {
     World,
@@ -13,20 +13,22 @@ impl TryFrom<&str> for RegionType {
     type Error = ();
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         return match value {
-            "world" => Ok(Self::World),
-            "continent" => Ok(Self::Continent),
-            "country_group" => Ok(Self::CountryGroup),
-            "country" => Ok(Self::Country),
-            "subnational_group" => Ok(Self::SubnationalGroup),
-            "subnational" => Ok(Self::Subnational),
+            "world" | "World" | "WORLD" => Ok(Self::World),
+            "continent" | "Continent" | "CONTINENT" => Ok(Self::Continent),
+            "country_group" | "COUNTRYGROUP" | "COUNTRY_GROUP" | "CountryGroup"
+            | "countryGroup" => Ok(Self::CountryGroup),
+            "country" | "Country" | "COUNTRY" => Ok(Self::Country),
+            "subnational_group" | "SUBNATIONALGROUP" | "SUBNATIONAL_GROUP" | "SubnationalGroup"
+            | "subnationalGroup" => Ok(Self::SubnationalGroup),
+            "subnational" | "Subnational" | "SUBNATIONAL" => Ok(Self::Subnational),
             _ => Err(()),
         };
     }
 }
 
 impl From<RegionType> for u8 {
-    fn from(value: RegionType) -> Self {
-        return match value {
+    fn from(val: RegionType) -> Self {
+        return match val {
             RegionType::World => 0,
             RegionType::Continent => 1,
             RegionType::CountryGroup => 2,
@@ -37,13 +39,41 @@ impl From<RegionType> for u8 {
     }
 }
 
-#[derive(sqlx::FromRow, serde::Serialize)]
+impl From<&RegionType> for u8 {
+    fn from(val: &RegionType) -> Self {
+        return match val {
+            RegionType::World => 0,
+            RegionType::Continent => 1,
+            RegionType::CountryGroup => 2,
+            RegionType::Country => 3,
+            RegionType::SubnationalGroup => 4,
+            RegionType::Subnational => 5,
+        };
+    }
+}
+
+impl serde::Serialize for RegionType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        return serializer.serialize_u8(self.into());
+    }
+}
+
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Regions {
     pub id: i32,
     pub code: String,
     pub region_type: RegionType,
     pub parent_id: Option<i32>,
     pub is_ranked: bool,
+}
+
+impl super::BasicTableQueries for Regions {
+    fn table_name() -> &'static str {
+        return "regions";
+    }
 }
 
 impl Regions {

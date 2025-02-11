@@ -1,9 +1,15 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, sqlx::FromRow, serde::Serialize)]
 pub struct Tracks {
     pub id: i32,
     pub abbr: String,
     pub cup_id: i32,
     pub categories: Vec<super::Category>,
+}
+
+impl super::BasicTableQueries for Tracks {
+    fn table_name() -> &'static str {
+        return "tracks";
+    }
 }
 
 impl Tracks {

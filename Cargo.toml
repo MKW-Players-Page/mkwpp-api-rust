@@ -13,13 +13,13 @@ serde_json = "1.0.138"
 env_logger = "0.11.6"
 typetag = "0.2.19"
 async-trait = "0.1.86"
+futures = {version = "0.3.31", features = ["executor"]}
 
 [lints.rust]
 unused_imports = "deny"
 
 [lints.clippy]
 needless_return = "allow"
-implicit_return = "deny"
 too_many_arguments = "allow"
 needless_borrow = "deny"
 duplicate_mod = "deny"

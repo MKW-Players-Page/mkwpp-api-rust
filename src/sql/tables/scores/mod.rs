@@ -1,4 +1,6 @@
-#[derive(serde::Deserialize, Debug)]
+pub mod with_player;
+
+#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Scores {
     pub id: i32,
     pub value: i32,
@@ -12,6 +14,12 @@ pub struct Scores {
     pub comment: Option<String>,
     pub admin_note: Option<String>,
     pub initial_rank: Option<i32>,
+}
+
+impl super::BasicTableQueries for Scores {
+    fn table_name() -> &'static str {
+        return "scores";
+    }
 }
 
 impl Scores {

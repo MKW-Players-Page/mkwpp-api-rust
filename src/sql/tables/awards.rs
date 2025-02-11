@@ -20,13 +20,19 @@ impl TryFrom<&str> for AwardType {
     }
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Awards {
     pub id: i32,
     pub player_id: i32,
     pub date: chrono::NaiveDate,
     pub description: String,
     pub player_award_type: AwardType,
+}
+
+impl super::BasicTableQueries for Awards {
+    fn table_name() -> &'static str {
+        return "player_awards";
+    }
 }
 
 impl Awards {

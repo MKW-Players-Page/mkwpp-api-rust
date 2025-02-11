@@ -10,7 +10,7 @@ pub mod standards;
 pub mod submissions;
 pub mod tracks;
 
-#[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
+#[derive(sqlx::Type, serde::Deserialize, Debug)]
 #[sqlx(type_name = "category", rename_all = "lowercase")]
 pub enum Category {
     NonSc,
@@ -27,6 +27,35 @@ impl TryFrom<u8> for Category {
             2 => Ok(Self::Unres),
             _ => Err(()),
         };
+    }
+}
+
+impl From<Category> for u8 {
+    fn from(val: Category) -> Self {
+        return match val {
+            Category::NonSc => 0,
+            Category::Sc => 1,
+            Category::Unres => 2,
+        };
+    }
+}
+
+impl From<&Category> for u8 {
+    fn from(val: &Category) -> Self {
+        return match val {
+            Category::NonSc => 0,
+            Category::Sc => 1,
+            Category::Unres => 2,
+        };
+    }
+}
+
+impl serde::Serialize for Category {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        return serializer.serialize_u8(self.into());
     }
 }
 
@@ -49,5 +78,17 @@ impl TryFrom<u8> for SubmissionStatus {
             3 => Ok(Self::OnHold),
             _ => Err(()),
         };
+    }
+}
+
+pub trait BasicTableQueries {
+    fn table_name() -> &'static str;
+
+    async fn select_star_query(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+        return sqlx::query(&format!("SELECT * from {};", Self::table_name()))
+            .fetch_all(executor)
+            .await;
     }
 }

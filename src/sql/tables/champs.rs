@@ -1,9 +1,15 @@
-#[derive(serde::Deserialize, Debug)]
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Champs {
     pub id: i32,
     pub player_id: i32,
     pub category: super::Category,
     pub date_instated: chrono::NaiveDate,
+}
+
+impl super::BasicTableQueries for Champs {
+    fn table_name() -> &'static str {
+        return "site_champs";
+    }
 }
 
 impl Champs {
