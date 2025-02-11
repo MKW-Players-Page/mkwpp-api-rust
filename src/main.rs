@@ -29,7 +29,7 @@ async fn main() -> std::io::Result<()> {
     println!("Loading Config");
     let config = sql::config::PostgresConfig::load_from_file().to_url();
     let pg_pool = match sqlx::postgres::PgPoolOptions::new()
-        .max_connections(5)
+        .max_connections(25)
         .connect(&config)
         .await
     {

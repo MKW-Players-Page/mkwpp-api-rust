@@ -1,22 +1,23 @@
 use crate::sql::tables::BasicTableQueries;
-use actix_web::{dev::HttpServiceFactory, web, HttpResponse, Responder};
+use actix_web::{dev::HttpServiceFactory, web, HttpResponse};
 
 mod cups;
 
-const PLAYER_AWARDS_PATH: &'static str = "/player_awards";
-const SITE_CHAMPS_PATH: &'static str = "/site_champs";
-const CUPS_PATH: &'static str = "/cups";
-const EDIT_SUBMISSIONS_PATH: &'static str = "/edit_submissions";
-const PLAYERS_PATH: &'static str = "/players";
-const REGIONS_PATH: &'static str = "/regions";
-const SCORES_PATH: &'static str = "/scores";
-const STANDARD_LEVELS_PATH: &'static str = "/standard_levels";
-const STANDARDS_PATH: &'static str = "/standards";
-const SUBMISSIONS_PATH: &'static str = "/submissions";
-const TRACKS_PATH: &'static str = "/tracks";
+const PLAYER_AWARDS_PATH: &str = "/player_awards";
+const SITE_CHAMPS_PATH: &str = "/site_champs";
+const CUPS_PATH: &str = "/cups";
+const EDIT_SUBMISSIONS_PATH: &str = "/edit_submissions";
+const PLAYERS_PATH: &str = "/players";
+const REGIONS_PATH: &str = "/regions";
+const SCORES_PATH: &str = "/scores";
+const STANDARD_LEVELS_PATH: &str = "/standard_levels";
+const STANDARDS_PATH: &str = "/standards";
+const SUBMISSIONS_PATH: &str = "/submissions";
+const TRACKS_PATH: &str = "/tracks";
 
 pub fn raw() -> impl HttpServiceFactory {
     return web::scope("/raw")
+        .guard(actix_web::guard::Get())
         .default_service(web::get().to(default))
         .route(
             PLAYER_AWARDS_PATH,
@@ -66,42 +67,15 @@ async fn default() -> impl actix_web::Responder {
 }
 
 pub async fn get<
-    Table: BasicTableQueries + serde::Serialize + for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>,
+    Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + BasicTableQueries,
 >(
     data: web::Data<crate::AppState>,
-) -> impl Responder {
+) -> HttpResponse {
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
         Err(e) => return e,
     };
 
-    let region_rows = match Table::select_star_query(&mut connection).await {
-        Ok(rows) => {
-            connection.close().await.unwrap();
-            rows
-        }
-        Err(e) => {
-            connection.close().await.unwrap();
-            return HttpResponse::InternalServerError()
-                .content_type("application/json")
-                .body(crate::api::generate_error_json_string(
-                    "Couldn't get rows from database",
-                    e.to_string().as_str(),
-                ));
-        }
-    };
-
-    let regions = region_rows
-        .into_iter()
-        .map(|r| return Table::from_row(&r).unwrap())
-        .collect::<Vec<Table>>();
-
-    match serde_json::to_string(&regions) {
-        Ok(v) => return HttpResponse::Ok().content_type("application/json").body(v),
-        Err(e) => {
-            return HttpResponse::InternalServerError()
-                .content_type("text/plain")
-                .body(e.to_string())
-        }
-    }
+    let rows_request = Table::select_star_query(&mut connection).await;
+    return crate::api::v1::handle_basic_get::<Table>(rows_request, connection).await;
 }

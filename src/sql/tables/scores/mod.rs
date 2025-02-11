@@ -1,3 +1,5 @@
+pub mod with_player;
+
 #[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
 pub struct Scores {
     pub id: i32,

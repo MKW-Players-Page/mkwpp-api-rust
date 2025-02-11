@@ -1,4 +1,6 @@
-#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+pub mod players_basic;
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
 pub struct Players {
     pub id: i32,
     pub name: String,
