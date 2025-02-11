@@ -6,7 +6,7 @@ pub struct Players {
     pub name: String,
     pub alias: Option<String>,
     pub bio: Option<String>,
-    pub region_id: Option<i32>,
+    pub region_id: i32,
     pub joined_date: chrono::NaiveDate,
     pub last_activity: chrono::NaiveDate,
 }
