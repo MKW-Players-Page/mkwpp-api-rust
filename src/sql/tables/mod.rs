@@ -30,6 +30,19 @@ impl TryFrom<u8> for Category {
     }
 }
 
+impl TryFrom<&str> for Category {
+    type Error = ();
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        return match value.to_lowercase().as_str() {
+            "nonsc" | "nosc" | "normal" | "non-sc" | "non_sc" | "no-shortcut" | "noshortcut"
+            | "n" => Ok(Self::NonSc),
+            "shortcut" | "sc" | "s" => Ok(Self::Sc),
+            "unrestricted" | "unres" | "unr" | "glitch" | "g" | "u" => Ok(Self::Unres),
+            _ => Err(()),
+        };
+    }
+}
+
 impl From<Category> for u8 {
     fn from(val: Category) -> Self {
         return match val {

@@ -42,7 +42,7 @@ impl ScoresWithPlayer {
         limit: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
-                "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL ORDER BY date desc LIMIT $1",
+                "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL ORDER BY date desc LIMIT $1;",
                 super::Scores::table_name(),
                 Players::table_name(),
                 
@@ -56,11 +56,28 @@ impl ScoresWithPlayer {
         limit: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
-                    "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL AND initial_rank = 1 ORDER BY date desc LIMIT $1",
+                    "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL AND initial_rank = 1 ORDER BY date DESC LIMIT $1;",
                     super::Scores::table_name(),
                     Players::table_name(),
                     
                 )).bind(limit)
+                .fetch_all(executor)
+                .await;
+    }
+
+    pub async fn filter_charts(
+        executor: &mut sqlx::PgConnection,
+        track_id: i32,
+        category: crate::sql::tables::Category,
+        is_lap: bool,
+        max_date: chrono::NaiveDate,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+        return sqlx::query(&format!(
+                    "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE track_id = $1 AND category <= $2 AND is_lap = $3 AND date <= $4 ORDER BY value ASC;",
+                    super::Scores::table_name(),
+                    Players::table_name(),
+                    
+                )).bind(track_id).bind(category).bind(is_lap).bind(max_date)
                 .fetch_all(executor)
                 .await;
     }
