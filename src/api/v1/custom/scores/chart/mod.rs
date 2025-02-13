@@ -39,7 +39,32 @@ pub async fn get(
         .unwrap_or(chrono::Local::now().date_naive());
     let region_id = params.reg.unwrap_or(1);
 
-    let rows_request =
-        ScoresWithPlayer::filter_charts(&mut connection, track, category, is_lap, max_date, region_id).await;
-    return crate::api::v1::handle_basic_get::<ScoresWithPlayer>(rows_request, connection).await;
+    let rows_request = ScoresWithPlayer::filter_charts(
+        &mut connection,
+        track,
+        category,
+        is_lap,
+        max_date,
+        region_id,
+    )
+    .await;
+
+    if let Err(e) = crate::api::v1::close_connection(connection).await {
+        return e;
+    }
+
+    let rows = match crate::api::v1::match_rows(rows_request) {
+        Ok(rows) => rows,
+        Err(e) => return e,
+    };
+
+    let data = match crate::api::v1::decode_rows_to_table::<ScoresWithPlayer>(rows) {
+        Ok(mut data) => {
+            ScoresWithPlayer::calc_rank_prwr(&mut data);
+            data
+        }
+        Err(e) => return e,
+    };
+
+    return crate::api::v1::send_serialized_data(data);
 }

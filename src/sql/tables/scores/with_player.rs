@@ -1,21 +1,48 @@
-use crate::sql::tables::players::Players;
+use crate::sql::tables::players::players_basic::PlayersBasic;
 use crate::sql::tables::BasicTableQueries;
+use sqlx::{FromRow, Row};
 
-#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
+#[serde_with::skip_serializing_none]
+#[derive(serde::Deserialize, Debug, serde::Serialize)]
 pub struct ScoresWithPlayer {
-    #[sqlx(rename = "s_id")]
+    pub rank: Option<i64>,
+    pub prwr: Option<f64>,
     pub id: i32,
     pub value: i32,
     pub category: crate::sql::tables::Category,
     pub is_lap: bool,
-    #[sqlx(flatten)]
-    pub player: crate::sql::tables::players::players_basic::PlayersBasic,
+    pub player: PlayersBasic,
     pub track_id: i32,
     pub date: Option<chrono::NaiveDate>,
     pub video_link: Option<String>,
     pub ghost_link: Option<String>,
     pub comment: Option<String>,
     pub initial_rank: Option<i32>,
+}
+
+impl<'a> FromRow<'a, sqlx::postgres::PgRow> for ScoresWithPlayer {
+    fn from_row(row: &'a sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
+        Ok(Self {
+            rank: row.try_get("rank").unwrap_or(None),
+            prwr: row.try_get("prwr").unwrap_or(None),
+            id: row.try_get("s_id")?,
+            value: row.try_get("value")?,
+            category: row.try_get("category")?,
+            is_lap: row.try_get("is_lap")?,
+            player: PlayersBasic {
+                id: row.try_get("id")?,
+                name: row.try_get("name")?,
+                alias: row.try_get("alias")?,
+                region_id: row.try_get("region_id")?,
+            },
+            track_id: row.try_get("track_id")?,
+            date: row.try_get("date")?,
+            video_link: row.try_get("video_link")?,
+            ghost_link: row.try_get("ghost_link")?,
+            comment: row.try_get("comment")?,
+            initial_rank: row.try_get("initial_rank")?,
+        })
+    }
 }
 
 impl BasicTableQueries for ScoresWithPlayer {
@@ -29,7 +56,7 @@ impl BasicTableQueries for ScoresWithPlayer {
         return sqlx::query(&format!(
             "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id;",
             super::Scores::table_name(),
-            Players::table_name(),
+            PlayersBasic::table_name(),
         ))
         .fetch_all(executor)
         .await;
@@ -42,15 +69,14 @@ impl ScoresWithPlayer {
         limit: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
-                "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL ORDER BY date desc LIMIT $1;",
+                "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL ORDER BY date DESC LIMIT $1;",
                 super::Scores::table_name(),
-                Players::table_name(),
-                
+                PlayersBasic::table_name(),
             )).bind(limit)
             .fetch_all(executor)
             .await;
     }
-    
+
     pub async fn order_records_by_date(
         executor: &mut sqlx::PgConnection,
         limit: i32,
@@ -58,32 +84,49 @@ impl ScoresWithPlayer {
         return sqlx::query(&format!(
                     "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL AND initial_rank = 1 ORDER BY date DESC LIMIT $1;",
                     super::Scores::table_name(),
-                    Players::table_name(),
-                    
+                    PlayersBasic::table_name(),
                 )).bind(limit)
                 .fetch_all(executor)
                 .await;
     }
-    
+
     pub async fn filter_charts(
         executor: &mut sqlx::PgConnection,
         track_id: i32,
         category: crate::sql::tables::Category,
-        is_lap: bool,max_date: chrono::NaiveDate,
-        region_id: i32
+        is_lap: bool,
+        max_date: chrono::NaiveDate,
+        region_id: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        let region_ids = match crate::sql::tables::regions::Regions::get_nephews(region_id, executor).await {
-            Ok(v)=>v,
-            Err(e)=> return Err(e)
-        };
-        
+        let region_ids =
+            match crate::sql::tables::regions::Regions::get_nephews(region_id, executor).await {
+                Ok(v) => v,
+                Err(e) => return Err(e),
+            };
+
         return sqlx::query(&format!(
-                    "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE track_id = $1 AND category <= $2 AND is_lap = $3 AND date <= $4 AND region_id = ANY($5) ORDER BY value ASC;",
-                    super::Scores::table_name(),
-                    Players::table_name(),
-                    
-                )).bind(track_id).bind(category).bind(is_lap).bind(max_date).bind(region_ids)
-                .fetch_all(executor)
-                .await;
+                "SELECT * FROM (SELECT DISTINCT ON(id) * FROM (SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE track_id = $1 AND category <= $2 AND is_lap = $3 AND date <= $4 AND region_id = ANY($5) ORDER BY value ASC)) ORDER BY value ASC, DATE DESC;",
+                super::Scores::table_name(),
+                PlayersBasic::table_name(),
+            )).bind(track_id).bind(category).bind(is_lap).bind(max_date).bind(region_ids)
+            .fetch_all(executor)
+            .await;
+    }
+
+    pub fn calc_rank_prwr(vec: &mut Vec<Self>) {
+        let mut current_rank = 0;
+        let mut actual_current_rank = 0;
+        let mut current_value = 0;
+        let first_value = vec.first().map(|s| s.value).unwrap_or(1) as f64;
+        for element in vec {
+            actual_current_rank += 1;
+            if element.value > current_value {
+                current_rank = actual_current_rank;
+                current_value = element.value;
+            }
+
+            element.rank = Some(current_rank);
+            element.prwr = Some(first_value / (element.value as f64))
+        }
     }
 }
