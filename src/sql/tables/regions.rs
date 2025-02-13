@@ -83,11 +83,25 @@ impl Regions {
     // ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
     //     sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await
     // }
-
+    
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         return sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET code = $2, region_type = $3, parent_id = $4, is_ranked = $5 WHERE regions.id = $1;").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await;
+    }
+    
+    pub async fn get_ancestors(
+        id: i32,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<Vec<i32>, sqlx::Error> {
+        return sqlx::query_scalar("WITH RECURSIVE nephews AS (SELECT id, parent_id FROM regions WHERE id = $1 UNION SELECT e.id, e.parent_id FROM regions e INNER JOIN nephews s ON s.parent_id = e.id) SELECT id FROM nephews;").bind(id).fetch_all(executor).await;
+    }
+    
+    pub async fn get_nephews(
+        id: i32,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<Vec<i32>, sqlx::Error> {
+        return sqlx::query_scalar("WITH RECURSIVE nephews AS (SELECT id, parent_id FROM regions WHERE id = $1 UNION SELECT e.id, e.parent_id FROM regions e INNER JOIN nephews s ON s.id = e.parent_id) SELECT id FROM nephews;").bind(id).fetch_all(executor).await;
     }
 }

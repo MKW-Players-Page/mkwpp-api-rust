@@ -50,7 +50,7 @@ impl ScoresWithPlayer {
             .fetch_all(executor)
             .await;
     }
-
+    
     pub async fn order_records_by_date(
         executor: &mut sqlx::PgConnection,
         limit: i32,
@@ -64,20 +64,25 @@ impl ScoresWithPlayer {
                 .fetch_all(executor)
                 .await;
     }
-
+    
     pub async fn filter_charts(
         executor: &mut sqlx::PgConnection,
         track_id: i32,
         category: crate::sql::tables::Category,
-        is_lap: bool,
-        max_date: chrono::NaiveDate,
+        is_lap: bool,max_date: chrono::NaiveDate,
+        region_id: i32
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+        let region_ids = match crate::sql::tables::regions::Regions::get_nephews(region_id, executor).await {
+            Ok(v)=>v,
+            Err(e)=> return Err(e)
+        };
+        
         return sqlx::query(&format!(
-                    "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE track_id = $1 AND category <= $2 AND is_lap = $3 AND date <= $4 ORDER BY value ASC;",
+                    "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE track_id = $1 AND category <= $2 AND is_lap = $3 AND date <= $4 AND region_id = ANY($5) ORDER BY value ASC;",
                     super::Scores::table_name(),
                     Players::table_name(),
                     
-                )).bind(track_id).bind(category).bind(is_lap).bind(max_date)
+                )).bind(track_id).bind(category).bind(is_lap).bind(max_date).bind(region_ids)
                 .fetch_all(executor)
                 .await;
     }

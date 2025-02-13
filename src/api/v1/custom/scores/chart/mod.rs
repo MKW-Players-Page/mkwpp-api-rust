@@ -37,8 +37,9 @@ pub async fn get(
         .as_ref()
         .and_then(|x| chrono::NaiveDate::parse_from_str(x, "%F").ok())
         .unwrap_or(chrono::Local::now().date_naive());
+    let region_id = params.reg.unwrap_or(1);
 
     let rows_request =
-        ScoresWithPlayer::filter_charts(&mut connection, track, category, is_lap, max_date).await;
+        ScoresWithPlayer::filter_charts(&mut connection, track, category, is_lap, max_date, region_id).await;
     return crate::api::v1::handle_basic_get::<ScoresWithPlayer>(rows_request, connection).await;
 }
