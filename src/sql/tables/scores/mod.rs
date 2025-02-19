@@ -1,3 +1,4 @@
+pub mod rankings;
 pub mod with_player;
 
 #[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]

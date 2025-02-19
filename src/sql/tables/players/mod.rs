@@ -1,5 +1,6 @@
 pub mod players_basic;
 
+#[serde_with::skip_serializing_none]
 #[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
 pub struct Players {
     pub id: i32,

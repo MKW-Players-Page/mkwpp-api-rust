@@ -13,5 +13,5 @@ pub fn scores() -> impl HttpServiceFactory {
 async fn default() -> impl actix_web::Responder {
     return actix_web::HttpResponse::Ok()
         .content_type("application/json")
-        .body(r#"{"paths":["/recent","/chart/:trackId?cat=:categoryId"]}"#);
+        .body(r#"{"paths":["/recent","/chart/:trackId"]}"#);
 }

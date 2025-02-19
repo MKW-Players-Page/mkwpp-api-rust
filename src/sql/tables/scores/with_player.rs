@@ -5,8 +5,9 @@ use sqlx::{FromRow, Row};
 #[serde_with::skip_serializing_none]
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
 pub struct ScoresWithPlayer {
-    pub rank: Option<i64>,
+    pub rank: Option<i32>,
     pub prwr: Option<f64>,
+    pub standard_level_code: String,
     pub id: i32,
     pub value: i32,
     pub category: crate::sql::tables::Category,
@@ -28,6 +29,7 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for ScoresWithPlayer {
             id: row.try_get("s_id")?,
             value: row.try_get("value")?,
             category: row.try_get("category")?,
+            standard_level_code: row.try_get("code")?,
             is_lap: row.try_get("is_lap")?,
             player: PlayersBasic {
                 id: row.try_get("id")?,
@@ -90,6 +92,7 @@ impl ScoresWithPlayer {
                 .await;
     }
 
+    // TODO: Hardcoded value for Newbie Code
     pub async fn filter_charts(
         executor: &mut sqlx::PgConnection,
         track_id: i32,
@@ -105,28 +108,58 @@ impl ScoresWithPlayer {
             };
 
         return sqlx::query(&format!(
-                "SELECT * FROM (SELECT DISTINCT ON(id) * FROM (SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE track_id = $1 AND category <= $2 AND is_lap = $3 AND date <= $4 AND region_id = ANY($5) ORDER BY value ASC)) ORDER BY value ASC, DATE DESC;",
+            r#"
+            SELECT *,
+                (RANK() OVER(ORDER BY value ASC))::INTEGER AS rank,
+                ((FIRST_VALUE(value) OVER(ORDER BY value ASC))::FLOAT8 / value::FLOAT8) AS prwr
+            FROM (
+                SELECT *
+                FROM (
+                    SELECT
+                        {0}.id AS s_id,
+                        {0}.value,
+                        {0}.category,
+                        {0}.is_lap,
+                        {0}.track_id,
+                        ROW_NUMBER() OVER(
+                            PARTITION BY {1}.id
+                            ORDER BY {0}.value ASC, {3}.value ASC
+                        ) AS row_n,
+                        date,
+                        video_link,
+                        ghost_link,
+                        comment,
+                        initial_rank,
+                        {1}.id,
+                        COALESCE({3}.code, 'NW') AS code,
+                        name,
+                        alias,
+                        region_id FROM {0}
+                    LEFT JOIN {1} ON
+                        {0}.player_id = {1}.id
+                    LEFT JOIN {2} ON
+                        {0}.track_id = {2}.track_id AND
+                        {0}.value <= {2}.value AND
+                        {2}.category <= {0}.category AND
+                        {2}.is_lap = {0}.is_lap
+                    LEFT JOIN {3} ON
+                        {3}.id = {2}.standard_level_id
+                    WHERE
+                        {0}.track_id = $1 AND
+                        {0}.category <= $2 AND
+                        {0}.is_lap = $3 AND
+                        {0}.date <= $4 AND
+                        {1}.region_id = ANY($5) 
+                    ORDER BY value ASC, {3}.value ASC
+                ) WHERE row_n = 1
+            ) ORDER BY value ASC, date DESC;
+            "#,
                 super::Scores::table_name(),
                 PlayersBasic::table_name(),
+                crate::sql::tables::standards::Standards::table_name(),
+                crate::sql::tables::standard_levels::StandardLevels::table_name(),
             )).bind(track_id).bind(category).bind(is_lap).bind(max_date).bind(region_ids)
             .fetch_all(executor)
             .await;
-    }
-
-    pub fn calc_rank_prwr(vec: &mut Vec<Self>) {
-        let mut current_rank = 0;
-        let mut actual_current_rank = 0;
-        let mut current_value = 0;
-        let first_value = vec.first().map(|s| s.value).unwrap_or(1) as f64;
-        for element in vec {
-            actual_current_rank += 1;
-            if element.value > current_value {
-                current_rank = actual_current_rank;
-                current_value = element.value;
-            }
-
-            element.rank = Some(current_rank);
-            element.prwr = Some(first_value / (element.value as f64))
-        }
     }
 }
