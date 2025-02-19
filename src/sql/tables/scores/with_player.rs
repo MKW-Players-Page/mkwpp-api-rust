@@ -154,12 +154,17 @@ impl ScoresWithPlayer {
                 ) WHERE row_n = 1
             ) ORDER BY value ASC, date DESC;
             "#,
-                super::Scores::table_name(),
-                PlayersBasic::table_name(),
-                crate::sql::tables::standards::Standards::table_name(),
-                crate::sql::tables::standard_levels::StandardLevels::table_name(),
-            )).bind(track_id).bind(category).bind(is_lap).bind(max_date).bind(region_ids)
-            .fetch_all(executor)
-            .await;
+            super::Scores::table_name(),
+            PlayersBasic::table_name(),
+            crate::sql::tables::standards::Standards::table_name(),
+            crate::sql::tables::standard_levels::StandardLevels::table_name(),
+        ))
+        .bind(track_id)
+        .bind(category)
+        .bind(is_lap)
+        .bind(max_date)
+        .bind(region_ids)
+        .fetch_all(executor)
+        .await;
     }
 }

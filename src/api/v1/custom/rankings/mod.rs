@@ -34,11 +34,18 @@ async fn total_time(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpR
     return get(RankingType::TotalTime(0), req, data).await;
 }
 
-async fn personal_record_world_record(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
+async fn personal_record_world_record(
+    req: HttpRequest,
+    data: web::Data<crate::AppState>,
+) -> HttpResponse {
     return get(RankingType::PersonalRecordWorldRecord(0.0), req, data).await;
 }
 
-async fn get(ranking_type: RankingType, req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
+async fn get(
+    ranking_type: RankingType,
+    req: HttpRequest,
+    data: web::Data<crate::AppState>,
+) -> HttpResponse {
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
         Err(e) => return e,
@@ -57,7 +64,7 @@ async fn get(ranking_type: RankingType, req: HttpRequest, data: web::Data<crate:
         params.region_id,
     )
     .await;
-    
+
     if let Err(e) = crate::api::v1::close_connection(connection).await {
         return e;
     }

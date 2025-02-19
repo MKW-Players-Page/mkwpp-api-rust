@@ -32,7 +32,7 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Rankings {
                 },
             },
         };
-        
+
         return Ok(Rankings {
             rank: row.try_get("rank")?,
             player: PlayersBasic {
@@ -72,14 +72,28 @@ impl Rankings {
             };
 
         match ranking_type {
-            RankingType::AverageFinish(_) => Self::get_average_finish(executor, category, is_lap, max_date, region_ids).await,
-            RankingType::TotalTime(_) => Self::get_total_time(executor, category, is_lap, max_date, region_ids).await,
-            RankingType::PersonalRecordWorldRecord(_) => Self::get_personal_record_world_record(executor, category, is_lap, max_date, region_ids).await,
-            RankingType::TallyPoints(_) => Self::get_tally_points(executor, category, is_lap, max_date, region_ids).await,
-            RankingType::AverageRankRating(_) => Self::get_average_rank_rating(executor, category, is_lap, max_date, region_ids).await,
+            RankingType::AverageFinish(_) => {
+                Self::get_average_finish(executor, category, is_lap, max_date, region_ids).await
+            }
+            RankingType::TotalTime(_) => {
+                Self::get_total_time(executor, category, is_lap, max_date, region_ids).await
+            }
+            RankingType::PersonalRecordWorldRecord(_) => {
+                Self::get_personal_record_world_record(
+                    executor, category, is_lap, max_date, region_ids,
+                )
+                .await
+            }
+            RankingType::TallyPoints(_) => {
+                Self::get_tally_points(executor, category, is_lap, max_date, region_ids).await
+            }
+            RankingType::AverageRankRating(_) => {
+                Self::get_average_rank_rating(executor, category, is_lap, max_date, region_ids)
+                    .await
+            }
         }
     }
-    
+
     async fn get_total_time(
         executor: &mut sqlx::PgConnection,
         category: crate::sql::tables::Category,
@@ -184,7 +198,7 @@ impl Rankings {
         .fetch_all(executor)
         .await;
     }
-    
+
     async fn get_personal_record_world_record(
         executor: &mut sqlx::PgConnection,
         category: crate::sql::tables::Category,
@@ -291,7 +305,7 @@ impl Rankings {
         .fetch_all(executor)
         .await;
     }
-    
+
     async fn get_tally_points(
         executor: &mut sqlx::PgConnection,
         category: crate::sql::tables::Category,
@@ -339,7 +353,7 @@ impl Rankings {
         .fetch_all(executor)
         .await;
     }
-    
+
     // TODO: Fix
     async fn get_average_finish(
         executor: &mut sqlx::PgConnection,
@@ -453,7 +467,7 @@ impl Rankings {
         .fetch_all(executor)
         .await;
     }
-    
+
     // TODO: Hardcoded Value 33 for Newbie
     async fn get_average_rank_rating(
         executor: &mut sqlx::PgConnection,
