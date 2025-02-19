@@ -2,15 +2,11 @@ use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::sql::tables::scores::with_player::ScoresWithPlayer;
 use actix_web::{dev::HttpServiceFactory, web, HttpRequest, HttpResponse};
 
-pub fn chart() -> impl HttpServiceFactory {
-    return web::scope("/chart/{track_id}").default_service(web::get().to(get));
+pub fn records() -> impl HttpServiceFactory {
+    return web::scope("/records").default_service(web::get().to(get));
 }
 
-pub async fn get(
-    req: HttpRequest,
-    path: web::Path<i32>,
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
+pub async fn get(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
         Err(e) => return e,
@@ -19,13 +15,11 @@ pub async fn get(
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
-    let track = path.into_inner();
 
-    let rows_request = ScoresWithPlayer::filter_charts(
+    let rows_request = ScoresWithPlayer::get_records(
         &mut connection,
-        track,
         params.category,
-        params.lap_mode.unwrap_or(false),
+        params.lap_mode,
         params.date,
         params.region_id,
     )
