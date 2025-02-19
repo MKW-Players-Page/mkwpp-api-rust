@@ -1,3 +1,5 @@
+use std::i32;
+
 use crate::sql::tables::Category;
 
 #[derive(serde::Deserialize, Debug)]
@@ -6,6 +8,7 @@ pub struct Params {
     lap: Option<u8>,
     dat: Option<String>,
     reg: Option<i32>,
+    lmt: Option<i32>,
 }
 
 pub struct ParamsDestructured {
@@ -13,6 +16,7 @@ pub struct ParamsDestructured {
     pub lap_mode: Option<bool>,
     pub date: chrono::NaiveDate,
     pub region_id: i32,
+    pub limit: i32,
 }
 
 impl ParamsDestructured {
@@ -29,6 +33,7 @@ impl ParamsDestructured {
                 .unwrap_or(chrono::Local::now().date_naive()),
             region_id: params.reg.unwrap_or(1),
             lap_mode: params.lap.map(|x| x == 1),
+            limit: params.lmt.unwrap_or(i32::MAX)
         };
     }
 }

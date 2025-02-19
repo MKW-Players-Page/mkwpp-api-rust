@@ -28,6 +28,7 @@ pub async fn get(
         params.lap_mode.unwrap_or(false),
         params.date,
         params.region_id,
+        params.limit
     )
     .await;
 

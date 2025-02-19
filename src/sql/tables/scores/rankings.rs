@@ -354,7 +354,6 @@ impl Rankings {
         .await;
     }
 
-    // TODO: Fix
     async fn get_average_finish(
         executor: &mut sqlx::PgConnection,
         category: crate::sql::tables::Category,
