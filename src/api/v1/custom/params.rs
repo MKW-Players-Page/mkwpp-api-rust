@@ -33,7 +33,7 @@ impl ParamsDestructured {
                 .unwrap_or(chrono::Local::now().date_naive()),
             region_id: params.reg.unwrap_or(1),
             lap_mode: params.lap.map(|x| x == 1),
-            limit: params.lmt.unwrap_or(i32::MAX)
+            limit: params.lmt.unwrap_or(i32::MAX),
         };
     }
 }

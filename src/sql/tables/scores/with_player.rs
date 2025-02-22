@@ -100,7 +100,7 @@ impl ScoresWithPlayer {
         is_lap: bool,
         max_date: chrono::NaiveDate,
         region_id: i32,
-        limit: i32
+        limit: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         let region_ids =
             match crate::sql::tables::regions::Regions::get_nephews(region_id, executor).await {
