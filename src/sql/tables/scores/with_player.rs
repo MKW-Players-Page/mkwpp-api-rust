@@ -7,7 +7,7 @@ use sqlx::{FromRow, Row};
 pub struct ScoresWithPlayer {
     pub rank: Option<i32>,
     pub prwr: Option<f64>,
-    pub standard_level_code: String,
+    pub std_lvl_code: String,
     pub id: i32,
     pub value: i32,
     pub category: crate::sql::tables::Category,
@@ -29,7 +29,7 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for ScoresWithPlayer {
             id: row.try_get("s_id")?,
             value: row.try_get("value")?,
             category: row.try_get("category")?,
-            standard_level_code: row.try_get("code")?,
+            std_lvl_code: row.try_get("code")?,
             is_lap: row.try_get("is_lap")?,
             player: PlayersBasic {
                 id: row.try_get("id")?,

@@ -7,16 +7,15 @@ const MAX_CONN_KEY: &'static str = "MAX_CONN";
 const MAX_CONN: u32 = 25;
 const DATABASE_URL_KEY: &'static str = "DATABASE_URL";
 const USERNAME_KEY: &'static str = "USERNAME";
-const USERNAME:&'static str = "postgres";
+const USERNAME: &'static str = "postgres";
 const PASSWORD_KEY: &'static str = "PASSWORD";
-const PASSWORD:&'static str = "password";
+const PASSWORD: &'static str = "password";
 const DATABASE_NAME_KEY: &'static str = "DATABASE_NAME";
-const DATABASE_NAME:&'static str = "mkwppdb";
+const DATABASE_NAME: &'static str = "mkwppdb";
 const HOST_KEY: &'static str = "HOST";
-const HOST:&'static str = "localhost";
+const HOST: &'static str = "localhost";
 const PORT_KEY: &'static str = "PORT";
-const PORT:&'static str = "5432";
-
+const PORT: &'static str = "5432";
 
 struct AppState {
     pg_pool: sqlx::Pool<sqlx::Postgres>,
@@ -42,20 +41,22 @@ async fn main() -> std::io::Result<()> {
     let _ = clear_terminal().status(); // silent error
 
     println!("Loading Config");
-    
+
     dotenvy::dotenv().expect("Couldn't read .env file");
     let pg_pool = sqlx::postgres::PgPoolOptions::new()
-        .max_connections(std::env::var(MAX_CONN_KEY).map(|v | v.parse::<u32>().unwrap_or(MAX_CONN)).unwrap_or(MAX_CONN))
+        .max_connections(
+            std::env::var(MAX_CONN_KEY)
+                .map(|v| v.parse::<u32>().unwrap_or(MAX_CONN))
+                .unwrap_or(MAX_CONN),
+        )
         .connect(
-            &std::env::var(DATABASE_URL_KEY).unwrap_or(
-                sql::config::to_url(
-                    &std::env::var(USERNAME_KEY).unwrap_or(String::from(USERNAME)),
-                    &std::env::var(PASSWORD_KEY).unwrap_or(String::from(PASSWORD)),
-                    &std::env::var(DATABASE_NAME_KEY).unwrap_or(String::from(DATABASE_NAME)),
-                    &std::env::var(HOST_KEY).unwrap_or(String::from(HOST)),
-                    &std::env::var(PORT_KEY).unwrap_or(String::from(PORT)),
-                )
-            )
+            &std::env::var(DATABASE_URL_KEY).unwrap_or(sql::config::to_url(
+                &std::env::var(USERNAME_KEY).unwrap_or(String::from(USERNAME)),
+                &std::env::var(PASSWORD_KEY).unwrap_or(String::from(PASSWORD)),
+                &std::env::var(DATABASE_NAME_KEY).unwrap_or(String::from(DATABASE_NAME)),
+                &std::env::var(HOST_KEY).unwrap_or(String::from(HOST)),
+                &std::env::var(PORT_KEY).unwrap_or(String::from(PORT)),
+            )),
         )
         .await
         .expect("Couldn't load Postgres Connection Pool");
