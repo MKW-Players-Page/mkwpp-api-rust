@@ -3,19 +3,19 @@ mod sql;
 
 use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 
-const MAX_CONN_KEY: &'static str = "MAX_CONN";
+const MAX_CONN_KEY: &str = "MAX_CONN";
 const MAX_CONN: u32 = 25;
-const DATABASE_URL_KEY: &'static str = "DATABASE_URL";
-const USERNAME_KEY: &'static str = "USERNAME";
-const USERNAME: &'static str = "postgres";
-const PASSWORD_KEY: &'static str = "PASSWORD";
-const PASSWORD: &'static str = "password";
-const DATABASE_NAME_KEY: &'static str = "DATABASE_NAME";
-const DATABASE_NAME: &'static str = "mkwppdb";
-const HOST_KEY: &'static str = "HOST";
-const HOST: &'static str = "localhost";
-const PORT_KEY: &'static str = "PORT";
-const PORT: &'static str = "5432";
+const DATABASE_URL_KEY: &str = "DATABASE_URL";
+const USERNAME_KEY: &str = "USERNAME";
+const USERNAME: &str = "postgres";
+const PASSWORD_KEY: &str = "PASSWORD";
+const PASSWORD: &str = "password";
+const DATABASE_NAME_KEY: &str = "DATABASE_NAME";
+const DATABASE_NAME: &str = "mkwppdb";
+const HOST_KEY: &str = "HOST";
+const HOST: &str = "localhost";
+const PORT_KEY: &str = "PORT";
+const PORT: &str = "5432";
 
 struct AppState {
     pg_pool: sqlx::Pool<sqlx::Postgres>,

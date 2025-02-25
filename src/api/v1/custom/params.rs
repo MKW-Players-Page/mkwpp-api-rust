@@ -1,5 +1,3 @@
-use std::i32;
-
 use crate::sql::tables::Category;
 
 #[derive(serde::Deserialize, Debug)]
