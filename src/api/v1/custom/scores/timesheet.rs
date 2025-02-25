@@ -27,7 +27,7 @@ pub async fn get(
         params.category,
         params.lap_mode,
         params.date,
-        params.region_id
+        params.region_id,
     )
     .await;
 

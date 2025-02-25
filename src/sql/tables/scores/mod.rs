@@ -1,5 +1,5 @@
-pub mod timesheet;
 pub mod rankings;
+pub mod timesheet;
 pub mod with_player;
 
 #[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]

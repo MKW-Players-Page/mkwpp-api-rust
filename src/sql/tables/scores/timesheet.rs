@@ -24,7 +24,6 @@ impl BasicTableQueries for Timesheet {
     }
 }
 
-
 impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Timesheet {
     fn from_row(row: &'a sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
         Ok(Self {
@@ -55,11 +54,14 @@ impl Timesheet {
         max_date: chrono::NaiveDate,
         region_id: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        let region_ids =
-            match crate::sql::tables::regions::Regions::get_nephews(region_id, executor).await {
-                Ok(v) => v,
-                Err(e) => return Err(e),
-            };
+        let region_ids = match crate::sql::tables::regions::Regions::get_descendants(
+            executor, region_id,
+        )
+        .await
+        {
+            Ok(v) => v,
+            Err(e) => return Err(e),
+        };
 
         return sqlx::query(&format!(
             r#"

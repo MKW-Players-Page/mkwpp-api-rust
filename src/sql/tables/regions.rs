@@ -92,16 +92,16 @@ impl Regions {
     }
 
     pub async fn get_ancestors(
-        id: i32,
         executor: &mut sqlx::PgConnection,
+        id: i32,
     ) -> Result<Vec<i32>, sqlx::Error> {
-        return sqlx::query_scalar("WITH RECURSIVE nephews AS (SELECT id, parent_id FROM regions WHERE id = $1 UNION SELECT e.id, e.parent_id FROM regions e INNER JOIN nephews s ON s.parent_id = e.id) SELECT id FROM nephews;").bind(id).fetch_all(executor).await;
+        return sqlx::query_scalar("WITH RECURSIVE ancestors AS (SELECT id, parent_id FROM regions WHERE id = $1 UNION SELECT e.id, e.parent_id FROM regions e INNER JOIN ancestors s ON s.parent_id = e.id) SELECT id FROM ancestors;").bind(id).fetch_all(executor).await;
     }
 
-    pub async fn get_nephews(
-        id: i32,
+    pub async fn get_descendants(
         executor: &mut sqlx::PgConnection,
+        id: i32,
     ) -> Result<Vec<i32>, sqlx::Error> {
-        return sqlx::query_scalar("WITH RECURSIVE nephews AS (SELECT id, parent_id FROM regions WHERE id = $1 UNION SELECT e.id, e.parent_id FROM regions e INNER JOIN nephews s ON s.id = e.parent_id) SELECT id FROM nephews;").bind(id).fetch_all(executor).await;
+        return sqlx::query_scalar("WITH RECURSIVE descendants AS (SELECT id, parent_id FROM regions WHERE id = $1 UNION SELECT e.id, e.parent_id FROM regions e INNER JOIN descendants s ON s.id = e.parent_id) SELECT id FROM descendants;").bind(id).fetch_all(executor).await;
     }
 }
