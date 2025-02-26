@@ -1,6 +1,7 @@
 mod api;
 mod sql;
 
+use actix_cors::Cors;
 use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 
 const MAX_CONN_KEY: &str = "MAX_CONN";
@@ -81,7 +82,10 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     HttpServer::new(move || {
+        let cors = Cors::permissive();
+
         return App::new()
+            .wrap(cors)
             .wrap(middleware::NormalizePath::new(
                 middleware::TrailingSlash::Trim,
             ))
