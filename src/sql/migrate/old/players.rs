@@ -25,7 +25,7 @@ impl super::OldFixtureJson for Players {
             name: self.name,
             alias: self.alias,
             bio: self.bio,
-            region_id: self.region,
+            region_id: self.region.unwrap_or(1),
             joined_date,
             last_activity: self
                 .last_activity

@@ -10,7 +10,7 @@ pub mod standards;
 pub mod submissions;
 pub mod tracks;
 
-#[derive(sqlx::Type, serde::Deserialize, Debug)]
+#[derive(sqlx::Type, serde::Deserialize, Debug, Clone, Copy)]
 #[sqlx(type_name = "category", rename_all = "lowercase")]
 pub enum Category {
     NonSc,
@@ -25,6 +25,19 @@ impl TryFrom<u8> for Category {
             0 => Ok(Self::NonSc),
             1 => Ok(Self::Sc),
             2 => Ok(Self::Unres),
+            _ => Err(()),
+        };
+    }
+}
+
+impl TryFrom<&str> for Category {
+    type Error = ();
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        return match value.to_lowercase().as_str() {
+            "nonsc" | "nosc" | "normal" | "non-sc" | "non_sc" | "no-shortcut" | "noshortcut"
+            | "n" => Ok(Self::NonSc),
+            "shortcut" | "sc" | "s" => Ok(Self::Sc),
+            "unrestricted" | "unres" | "unr" | "glitch" | "g" | "u" => Ok(Self::Unres),
             _ => Err(()),
         };
     }

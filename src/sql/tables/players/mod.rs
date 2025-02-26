@@ -1,12 +1,13 @@
 pub mod players_basic;
 
+#[serde_with::skip_serializing_none]
 #[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
 pub struct Players {
     pub id: i32,
     pub name: String,
     pub alias: Option<String>,
     pub bio: Option<String>,
-    pub region_id: Option<i32>,
+    pub region_id: i32,
     pub joined_date: chrono::NaiveDate,
     pub last_activity: chrono::NaiveDate,
 }

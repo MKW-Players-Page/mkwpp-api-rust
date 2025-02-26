@@ -16,7 +16,7 @@ async fn default() -> impl actix_web::Responder {
         .body(r#"{"paths":["/raw","/custom"]}"#);
 }
 
-async fn close_connection(
+pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
 ) -> Result<(), HttpResponse> {
     return connection.close().await.map_err(|e| {
@@ -29,7 +29,7 @@ async fn close_connection(
     });
 }
 
-fn match_rows(
+pub fn match_rows(
     rows_request: Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
 ) -> Result<Vec<sqlx::postgres::PgRow>, HttpResponse> {
     return rows_request.map_err(|e| {
@@ -42,7 +42,7 @@ fn match_rows(
     });
 }
 
-fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
+pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
     rows: Vec<sqlx::postgres::PgRow>,
 ) -> Result<Vec<Table>, HttpResponse> {
     return rows
