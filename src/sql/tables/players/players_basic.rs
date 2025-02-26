@@ -27,12 +27,12 @@ impl BasicTableQueries for PlayersBasic {
 }
 
 impl PlayersBasic {
-    async fn get_select_players(
+    pub async fn get_select_players(
         executor: &mut sqlx::PgConnection,
         player_ids: Vec<i32>,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
-            "SELECT id, name, alias, region_id from {} WHERE player_id = ANY($1);",
+            "SELECT id, name, alias, region_id from {} WHERE id = ANY($1);",
             Self::table_name(),
         ))
         .bind(player_ids)
