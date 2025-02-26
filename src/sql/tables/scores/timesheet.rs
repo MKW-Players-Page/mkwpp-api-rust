@@ -2,7 +2,7 @@ use crate::sql::tables::{BasicTableQueries, Category};
 use sqlx::{FromRow, Row};
 
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
-pub struct Timesheet {
+pub struct Times {
     pub rank: Option<i32>,
     pub prwr: Option<f64>,
     pub std_lvl_code: String,
@@ -18,13 +18,7 @@ pub struct Timesheet {
     pub initial_rank: Option<i32>,
 }
 
-impl BasicTableQueries for Timesheet {
-    fn table_name() -> &'static str {
-        return super::Scores::table_name();
-    }
-}
-
-impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Timesheet {
+impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Times {
     fn from_row(row: &'a sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
         Ok(Self {
             rank: row.try_get("rank").unwrap_or(None),
@@ -44,9 +38,9 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Timesheet {
     }
 }
 
-impl Timesheet {
+impl Times {
     // TODO: Hardcoded value for Newbie Code
-    pub async fn get_timesheet(
+    async fn get_times(
         executor: &mut sqlx::PgConnection,
         player_id: i32,
         category: crate::sql::tables::Category,
@@ -129,5 +123,52 @@ impl Timesheet {
         .bind(region_ids)
         .fetch_all(executor)
         .await;
+    }
+}
+
+#[derive(serde::Deserialize, Debug, serde::Serialize)]
+#[serde_with::skip_serializing_none]
+pub struct Timesheet {
+    pub times: Vec<Times>,
+    pub af: Option<f64>,
+    pub total_time: Option<i32>,
+    pub tally: Option<i16>,
+    pub arr: Option<f64>,
+    pub prwr: Option<f64>,
+}
+impl BasicTableQueries for Timesheet {
+    fn table_name() -> &'static str {
+        return super::Scores::table_name();
+    }
+}
+
+impl Timesheet {
+    pub async fn get_times(
+        executor: &mut sqlx::PgConnection,
+        player_id: i32,
+        category: crate::sql::tables::Category,
+        is_lap: Option<bool>,
+        max_date: chrono::NaiveDate,
+        region_id: i32,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+        return Times::get_times(executor, player_id, category, is_lap, max_date, region_id).await;
+    }
+
+    pub fn new(
+        times: Vec<Times>,
+        af: Option<f64>,
+        arr: Option<f64>,
+        total_time: Option<i32>,
+        prwr: Option<f64>,
+        tally: Option<i16>,
+    ) -> Self {
+        return Timesheet {
+            times,
+            af,
+            arr,
+            total_time,
+            prwr,
+            tally,
+        };
     }
 }

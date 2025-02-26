@@ -46,16 +46,6 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Rankings {
     }
 }
 
-#[derive(serde::Deserialize, Debug, serde::Serialize)]
-#[serde(untagged)]
-pub enum RankingType {
-    AverageFinish(f64),
-    TotalTime(i32),
-    TallyPoints(i16),
-    AverageRankRating(f64),
-    PersonalRecordWorldRecord(f64),
-}
-
 impl Rankings {
     pub async fn get(
         executor: &mut sqlx::PgConnection,
@@ -546,5 +536,47 @@ impl Rankings {
         .bind(is_lap)
         .fetch_all(executor)
         .await;
+    }
+}
+
+#[derive(serde::Deserialize, Debug, serde::Serialize, Clone)]
+#[serde(untagged)]
+pub enum RankingType {
+    AverageFinish(f64),
+    TotalTime(i32),
+    TallyPoints(i16),
+    AverageRankRating(f64),
+    PersonalRecordWorldRecord(f64),
+}
+
+impl TryInto<f64> for RankingType {
+    type Error = ();
+    fn try_into(self) -> Result<f64, Self::Error> {
+        return match self {
+            Self::AverageFinish(x) => Ok(x),
+            Self::AverageRankRating(x) => Ok(x),
+            Self::PersonalRecordWorldRecord(x) => Ok(x),
+            _ => Err(()),
+        };
+    }
+}
+
+impl TryInto<i32> for RankingType {
+    type Error = ();
+    fn try_into(self) -> Result<i32, Self::Error> {
+        return match self {
+            Self::TotalTime(x) => Ok(x),
+            _ => Err(()),
+        };
+    }
+}
+
+impl TryInto<i16> for RankingType {
+    type Error = ();
+    fn try_into(self) -> Result<i16, Self::Error> {
+        return match self {
+            Self::TallyPoints(x) => Ok(x),
+            _ => Err(()),
+        };
     }
 }
