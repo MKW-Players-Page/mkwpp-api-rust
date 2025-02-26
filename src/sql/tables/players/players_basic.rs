@@ -1,5 +1,8 @@
+use crate::sql::tables::BasicTableQueries;
+
 #[serde_with::skip_serializing_none]
 #[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct PlayersBasic {
     pub id: i32,
     pub name: String,
@@ -7,7 +10,7 @@ pub struct PlayersBasic {
     pub region_id: i32,
 }
 
-impl crate::sql::tables::BasicTableQueries for PlayersBasic {
+impl BasicTableQueries for PlayersBasic {
     fn table_name() -> &'static str {
         return super::Players::table_name();
     }
@@ -16,8 +19,23 @@ impl crate::sql::tables::BasicTableQueries for PlayersBasic {
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
             "SELECT id, name, alias, region_id from {};",
-            super::Players::table_name(),
+            Self::table_name(),
         ))
+        .fetch_all(executor)
+        .await;
+    }
+}
+
+impl PlayersBasic {
+    async fn get_select_players(
+        executor: &mut sqlx::PgConnection,
+        player_ids: Vec<i32>,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+        return sqlx::query(&format!(
+            "SELECT id, name, alias, region_id from {} WHERE player_id = ANY($1);",
+            Self::table_name(),
+        ))
+        .bind(player_ids)
         .fetch_all(executor)
         .await;
     }
