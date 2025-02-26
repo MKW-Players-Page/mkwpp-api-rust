@@ -1,4 +1,5 @@
 #[derive(serde::Deserialize, Debug, sqlx::FromRow, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Tracks {
     pub id: i32,
     pub abbr: String,
