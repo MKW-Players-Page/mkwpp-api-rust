@@ -1,5 +1,5 @@
 use crate::sql::tables::BasicTableQueries;
-use actix_web::{dev::HttpServiceFactory, web, HttpResponse};
+use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 mod cups;
 

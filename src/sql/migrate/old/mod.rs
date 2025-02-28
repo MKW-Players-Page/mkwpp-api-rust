@@ -198,8 +198,8 @@ trait OldFixtureJson: std::fmt::Debug {
         return Ok(());
     }
 
-    fn get_sort(
-    ) -> impl FnMut(&OldFixtureWrapper<Self>, &OldFixtureWrapper<Self>) -> std::cmp::Ordering
+    fn get_sort()
+    -> impl FnMut(&OldFixtureWrapper<Self>, &OldFixtureWrapper<Self>) -> std::cmp::Ordering
     where
         Self: Sized,
     {

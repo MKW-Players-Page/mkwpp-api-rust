@@ -1,6 +1,6 @@
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::sql::tables::scores::rankings::{RankingType, Rankings};
-use actix_web::{dev::HttpServiceFactory, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn rankings() -> impl HttpServiceFactory {
     return web::scope("/rankings")

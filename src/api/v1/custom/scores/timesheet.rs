@@ -1,7 +1,7 @@
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::sql::tables::scores::rankings::{RankingType, Rankings};
 use crate::sql::tables::scores::timesheet::{Times, Timesheet};
-use actix_web::{dev::HttpServiceFactory, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn timesheet() -> impl HttpServiceFactory {
     return web::scope("/timesheet/{player_id}").default_service(web::get().to(get));

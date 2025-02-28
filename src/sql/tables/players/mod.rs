@@ -4,6 +4,7 @@ pub mod players_basic;
 
 #[serde_with::skip_serializing_none]
 #[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Players {
     pub id: i32,
     pub name: String,

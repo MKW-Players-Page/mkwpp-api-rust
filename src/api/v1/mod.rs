@@ -1,4 +1,4 @@
-use actix_web::{dev::HttpServiceFactory, web, HttpResponse};
+use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 mod custom;
 mod raw;
@@ -68,7 +68,7 @@ pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
                 .body(crate::api::generate_error_json_string(
                     "Error serializing database data",
                     e.to_string().as_str(),
-                ))
+                ));
         }
     }
 }

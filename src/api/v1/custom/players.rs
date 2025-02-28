@@ -1,7 +1,7 @@
-use crate::sql::tables::players::players_basic::PlayersBasic;
-use crate::sql::tables::players::Players;
 use crate::sql::tables::BasicTableQueries;
-use actix_web::{dev::HttpServiceFactory, web, HttpResponse};
+use crate::sql::tables::players::Players;
+use crate::sql::tables::players::players_basic::PlayersBasic;
+use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn players() -> impl HttpServiceFactory {
     return web::scope("/players")
@@ -41,7 +41,7 @@ pub async fn select(data: web::Data<crate::AppState>, body: web::Bytes) -> HttpR
                 .body(crate::api::generate_error_json_string(
                     "Couldn't turn request body bytes into utf8 string",
                     &e.to_string(),
-                ))
+                ));
         }
     };
 
@@ -52,7 +52,7 @@ pub async fn select(data: web::Data<crate::AppState>, body: web::Bytes) -> HttpR
                 .body(crate::api::generate_error_json_string(
                     "Couldn't turn request body into the right json",
                     &e.to_string(),
-                ))
+                ));
         }
         Ok(v) => v,
     };
@@ -75,7 +75,7 @@ pub async fn select_basic(data: web::Data<crate::AppState>, body: web::Bytes) ->
                 .body(crate::api::generate_error_json_string(
                     "Couldn't turn request body bytes into utf8 string",
                     &e.to_string(),
-                ))
+                ));
         }
     };
 
@@ -86,7 +86,7 @@ pub async fn select_basic(data: web::Data<crate::AppState>, body: web::Bytes) ->
                 .body(crate::api::generate_error_json_string(
                     "Couldn't turn request body into the right json",
                     &e.to_string(),
-                ))
+                ));
         }
         Ok(v) => v,
     };

@@ -1,5 +1,5 @@
 use crate::sql::tables::regions::Regions;
-use actix_web::{dev::HttpServiceFactory, web, HttpResponse};
+use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn regions() -> impl HttpServiceFactory {
     return web::scope("/regions")
@@ -57,7 +57,7 @@ pub async fn handle_basic_get_i32(
                 .body(crate::api::generate_error_json_string(
                     "Couldn't get rows from database",
                     e.to_string().as_str(),
-                ))
+                ));
         }
     };
 

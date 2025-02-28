@@ -126,8 +126,8 @@ impl Times {
     }
 }
 
-#[derive(serde::Deserialize, Debug, serde::Serialize)]
 #[serde_with::skip_serializing_none]
+#[derive(serde::Deserialize, Debug, serde::Serialize)]
 pub struct Timesheet {
     pub times: Vec<Times>,
     pub af: Option<f64>,

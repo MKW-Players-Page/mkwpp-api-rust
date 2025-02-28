@@ -28,8 +28,8 @@ impl super::OldFixtureJson for Regions {
         .await;
     }
 
-    fn get_sort(
-    ) -> impl FnMut(&super::OldFixtureWrapper<Self>, &super::OldFixtureWrapper<Self>) -> std::cmp::Ordering
+    fn get_sort()
+    -> impl FnMut(&super::OldFixtureWrapper<Self>, &super::OldFixtureWrapper<Self>) -> std::cmp::Ordering
     {
         return |a, b| {
             let a_parent = a.fields.parent.unwrap_or(0);

@@ -1,5 +1,5 @@
 use crate::sql::tables::scores::with_player::ScoresWithPlayer;
-use actix_web::{dev::HttpServiceFactory, web, HttpResponse};
+use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn recent() -> impl HttpServiceFactory {
     return web::scope("/recent")

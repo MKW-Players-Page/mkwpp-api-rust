@@ -62,6 +62,7 @@ impl serde::Serialize for RegionType {
 }
 
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Regions {
     pub id: i32,
     pub code: String,

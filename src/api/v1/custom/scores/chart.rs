@@ -1,6 +1,6 @@
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::sql::tables::scores::with_player::ScoresWithPlayer;
-use actix_web::{dev::HttpServiceFactory, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn chart() -> impl HttpServiceFactory {
     return web::scope("/chart/{track_id}").default_service(web::get().to(get));

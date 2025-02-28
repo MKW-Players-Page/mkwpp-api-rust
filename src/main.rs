@@ -2,7 +2,7 @@ mod api;
 mod sql;
 
 use actix_cors::Cors;
-use actix_web::{middleware, web, App, HttpResponse, HttpServer};
+use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
 const MAX_CONN_KEY: &str = "MAX_CONN";
 const MAX_CONN: u32 = 25;

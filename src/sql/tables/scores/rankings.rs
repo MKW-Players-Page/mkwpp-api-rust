@@ -1,5 +1,5 @@
-use crate::sql::tables::players::players_basic::PlayersBasic;
 use crate::sql::tables::BasicTableQueries;
+use crate::sql::tables::players::players_basic::PlayersBasic;
 use sqlx::{FromRow, Row};
 
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
