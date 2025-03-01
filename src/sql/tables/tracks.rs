@@ -8,9 +8,7 @@ pub struct Tracks {
 }
 
 impl super::BasicTableQueries for Tracks {
-    fn table_name() -> &'static str {
-        return "tracks";
-    }
+    const TABLE_NAME: &'static str = "tracks";
 }
 
 impl Tracks {

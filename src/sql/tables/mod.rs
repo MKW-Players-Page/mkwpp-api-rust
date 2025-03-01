@@ -95,12 +95,12 @@ impl TryFrom<u8> for SubmissionStatus {
 }
 
 pub trait BasicTableQueries {
-    fn table_name() -> &'static str;
+    const TABLE_NAME: &'static str;
 
     async fn select_star_query(
         executor: &mut sqlx::PgConnection,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        return sqlx::query(&format!("SELECT * from {};", Self::table_name()))
+        return sqlx::query(&format!("SELECT * from {};", Self::TABLE_NAME))
             .fetch_all(executor)
             .await;
     }

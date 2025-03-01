@@ -7,9 +7,7 @@ pub struct Champs {
 }
 
 impl super::BasicTableQueries for Champs {
-    fn table_name() -> &'static str {
-        return "site_champs";
-    }
+    const TABLE_NAME: &'static str = "site_champs";
 }
 
 impl Champs {

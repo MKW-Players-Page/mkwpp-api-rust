@@ -106,10 +106,10 @@ impl Times {
                 WHERE id = $1
                 ORDER BY track_id;
                 "#,
-            super::Scores::table_name(),
-            crate::sql::tables::players::Players::table_name(),
-            crate::sql::tables::standards::Standards::table_name(),
-            crate::sql::tables::standard_levels::StandardLevels::table_name(),
+            super::Scores::TABLE_NAME,
+            crate::sql::tables::players::Players::TABLE_NAME,
+            crate::sql::tables::standards::Standards::TABLE_NAME,
+            crate::sql::tables::standard_levels::StandardLevels::TABLE_NAME,
             if is_lap.is_some() {
                 "AND is_lap = $3"
             } else {
@@ -136,10 +136,9 @@ pub struct Timesheet {
     pub arr: Option<f64>,
     pub prwr: Option<f64>,
 }
+
 impl BasicTableQueries for Timesheet {
-    fn table_name() -> &'static str {
-        return super::Scores::table_name();
-    }
+    const TABLE_NAME: &'static str = super::Scores::TABLE_NAME;
 }
 
 impl Timesheet {

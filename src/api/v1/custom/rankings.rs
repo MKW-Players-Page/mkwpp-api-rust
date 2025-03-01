@@ -2,82 +2,50 @@ use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::sql::tables::scores::rankings::{RankingType, Rankings};
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
+macro_rules! ranking {
+    ($fn_name:ident, $enum_variant:ident, $default_val:expr) => {
+        async fn $fn_name(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
+            return get(RankingType::$enum_variant($default_val), req, data).await;
+        }
+    };
+}
+
 pub fn rankings() -> impl HttpServiceFactory {
     return web::scope("/rankings")
         .route("/totaltime", web::get().to(total_time))
-        .route("/prwr", web::get().to(personal_record_world_record))
+        .route("/prwr", web::get().to(prwr))
         .route("/tally", web::get().to(tally))
         .route("/af", web::get().to(af))
         .route("/arr", web::get().to(arr))
         .default_service(web::get().to(default));
 }
+default_paths_fn!("/af", "/arr", "/tally", "/prwr", "/totaltime");
 
-async fn default() -> impl actix_web::Responder {
-    return actix_web::HttpResponse::Ok()
-        .content_type("application/json")
-        .body(r#"{"paths":["/af","/arr","/tally","/prwr","/totaltime"]}"#);
-}
-
-async fn af(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
-    return get(RankingType::AverageFinish(0.0), req, data).await;
-}
-
-async fn arr(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
-    return get(RankingType::AverageRankRating(0.0), req, data).await;
-}
-
-async fn tally(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
-    return get(RankingType::TallyPoints(0), req, data).await;
-}
-
-async fn total_time(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
-    return get(RankingType::TotalTime(0), req, data).await;
-}
-
-async fn personal_record_world_record(
-    req: HttpRequest,
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
-    return get(RankingType::PersonalRecordWorldRecord(0.0), req, data).await;
-}
+ranking!(af, AverageFinish, 0.0);
+ranking!(arr, AverageRankRating, 0.0);
+ranking!(prwr, PersonalRecordWorldRecord, 0.0);
+ranking!(tally, TallyPoints, 0);
+ranking!(total_time, TotalTime, 0);
 
 async fn get(
     ranking_type: RankingType,
     req: HttpRequest,
     data: web::Data<crate::AppState>,
 ) -> HttpResponse {
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return e,
-    };
-
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
 
-    let rows_request = Rankings::get(
-        &mut connection,
-        ranking_type,
-        params.category,
-        params.lap_mode,
-        params.date,
-        params.region_id,
-    )
+    return crate::api::v1::basic_get::<Rankings>(data, async |x| {
+        Rankings::get(
+            x,
+            ranking_type,
+            params.category,
+            params.lap_mode,
+            params.date,
+            params.region_id,
+        )
+        .await
+    })
     .await;
-
-    if let Err(e) = crate::api::v1::close_connection(connection).await {
-        return e;
-    }
-
-    let rows = match crate::api::v1::match_rows(rows_request) {
-        Ok(rows) => rows,
-        Err(e) => return e,
-    };
-
-    let data = match crate::api::v1::decode_rows_to_table::<Rankings>(rows) {
-        Ok(data) => data,
-        Err(e) => return e,
-    };
-
-    return crate::api::v1::send_serialized_data(data);
 }

@@ -9,9 +9,7 @@ pub struct Standards {
 }
 
 impl super::BasicTableQueries for Standards {
-    fn table_name() -> &'static str {
-        return "standards";
-    }
+    const TABLE_NAME: &'static str = "standards";
 }
 
 impl Standards {

@@ -19,9 +19,7 @@ pub struct Scores {
 }
 
 impl super::BasicTableQueries for Scores {
-    fn table_name() -> &'static str {
-        return "scores";
-    }
+    const TABLE_NAME: &'static str = "scores";
 }
 
 impl Scores {

@@ -22,9 +22,7 @@ pub struct Submissions {
 }
 
 impl super::BasicTableQueries for Submissions {
-    fn table_name() -> &'static str {
-        return "submissions";
-    }
+    const TABLE_NAME: &'static str = "submissions";
 }
 
 impl Submissions {

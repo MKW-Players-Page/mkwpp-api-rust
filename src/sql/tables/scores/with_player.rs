@@ -48,17 +48,15 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for ScoresWithPlayer {
 }
 
 impl BasicTableQueries for ScoresWithPlayer {
-    fn table_name() -> &'static str {
-        return super::Scores::table_name();
-    }
+    const TABLE_NAME: &'static str = super::Scores::TABLE_NAME;
 
     async fn select_star_query(
         executor: &mut sqlx::PgConnection,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
             "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id;",
-            super::Scores::table_name(),
-            PlayersBasic::table_name(),
+            super::Scores::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
         ))
         .fetch_all(executor)
         .await;
@@ -72,8 +70,8 @@ impl ScoresWithPlayer {
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
                 "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL ORDER BY date DESC LIMIT $1;",
-                super::Scores::table_name(),
-                PlayersBasic::table_name(),
+                super::Scores::TABLE_NAME,
+                PlayersBasic::TABLE_NAME,
             )).bind(limit)
             .fetch_all(executor)
             .await;
@@ -85,8 +83,8 @@ impl ScoresWithPlayer {
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
         return sqlx::query(&format!(
                     "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL AND initial_rank = 1 ORDER BY date DESC LIMIT $1;",
-                    super::Scores::table_name(),
-                    PlayersBasic::table_name(),
+                    super::Scores::TABLE_NAME,
+                    PlayersBasic::TABLE_NAME,
                 )).bind(limit)
                 .fetch_all(executor)
                 .await;
@@ -161,10 +159,10 @@ impl ScoresWithPlayer {
                     ) ORDER BY value ASC, date DESC
                 ) WHERE rank <= $6;
                 "#,
-            super::Scores::table_name(),
-            PlayersBasic::table_name(),
-            crate::sql::tables::standards::Standards::table_name(),
-            crate::sql::tables::standard_levels::StandardLevels::table_name(),
+            super::Scores::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
+            crate::sql::tables::standards::Standards::TABLE_NAME,
+            crate::sql::tables::standard_levels::StandardLevels::TABLE_NAME,
         ))
         .bind(track_id)
         .bind(category)
@@ -238,10 +236,10 @@ impl ScoresWithPlayer {
                     ) WHERE row_n = 1
                 ) ORDER BY track_id ASC, is_lap ASC;
                 "#,
-            super::Scores::table_name(),
-            PlayersBasic::table_name(),
-            crate::sql::tables::standards::Standards::table_name(),
-            crate::sql::tables::standard_levels::StandardLevels::table_name(),
+            super::Scores::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
+            crate::sql::tables::standards::Standards::TABLE_NAME,
+            crate::sql::tables::standard_levels::StandardLevels::TABLE_NAME,
             if is_lap.is_some() {
                 "AND is_lap = $4"
             } else {

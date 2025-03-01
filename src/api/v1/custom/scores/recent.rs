@@ -1,6 +1,17 @@
 use crate::sql::tables::scores::with_player::ScoresWithPlayer;
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
+macro_rules! get_fn {
+    ($fn_name:ident, $handle:ident) => {
+        async fn $fn_name(path: web::Path<i32>, data: web::Data<crate::AppState>) -> HttpResponse {
+            return crate::api::v1::basic_get::<ScoresWithPlayer>(data, async |x| {
+                ScoresWithPlayer::$handle(x, path.into_inner()).await
+            })
+            .await;
+        }
+    };
+}
+
 pub fn recent() -> impl HttpServiceFactory {
     return web::scope("/recent")
         .guard(actix_web::guard::Get())
@@ -11,33 +22,7 @@ pub fn recent() -> impl HttpServiceFactory {
         )
         .default_service(web::get().to(default));
 }
+default_paths_fn!("/:limit/records", "/:limit/all");
 
-async fn default() -> impl actix_web::Responder {
-    return actix_web::HttpResponse::Ok()
-        .content_type("application/json")
-        .body(r#"{"paths":["/:limit/records","/:limit/all"]}"#);
-}
-
-pub async fn get_all(path: web::Path<i32>, data: web::Data<crate::AppState>) -> HttpResponse {
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return e,
-    };
-
-    let rows_request = ScoresWithPlayer::order_by_date(&mut connection, path.into_inner()).await;
-    return crate::api::v1::handle_basic_get::<ScoresWithPlayer>(rows_request, connection).await;
-}
-
-pub async fn get_all_records(
-    path: web::Path<i32>,
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return e,
-    };
-
-    let rows_request =
-        ScoresWithPlayer::order_records_by_date(&mut connection, path.into_inner()).await;
-    return crate::api::v1::handle_basic_get::<ScoresWithPlayer>(rows_request, connection).await;
-}
+get_fn!(get_all, order_by_date);
+get_fn!(get_all_records, order_records_by_date);

@@ -72,9 +72,7 @@ pub struct Regions {
 }
 
 impl super::BasicTableQueries for Regions {
-    fn table_name() -> &'static str {
-        return "regions";
-    }
+    const TABLE_NAME: &'static str = "regions";
 }
 
 impl Regions {

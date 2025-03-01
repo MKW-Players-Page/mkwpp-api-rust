@@ -10,9 +10,7 @@ pub struct Rankings {
 }
 
 impl BasicTableQueries for Rankings {
-    fn table_name() -> &'static str {
-        return super::Scores::table_name();
-    }
+    const TABLE_NAME: &'static str = super::Scores::TABLE_NAME;
 }
 
 impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Rankings {
@@ -175,9 +173,9 @@ impl Rankings {
                 GROUP BY id
             ) ORDER BY total_time ASC;
             "#,
-            Self::table_name(),
-            PlayersBasic::table_name(),
-            crate::sql::tables::tracks::Tracks::table_name(),
+            Self::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
+            crate::sql::tables::tracks::Tracks::TABLE_NAME,
             if is_lap.is_some() {
                 "AND is_lap = $4"
             } else {
@@ -282,9 +280,9 @@ impl Rankings {
                 GROUP BY id
             ) ORDER BY total_time ASC;
             "#,
-            Self::table_name(),
-            PlayersBasic::table_name(),
-            crate::sql::tables::tracks::Tracks::table_name(),
+            Self::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
+            crate::sql::tables::tracks::Tracks::TABLE_NAME,
             if is_lap.is_some() {
                 "AND is_lap = $4"
             } else {
@@ -331,8 +329,8 @@ impl Rankings {
                 ORDER BY tally_points DESC
             );
             "#,
-            Self::table_name(),
-            PlayersBasic::table_name(),
+            Self::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
             if is_lap.is_some() {
                 "AND is_lap = $4"
             } else {
@@ -442,9 +440,9 @@ impl Rankings {
                 GROUP BY id
             ) ORDER BY average_finish ASC;
             "#,
-            Self::table_name(),
-            PlayersBasic::table_name(),
-            crate::sql::tables::tracks::Tracks::table_name(),
+            Self::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
+            crate::sql::tables::tracks::Tracks::TABLE_NAME,
             if is_lap.is_some() {
                 "AND is_lap = $4"
             } else {
@@ -519,16 +517,16 @@ impl Rankings {
                 ORDER BY average_rank_rating ASC
             );
             "#,
-            Self::table_name(),
-            PlayersBasic::table_name(),
+            Self::TABLE_NAME,
+            PlayersBasic::TABLE_NAME,
             if is_lap.is_some() {
                 "AND {0}.is_lap = $4"
             } else {
                 ""
             }, // TODO: this is shit
             if is_lap.is_some() { 32 } else { 64 },
-            crate::sql::tables::standards::Standards::table_name(),
-            crate::sql::tables::standard_levels::StandardLevels::table_name(),
+            crate::sql::tables::standards::Standards::TABLE_NAME,
+            crate::sql::tables::standard_levels::StandardLevels::TABLE_NAME,
         ))
         .bind(category)
         .bind(max_date)

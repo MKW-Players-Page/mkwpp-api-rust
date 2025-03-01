@@ -19,9 +19,7 @@ pub struct EditSubmissions {
 }
 
 impl super::BasicTableQueries for EditSubmissions {
-    fn table_name() -> &'static str {
-        return "edit_submissions";
-    }
+    const TABLE_NAME: &'static str = "edit_submissions";
 }
 
 impl EditSubmissions {

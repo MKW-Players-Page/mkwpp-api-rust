@@ -1,4 +1,22 @@
+use crate::sql::tables::BasicTableQueries;
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
+
+macro_rules! default_paths_fn {
+    ($($y:literal),+) => {
+            async fn default() -> impl actix_web::Responder {
+                return actix_web::HttpResponse::Ok()
+                    .content_type("application/json")
+                    .body(
+                        const_format::str_replace!(
+                            const_format::concatc!(
+                                r#"{"paths":["#, $('"',$y,'"',','),+ ,"]}"),
+                            ",]",
+                            "]"
+                        )
+                    );
+            }
+        };
+}
 
 mod custom;
 mod raw;
@@ -9,12 +27,7 @@ pub fn v1() -> impl HttpServiceFactory {
         .service(custom::custom())
         .default_service(web::get().to(default));
 }
-
-async fn default() -> impl actix_web::Responder {
-    return actix_web::HttpResponse::Ok()
-        .content_type("application/json")
-        .body(r#"{"paths":["/raw","/custom"]}"#);
-}
+default_paths_fn!("/raw", "/custom");
 
 pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
@@ -94,4 +107,29 @@ pub async fn handle_basic_get<
     };
 
     return send_serialized_data(data);
+}
+
+pub async fn basic_get<
+    Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize,
+>(
+    data: web::Data<crate::AppState>,
+    rows_function: impl AsyncFnOnce(
+        &mut sqlx::PgConnection,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
+) -> HttpResponse {
+    let mut connection = match data.acquire_pg_connection().await {
+        Ok(conn) => conn,
+        Err(e) => return e,
+    };
+
+    let rows_request = rows_function(&mut connection).await;
+    return handle_basic_get::<Table>(rows_request, connection).await;
+}
+
+pub async fn get_star_query<
+    Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + BasicTableQueries,
+>(
+    data: web::Data<crate::AppState>,
+) -> HttpResponse {
+    return basic_get::<Table>(data, Table::select_star_query).await;
 }

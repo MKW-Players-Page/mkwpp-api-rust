@@ -13,9 +13,9 @@ pub fn scores() -> impl HttpServiceFactory {
         .service(timesheet::timesheet())
         .default_service(web::get().to(default));
 }
-
-async fn default() -> impl actix_web::Responder {
-    return actix_web::HttpResponse::Ok()
-        .content_type("application/json")
-        .body(r#"{"paths":["/recent","/chart/:trackId","/timesheet/:playerId","/records"]}"#);
-}
+default_paths_fn!(
+    "/recent",
+    "/chart/:trackId",
+    "/timesheet/:playerId",
+    "/records"
+);

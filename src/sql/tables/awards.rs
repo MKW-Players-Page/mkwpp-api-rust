@@ -30,9 +30,7 @@ pub struct Awards {
 }
 
 impl super::BasicTableQueries for Awards {
-    fn table_name() -> &'static str {
-        return "player_awards";
-    }
+    const TABLE_NAME: &'static str = "player_awards";
 }
 
 impl Awards {

@@ -7,9 +7,7 @@ pub struct StandardLevels {
 }
 
 impl super::BasicTableQueries for StandardLevels {
-    fn table_name() -> &'static str {
-        return "standard_levels";
-    }
+    const TABLE_NAME: &'static str = "standard_levels";
 }
 
 impl StandardLevels {

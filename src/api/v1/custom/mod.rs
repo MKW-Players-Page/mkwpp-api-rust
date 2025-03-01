@@ -14,9 +14,4 @@ pub fn custom() -> impl HttpServiceFactory {
         .service(players::players())
         .default_service(web::get().to(default));
 }
-
-async fn default() -> impl actix_web::Responder {
-    return actix_web::HttpResponse::Ok()
-        .content_type("application/json")
-        .body(r#"{"paths":["/scores","/rankings","/regions","/players"]}"#);
-}
+default_paths_fn!("/scores", "/rankings", "/regions", "/players");
