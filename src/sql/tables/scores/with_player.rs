@@ -4,6 +4,7 @@ use sqlx::{FromRow, Row};
 
 #[serde_with::skip_serializing_none]
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ScoresWithPlayer {
     pub rank: Option<i32>,
     pub prwr: Option<f64>,

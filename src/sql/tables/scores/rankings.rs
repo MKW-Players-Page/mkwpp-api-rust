@@ -3,6 +3,7 @@ use crate::sql::tables::players::players_basic::PlayersBasic;
 use sqlx::{FromRow, Row};
 
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Rankings {
     pub rank: i32,
     pub value: RankingType,

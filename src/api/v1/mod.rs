@@ -126,6 +126,40 @@ pub async fn basic_get<
     return handle_basic_get::<Table>(rows_request, connection).await;
 }
 
+pub async fn basic_get_with_data_mod<
+    Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>,
+    T: serde::Serialize,
+>(
+    data: web::Data<crate::AppState>,
+    rows_function: impl AsyncFnOnce(
+        &mut sqlx::PgConnection,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
+    modifier_function: impl AsyncFnOnce(Vec<Table>) -> T,
+) -> HttpResponse {
+    let mut connection = match data.acquire_pg_connection().await {
+        Ok(conn) => conn,
+        Err(e) => return e,
+    };
+
+    let rows_request = rows_function(&mut connection).await;
+
+    if let Err(e) = close_connection(connection).await {
+        return e;
+    }
+
+    let rows = match match_rows(rows_request) {
+        Ok(rows) => rows,
+        Err(e) => return e,
+    };
+
+    let data = match decode_rows_to_table::<Table>(rows) {
+        Ok(data) => modifier_function(data).await,
+        Err(e) => return e,
+    };
+
+    return send_serialized_data(data);
+}
+
 pub async fn get_star_query<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + BasicTableQueries,
 >(

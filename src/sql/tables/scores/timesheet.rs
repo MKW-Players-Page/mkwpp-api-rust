@@ -2,6 +2,7 @@ use crate::sql::tables::{BasicTableQueries, Category};
 use sqlx::{FromRow, Row};
 
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Times {
     pub rank: Option<i32>,
     pub prwr: Option<f64>,

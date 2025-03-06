@@ -3,6 +3,7 @@ pub mod timesheet;
 pub mod with_player;
 
 #[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Scores {
     pub id: i32,
     pub value: i32,
