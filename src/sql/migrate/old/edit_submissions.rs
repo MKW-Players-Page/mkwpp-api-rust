@@ -17,7 +17,6 @@ pub struct EditSubmissions {
     score: Option<i32>,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for EditSubmissions {
     async fn add_to_db(
         self,

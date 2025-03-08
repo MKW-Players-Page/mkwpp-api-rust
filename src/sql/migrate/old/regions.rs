@@ -7,7 +7,6 @@ pub struct Regions {
     region_type: String,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for Regions {
     async fn add_to_db(
         self,

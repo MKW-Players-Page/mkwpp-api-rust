@@ -8,7 +8,6 @@ pub struct Players {
     last_activity: Option<String>,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for Players {
     async fn add_to_db(
         self,

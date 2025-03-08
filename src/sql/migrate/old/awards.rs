@@ -7,7 +7,6 @@ pub struct Awards {
     award_type: String,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for Awards {
     async fn add_to_db(
         self,

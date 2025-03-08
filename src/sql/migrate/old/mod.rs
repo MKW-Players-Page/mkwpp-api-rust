@@ -156,7 +156,6 @@ pub async fn load_data(pool: &sqlx::Pool<sqlx::Postgres>) {
     }
 }
 
-#[async_trait::async_trait]
 trait OldFixtureJson: std::fmt::Debug {
     // buffer is because of lifetime. You can't declare the string within the function sadly enough.
     async fn read_file<'d>(

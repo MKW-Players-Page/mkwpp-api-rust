@@ -13,7 +13,6 @@ pub struct Scores {
     initial_rank: Option<i32>,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for Scores {
     async fn add_to_db(
         self,

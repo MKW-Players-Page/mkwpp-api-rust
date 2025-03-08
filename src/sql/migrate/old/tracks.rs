@@ -5,7 +5,6 @@ pub struct Tracks {
     categories: String,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for Tracks {
     async fn add_to_db(
         self,

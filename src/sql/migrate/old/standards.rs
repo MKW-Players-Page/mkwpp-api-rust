@@ -7,7 +7,6 @@ pub struct Standards {
     value: Option<i32>,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for Standards {
     async fn add_to_db(
         self,

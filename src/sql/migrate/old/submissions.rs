@@ -20,10 +20,9 @@ pub struct Submissions {
     score: Option<i32>,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for Submissions {
     async fn add_to_db(
-        mut self,
+        self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {

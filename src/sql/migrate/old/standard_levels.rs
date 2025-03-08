@@ -5,7 +5,6 @@ pub struct StandardLevels {
     is_legacy: bool,
 }
 
-#[async_trait::async_trait]
 impl super::OldFixtureJson for StandardLevels {
     async fn add_to_db(
         self,
