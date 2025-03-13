@@ -1,4 +1,5 @@
 #[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct StandardLevels {
     pub id: i32,
     pub code: String,
