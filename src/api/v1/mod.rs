@@ -27,9 +27,21 @@ pub fn v1() -> impl HttpServiceFactory {
         .service(raw::raw())
         .service(custom::custom())
         .service(auth::auth())
-        .default_service(web::get().to(default));
+        .service(
+            web::scope("/doc")
+                .route("/style.css", web::get().to(doc_css))
+                .default_service(web::get().to(doc)),
+        )
+        .service(web::redirect("", "/v1/doc"));
 }
-default_paths_fn!("/raw", "/custom", "/auth");
+
+async fn doc() -> HttpResponse {
+    return crate::api::read_file("frontend/doc/v1/index.html", "text/html", HttpResponse::Ok);
+}
+
+async fn doc_css() -> HttpResponse {
+    return crate::api::read_file("frontend/doc/v1/style.css", "text/css", HttpResponse::Ok);
+}
 
 pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,

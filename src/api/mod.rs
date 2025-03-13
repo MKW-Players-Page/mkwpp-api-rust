@@ -2,6 +2,16 @@ use actix_web::{HttpResponse, HttpResponseBuilder};
 
 pub mod v1;
 
+pub fn read_file(
+    file_path: &str,
+    mime_type: &str,
+    callback: impl FnOnce() -> HttpResponseBuilder,
+) -> HttpResponse {
+    return callback()
+        .content_type(mime_type)
+        .body(std::fs::read_to_string(file_path).expect("Missing file"));
+}
+
 pub fn generate_error_json_string(personal_err: &str, lib_err: &str) -> String {
     return format!(
         "{{\"error\":\"{}\",\"server_error\":\"{}\"}}",
