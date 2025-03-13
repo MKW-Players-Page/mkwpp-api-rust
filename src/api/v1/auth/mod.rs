@@ -17,19 +17,10 @@ struct RegisterBody {
     email: String,
 }
 
-async fn register(body: web::Bytes, data: web::Data<crate::AppState>) -> HttpResponse {
-    let transaction_future = data.pg_pool.begin();
+async fn register(body: web::Json<RegisterBody>, data: web::Data<crate::AppState>) -> HttpResponse {
+    let body = body.0;
 
-    let body = match serde_json::from_slice::<RegisterBody>(&body) {
-        Ok(v) => v,
-        Err(error) => {
-            return crate::api::generate_error_response(
-                "Couldn't turn the request body into valid JSON data",
-                error.to_string().as_str(),
-                HttpResponse::BadRequest,
-            );
-        }
-    };
+    let transaction_future = data.pg_pool.begin();
 
     let username =
         match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
@@ -110,7 +101,7 @@ struct LoginBody {
 
 async fn login(
     req: HttpRequest,
-    body: web::Bytes,
+    body: web::Json<LoginBody>,
     data: web::Data<crate::AppState>,
 ) -> HttpResponse {
     let transaction_future = data.pg_pool.begin();
@@ -118,16 +109,7 @@ async fn login(
     // default pause
     std::thread::sleep(std::time::Duration::from_secs(5));
 
-    let body = match serde_json::from_slice::<LoginBody>(&body) {
-        Ok(v) => v,
-        Err(error) => {
-            return crate::api::generate_error_response(
-                "Couldn't turn the request body into valid JSON data",
-                error.to_string().as_str(),
-                HttpResponse::BadRequest,
-            );
-        }
-    };
+    let body = body.0;
 
     let ip = req.peer_addr().unwrap().ip();
     let username =

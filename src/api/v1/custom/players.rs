@@ -20,19 +20,9 @@ pub async fn get_with_decode<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + FilterByPlayerId,
 >(
     data: web::Data<crate::AppState>,
-    body: web::Bytes,
+    body: web::Json<Vec<i32>>,
 ) -> HttpResponse {
-    let player_ids = match serde_json::from_slice::<Vec<i32>>(&body) {
-        Err(e) => {
-            return crate::api::generate_error_response(
-                "Couldn't turn request body into valid json data",
-                &e.to_string(),
-                HttpResponse::BadRequest,
-            );
-        }
-        Ok(v) => v,
-    };
-
+    let player_ids = body.0;
     return crate::api::v1::basic_get::<Table>(data, async |x| {
         Table::get_select_players(x, player_ids).await
     })
