@@ -7,10 +7,10 @@ pub fn players() -> impl HttpServiceFactory {
             "/list",
             web::get().to(crate::api::v1::get_star_query::<PlayersBasic>),
         )
-        .route("/select", web::get().to(get_with_decode::<Players>))
+        .route("/select", web::post().to(get_with_decode::<Players>))
         .route(
             "/select_basic",
-            web::get().to(get_with_decode::<PlayersBasic>),
+            web::post().to(get_with_decode::<PlayersBasic>),
         )
         .default_service(web::get().to(default));
 }

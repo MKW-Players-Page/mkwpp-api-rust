@@ -4,8 +4,8 @@ use crate::auth::validated_strings::ValidatedString;
 
 pub fn auth() -> impl HttpServiceFactory {
     return web::scope("/auth")
-        .route("/register", web::post().to(register))
-        .route("/login", web::post().to(login))
+        .route("/register", web::put().to(register))
+        .route("/login", web::put().to(login))
         .default_service(web::get().to(default));
 }
 default_paths_fn!("/register", "/login");
