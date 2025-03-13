@@ -2,4 +2,5 @@
 
 cargo build --release
 mv target/release/mkwpp-api-rust ./mkwpp-api-rust
-rm -rf target # to not take space in the server
+cargo clean # to not take space in the server
+./mkwpp-api-rust

@@ -8,7 +8,7 @@ createdb database_name
 ```
 You can then log out of the postgres user.
 
-Build the executable with build.sh.
+Build the executable with run-scripts/build.sh.
 
 Create a `.env` file. (The possible parameters for it are below).
 
