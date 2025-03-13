@@ -1,4 +1,5 @@
 mod api;
+mod auth;
 mod sql;
 
 use actix_cors::Cors;
@@ -31,12 +32,11 @@ impl AppState {
         &self,
     ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, HttpResponse> {
         return self.pg_pool.acquire().await.map_err(|e| {
-            return HttpResponse::InternalServerError()
-                .content_type("application/json")
-                .body(api::generate_error_json_string(
-                    "Couldn't get connection from data pool",
-                    e.to_string().as_str(),
-                ));
+            return crate::api::generate_error_response(
+                "Couldn't get connection from data pool",
+                &e.to_string(),
+                HttpResponse::InternalServerError,
+            );
         });
     }
 }
@@ -112,8 +112,10 @@ async fn main() -> std::io::Result<()> {
             .service(api::v1::v1());
     })
     .bind(("127.0.0.1", 8080))?
-    .client_request_timeout(std::time::Duration::from_micros(client_request_timeout))
-    .keep_alive(std::time::Duration::from_micros(keep_alive))
+    .client_request_timeout(std::time::Duration::from_micros(
+        client_request_timeout * 1000,
+    ))
+    .keep_alive(std::time::Duration::from_micros(keep_alive * 1000))
     .run()
     .await
 }

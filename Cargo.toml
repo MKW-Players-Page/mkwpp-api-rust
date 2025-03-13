@@ -17,6 +17,11 @@ serde_with = "3.12.0"
 dotenvy = "0.15.7"
 actix-cors = "0.7.0"
 const_format = { version = "0.2.34", features = ["fmt"] }
+regex = "1.11.1"
+argon2 = "0.5.3"
+anyhow = "1.0.97"
+base64 = "0.22.1"
+rand = "0.9.0"
 
 [lints.rust]
 unused_imports = "deny"

@@ -18,6 +18,7 @@ macro_rules! default_paths_fn {
         };
 }
 
+mod auth;
 mod custom;
 mod raw;
 
@@ -25,20 +26,20 @@ pub fn v1() -> impl HttpServiceFactory {
     return web::scope("/v1")
         .service(raw::raw())
         .service(custom::custom())
+        .service(auth::auth())
         .default_service(web::get().to(default));
 }
-default_paths_fn!("/raw", "/custom");
+default_paths_fn!("/raw", "/custom", "/auth");
 
 pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
 ) -> Result<(), HttpResponse> {
     return connection.close().await.map_err(|e| {
-        HttpResponse::InternalServerError()
-            .content_type("application/json")
-            .body(crate::api::generate_error_json_string(
-                "Error closing Database connection",
-                e.to_string().as_str(),
-            ))
+        return crate::api::generate_error_response(
+            "Error closing Database connection",
+            &e.to_string(),
+            HttpResponse::InternalServerError,
+        );
     });
 }
 
@@ -46,12 +47,11 @@ pub fn match_rows(
     rows_request: Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
 ) -> Result<Vec<sqlx::postgres::PgRow>, HttpResponse> {
     return rows_request.map_err(|e| {
-        HttpResponse::InternalServerError()
-            .content_type("application/json")
-            .body(crate::api::generate_error_json_string(
-                "Couldn't get rows from database",
-                e.to_string().as_str(),
-            ))
+        return crate::api::generate_error_response(
+            "Couldn't get rows from database",
+            &e.to_string(),
+            HttpResponse::InternalServerError,
+        );
     });
 }
 
@@ -63,12 +63,11 @@ pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgR
         .map(|r| return Table::from_row(&r))
         .collect::<Result<Vec<Table>, sqlx::Error>>()
         .map_err(|e| {
-            HttpResponse::InternalServerError()
-                .content_type("application/json")
-                .body(crate::api::generate_error_json_string(
-                    "Error decoding rows from database",
-                    e.to_string().as_str(),
-                ))
+            return crate::api::generate_error_response(
+                "Error decoding rows from database",
+                &e.to_string(),
+                HttpResponse::InternalServerError,
+            );
         });
 }
 
@@ -76,12 +75,11 @@ pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
     match serde_json::to_string(&data) {
         Ok(v) => return HttpResponse::Ok().content_type("application/json").body(v),
         Err(e) => {
-            return HttpResponse::InternalServerError()
-                .content_type("application/json")
-                .body(crate::api::generate_error_json_string(
-                    "Error serializing database data",
-                    e.to_string().as_str(),
-                ));
+            return crate::api::generate_error_response(
+                "Error serializing database data",
+                &e.to_string(),
+                HttpResponse::InternalServerError,
+            );
         }
     }
 }

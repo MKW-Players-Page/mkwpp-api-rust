@@ -22,26 +22,13 @@ pub async fn get_with_decode<
     data: web::Data<crate::AppState>,
     body: web::Bytes,
 ) -> HttpResponse {
-    let json_string = match String::from_utf8(body.to_vec()) {
-        Ok(v) => v,
+    let player_ids = match serde_json::from_slice::<Vec<i32>>(&body) {
         Err(e) => {
-            return HttpResponse::BadRequest()
-                .content_type("application/json")
-                .body(crate::api::generate_error_json_string(
-                    "Couldn't turn request body bytes into utf8 string",
-                    &e.to_string(),
-                ));
-        }
-    };
-
-    let player_ids = match serde_json::from_str::<Vec<i32>>(&json_string) {
-        Err(e) => {
-            return HttpResponse::BadRequest()
-                .content_type("application/json")
-                .body(crate::api::generate_error_json_string(
-                    "Couldn't turn request body into the right json",
-                    &e.to_string(),
-                ));
+            return crate::api::generate_error_response(
+                "Couldn't turn request body into valid json data",
+                &e.to_string(),
+                HttpResponse::BadRequest,
+            );
         }
         Ok(v) => v,
     };

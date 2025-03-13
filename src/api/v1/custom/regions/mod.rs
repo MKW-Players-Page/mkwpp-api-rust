@@ -89,12 +89,11 @@ pub async fn basic_get_i32(
     let rows = match rows_request {
         Ok(rows) => rows,
         Err(e) => {
-            return HttpResponse::InternalServerError()
-                .content_type("application/json")
-                .body(crate::api::generate_error_json_string(
-                    "Couldn't get rows from database",
-                    e.to_string().as_str(),
-                ));
+            return crate::api::generate_error_response(
+                "Couldn't get rows from database",
+                &e.to_string(),
+                HttpResponse::InternalServerError,
+            );
         }
     };
 

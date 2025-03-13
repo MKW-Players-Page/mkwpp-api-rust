@@ -1,3 +1,5 @@
+use actix_web::{HttpResponse, HttpResponseBuilder};
+
 pub mod v1;
 
 pub fn generate_error_json_string(personal_err: &str, lib_err: &str) -> String {
@@ -6,6 +8,16 @@ pub fn generate_error_json_string(personal_err: &str, lib_err: &str) -> String {
         escape_char_for_json(personal_err),
         escape_char_for_json(lib_err)
     );
+}
+
+pub fn generate_error_response(
+    personal_err: &str,
+    lib_err: &str,
+    callback: impl FnOnce() -> HttpResponseBuilder,
+) -> HttpResponse {
+    return callback()
+        .content_type("application/json")
+        .body(generate_error_json_string(personal_err, lib_err));
 }
 
 fn escape_char_for_json(src: &str) -> String {

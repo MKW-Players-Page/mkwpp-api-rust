@@ -25,7 +25,7 @@ CREATE TABLE users (
     last_login TIMESTAMP WITH TIME ZONE,
     is_superuser BOOL DEFAULT FALSE NOT NULL,
     is_staff BOOL DEFAULT FALSE NOT NULL,
-    is_active BOOL DEFAULT FALSE NOT NULL,
+    is_active BOOL DEFAULT FALSE NOT NULL, -- whether a use is activated or not
     is_verified BOOL DEFAULT FALSE NOT NULL,
     date_joined TIMESTAMP WITH TIME ZONE NOT NULL,
     player_id INTEGER REFERENCES players(id)
