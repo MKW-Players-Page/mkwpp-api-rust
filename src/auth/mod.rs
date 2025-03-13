@@ -138,3 +138,25 @@ pub async fn register(
 
     return Ok(());
 }
+
+pub async fn is_valid_token(
+    session_token: &str,
+    user_id: i32,
+    executor: &mut sqlx::PgConnection,
+) -> Result<bool, sqlx::Error> {
+    return sqlx::query(const_format::formatc!(
+        r#"
+            SELECT user_id
+            FROM auth_tokens
+            WHERE
+                session_token = $1 AND
+                user_id = $2 AND
+                expiry >= NOW()
+        "#
+    ))
+    .bind(session_token)
+    .bind(user_id)
+    .fetch_optional(executor)
+    .await
+    .map(|x| x.is_some());
+}
