@@ -31,7 +31,7 @@ async fn sql_env_valid() -> Result<(), anyhow::Error> {
         );
     }
 
-    return Ok(());
+    Ok(())
 }
 
 fn run_migrations() -> Result<(), anyhow::Error> {
@@ -50,5 +50,5 @@ fn run_migrations() -> Result<(), anyhow::Error> {
     if !migrations.status.success() {
         anyhow::bail!("Couldn't run SQLX");
     }
-    return Ok(());
+    Ok(())
 }

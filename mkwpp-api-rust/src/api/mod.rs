@@ -8,25 +8,25 @@ pub fn read_file(
     builder: &mut HttpResponseBuilder,
 ) -> HttpResponse {
     builder.content_type(mime_type);
-    return response_builder(
+    response_builder(
         builder,
         std::fs::read_to_string(file_path).expect("Missing file"),
-    );
+    )
 }
 
 pub fn response_builder(
     builder: &mut HttpResponseBuilder,
     body: impl MessageBody + 'static,
 ) -> HttpResponse {
-    return builder.body(body);
+    builder.body(body)
 }
 
 pub fn generate_error_json_string(personal_err: &str, lib_err: &str) -> String {
-    return format!(
+    format!(
         "{{\"error\":\"{}\",\"server_error\":\"{}\"}}",
         escape_char_for_json(personal_err),
         escape_char_for_json(lib_err)
-    );
+    )
 }
 
 pub fn generate_error_response(
@@ -34,9 +34,9 @@ pub fn generate_error_response(
     lib_err: &str,
     callback: impl FnOnce() -> HttpResponseBuilder,
 ) -> HttpResponse {
-    return callback()
+    callback()
         .content_type("application/json")
-        .body(generate_error_json_string(personal_err, lib_err));
+        .body(generate_error_json_string(personal_err, lib_err))
 }
 
 fn escape_char_for_json(src: &str) -> String {
@@ -61,5 +61,5 @@ fn escape_char_for_json(src: &str) -> String {
             // }
         }
     }
-    return escaped;
+    escaped
 }

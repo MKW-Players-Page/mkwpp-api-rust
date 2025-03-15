@@ -6,7 +6,7 @@ resolver = "3"
 unused_imports = "deny"
 
 [workspace.lints.clippy]
-needless_return = "allow"
+semicolon_if_nothing_returned = "warn"
 too_many_arguments = "allow"
 needless_borrow = "deny"
 duplicate_mod = "deny"

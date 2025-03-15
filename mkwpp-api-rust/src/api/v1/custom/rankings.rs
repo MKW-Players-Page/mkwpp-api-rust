@@ -11,13 +11,13 @@ macro_rules! ranking {
 }
 
 pub fn rankings() -> impl HttpServiceFactory {
-    return web::scope("/rankings")
+    web::scope("/rankings")
         .route("/totaltime", web::get().to(total_time))
         .route("/prwr", web::get().to(prwr))
         .route("/tally", web::get().to(tally))
         .route("/af", web::get().to(af))
         .route("/arr", web::get().to(arr))
-        .default_service(web::get().to(default));
+        .default_service(web::get().to(default))
 }
 default_paths_fn!("/af", "/arr", "/tally", "/prwr", "/totaltime");
 
@@ -37,7 +37,7 @@ async fn get(
     );
 
     return crate::api::v1::basic_get::<Rankings>(data, async |x| {
-        Rankings::get(
+        return Rankings::get(
             x,
             ranking_type,
             params.category,
@@ -45,7 +45,7 @@ async fn get(
             params.date,
             params.region_id,
         )
-        .await
+        .await;
     })
     .await;
 }

@@ -13,14 +13,14 @@ macro_rules! get_fn {
 }
 
 pub fn recent() -> impl HttpServiceFactory {
-    return web::scope("/recent")
+    web::scope("/recent")
         .guard(actix_web::guard::Get())
         .service(
             web::scope("/{limit}")
                 .route("/all", web::get().to(get_all))
                 .route("/records", web::get().to(get_all_records)),
         )
-        .default_service(web::get().to(default));
+        .default_service(web::get().to(default))
 }
 default_paths_fn!("/:limit/records", "/:limit/all");
 

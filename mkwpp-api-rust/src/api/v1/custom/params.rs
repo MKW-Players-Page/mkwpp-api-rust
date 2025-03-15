@@ -19,7 +19,7 @@ pub struct ParamsDestructured {
 
 impl ParamsDestructured {
     pub fn from_query(params: actix_web::web::Query<Params>) -> Self {
-        return ParamsDestructured {
+        ParamsDestructured {
             category: params
                 .cat
                 .and_then(|x| Category::try_from(x).ok())
@@ -32,6 +32,6 @@ impl ParamsDestructured {
             region_id: params.reg.unwrap_or(1),
             lap_mode: params.lap.map(|x| x == 1),
             limit: params.lim.unwrap_or(i32::MAX),
-        };
+        }
     }
 }

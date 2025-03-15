@@ -67,10 +67,10 @@ struct EnvSettingsSchemaField<T: Display> {
 
 impl<T: Display> EnvSettingsSchemaField<T> {
     fn to_readme_line(&self) -> String {
-        return format!(
+        format!(
             "\n| {} | {} | {} | {} |",
             self.key, self.type_name, self.description, self.value,
-        );
+        )
     }
 }
 
@@ -98,7 +98,7 @@ impl EnvSettingsSchema {
         out += &self.max_conn.to_readme_line();
         out += &self.keep_alive.to_readme_line();
         out += &self.client_request_timeout.to_readme_line();
-        return out;
+        out
     }
 }
 
@@ -146,14 +146,15 @@ impl EnvSettings {
                 .unwrap_or(DEFAULT_SCHEMA.keep_alive.value),
             client_request_timeout: std::env::var(DEFAULT_SCHEMA.client_request_timeout.key)
                 .map(|x| {
-                    x.parse::<u64>()
+                    x
+                        .parse::<u64>()
                         .unwrap_or(DEFAULT_SCHEMA.client_request_timeout.value)
                 })
                 .unwrap_or(DEFAULT_SCHEMA.client_request_timeout.value),
         };
         out.generate_url();
 
-        return Ok(out);
+        Ok(out)
     }
 
     pub fn to_env_file(&self, file: &mut std::fs::File) -> Result<(), anyhow::Error> {
@@ -180,7 +181,7 @@ impl EnvSettings {
             DEFAULT_SCHEMA.client_request_timeout.key, self.client_request_timeout
         )?;
 
-        return Ok(());
+        Ok(())
     }
 }
 

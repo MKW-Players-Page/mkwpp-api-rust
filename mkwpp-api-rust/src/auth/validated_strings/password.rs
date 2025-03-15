@@ -15,7 +15,7 @@ pub enum PasswordError {
 #[derive(sqlx::FromRow, Clone)]
 pub struct Password(String);
 
-impl<'a> ValidatedString<'a> for Password {
+impl ValidatedString for Password {
     type Err = PasswordError;
 
     fn new_from_string(val: String) -> Result<Self, Self::Err> {
@@ -64,11 +64,11 @@ impl<'a> ValidatedString<'a> for Password {
             return Err(PasswordError::MustHaveNumber);
         }
 
-        return Ok(Self(val));
+        Ok(Self(val))
     }
 
     fn get_inner(self) -> String {
-        return self.0;
+        self.0
     }
 }
 
@@ -88,6 +88,6 @@ impl Password {
 
         let mut out_string = String::new();
         token_engine.encode_string(hash_bytes, &mut out_string);
-        return out_string;
+        out_string
     }
 }

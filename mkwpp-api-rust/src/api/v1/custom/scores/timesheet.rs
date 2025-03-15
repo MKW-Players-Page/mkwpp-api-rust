@@ -4,7 +4,7 @@ use crate::sql::tables::scores::timesheet::{Times, Timesheet};
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn timesheet() -> impl HttpServiceFactory {
-    return web::scope("/timesheet/{player_id}").default_service(web::get().to(get));
+    web::scope("/timesheet/{player_id}").default_service(web::get().to(get))
 }
 
 // TODO: Incredibly, incredibly unoptimized
@@ -148,24 +148,34 @@ pub async fn get(
     };
 
     // TODO: wtf is this bs
-    return crate::api::v1::send_serialized_data(Timesheet::new(
+    crate::api::v1::send_serialized_data(Timesheet::new(
         times,
         af.iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()),
+            .map(|found| {
+                <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()
+            }),
         arr.iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()),
+            .map(|found| {
+                <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()
+            }),
         totals
             .iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| <RankingType as TryInto<i32>>::try_into(found.value.clone()).unwrap()),
+            .map(|found| {
+                <RankingType as TryInto<i32>>::try_into(found.value.clone()).unwrap()
+            }),
         prwr.iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()),
+            .map(|found| {
+                <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()
+            }),
         tally
             .iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| <RankingType as TryInto<i16>>::try_into(found.value.clone()).unwrap()),
-    ));
+            .map(|found| {
+                <RankingType as TryInto<i16>>::try_into(found.value.clone()).unwrap()
+            }),
+    ))
 }

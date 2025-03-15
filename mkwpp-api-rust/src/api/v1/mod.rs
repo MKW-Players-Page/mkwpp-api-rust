@@ -23,7 +23,7 @@ mod custom;
 mod raw;
 
 pub fn v1() -> impl HttpServiceFactory {
-    return web::scope("/v1")
+    web::scope("/v1")
         .service(raw::raw())
         .service(custom::custom())
         .service(auth::auth())
@@ -32,74 +32,74 @@ pub fn v1() -> impl HttpServiceFactory {
                 .route("/style.css", web::get().to(doc_css))
                 .default_service(web::get().to(doc)),
         )
-        .service(web::redirect("", "/v1/doc"));
+        .service(web::redirect("", "/v1/doc"))
 }
 
 async fn doc() -> HttpResponse {
-    return crate::api::read_file(
+    crate::api::read_file(
         "frontend/doc/v1/index.html",
         "text/html",
         &mut HttpResponse::Ok(),
-    );
+    )
 }
 
 async fn doc_css() -> HttpResponse {
-    return crate::api::read_file(
+    crate::api::read_file(
         "frontend/doc/v1/style.css",
         "text/css",
         &mut HttpResponse::Ok(),
-    );
+    )
 }
 
 pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
 ) -> Result<(), HttpResponse> {
-    return connection.close().await.map_err(|e| {
-        return crate::api::generate_error_response(
+    connection.close().await.map_err(|e| {
+        crate::api::generate_error_response(
             "Error closing Database connection",
             &e.to_string(),
             HttpResponse::InternalServerError,
-        );
-    });
+        )
+    })
 }
 
 pub fn match_rows(
     rows_request: Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
 ) -> Result<Vec<sqlx::postgres::PgRow>, HttpResponse> {
-    return rows_request.map_err(|e| {
-        return crate::api::generate_error_response(
+    rows_request.map_err(|e| {
+        crate::api::generate_error_response(
             "Couldn't get rows from database",
             &e.to_string(),
             HttpResponse::InternalServerError,
-        );
-    });
+        )
+    })
 }
 
 pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
     rows: Vec<sqlx::postgres::PgRow>,
 ) -> Result<Vec<Table>, HttpResponse> {
-    return rows
+    rows
         .into_iter()
-        .map(|r| return Table::from_row(&r))
+        .map(|r| Table::from_row(&r))
         .collect::<Result<Vec<Table>, sqlx::Error>>()
         .map_err(|e| {
-            return crate::api::generate_error_response(
+            crate::api::generate_error_response(
                 "Error decoding rows from database",
                 &e.to_string(),
                 HttpResponse::InternalServerError,
-            );
-        });
+            )
+        })
 }
 
 pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
     match serde_json::to_string(&data) {
-        Ok(v) => return HttpResponse::Ok().content_type("application/json").body(v),
+        Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
         Err(e) => {
-            return crate::api::generate_error_response(
+            crate::api::generate_error_response(
                 "Error serializing database data",
                 &e.to_string(),
                 HttpResponse::InternalServerError,
-            );
+            )
         }
     }
 }
@@ -124,7 +124,7 @@ pub async fn handle_basic_get<
         Err(e) => return e,
     };
 
-    return send_serialized_data(data);
+    send_serialized_data(data)
 }
 
 pub async fn basic_get<
@@ -141,7 +141,7 @@ pub async fn basic_get<
     };
 
     let rows_request = rows_function(&mut connection).await;
-    return handle_basic_get::<Table>(rows_request, connection).await;
+    handle_basic_get::<Table>(rows_request, connection).await
 }
 
 pub async fn basic_get_with_data_mod<
@@ -175,7 +175,7 @@ pub async fn basic_get_with_data_mod<
         Err(e) => return e,
     };
 
-    return send_serialized_data(data);
+    send_serialized_data(data)
 }
 
 pub async fn get_star_query<
@@ -183,5 +183,5 @@ pub async fn get_star_query<
 >(
     data: web::Data<crate::AppState>,
 ) -> HttpResponse {
-    return basic_get::<Table>(data, Table::select_star_query).await;
+    basic_get::<Table>(data, Table::select_star_query).await
 }

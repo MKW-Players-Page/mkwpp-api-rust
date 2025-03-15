@@ -3,5 +3,5 @@ use actix_web::Responder;
 
 pub async fn get() -> impl Responder {
     let cups = cups::Cups::reg_track_cups();
-    return crate::api::v1::send_serialized_data(cups);
+    crate::api::v1::send_serialized_data(cups)
 }

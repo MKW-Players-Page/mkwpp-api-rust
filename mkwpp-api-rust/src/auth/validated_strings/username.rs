@@ -10,18 +10,18 @@ pub enum UsernameError {
 #[derive(sqlx::FromRow)]
 pub struct Username(String);
 
-impl<'a> ValidatedString<'a> for Username {
+impl ValidatedString for Username {
     type Err = UsernameError;
 
     fn new_from_string(val: String) -> Result<Self, Self::Err> {
-        return match val.len() {
+        match val.len() {
             0..=4 => Err(UsernameError::TooShort),
             151.. => Err(UsernameError::TooLong),
             _ => Ok(Self(val)),
-        };
+        }
     }
 
     fn get_inner(self) -> String {
-        return self.0;
+        self.0
     }
 }

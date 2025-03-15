@@ -162,13 +162,13 @@ impl Timesheet {
         prwr: Option<f64>,
         tally: Option<i16>,
     ) -> Self {
-        return Timesheet {
+        Timesheet {
             times,
             af,
             arr,
             total_time,
             prwr,
             tally,
-        };
+        }
     }
 }

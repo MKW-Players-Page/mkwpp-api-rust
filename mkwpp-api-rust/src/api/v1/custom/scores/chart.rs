@@ -3,7 +3,7 @@ use crate::sql::tables::scores::with_player::ScoresWithPlayer;
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn chart() -> impl HttpServiceFactory {
-    return web::scope("/chart/{track_id}").default_service(web::get().to(get));
+    web::scope("/chart/{track_id}").default_service(web::get().to(get))
 }
 
 pub async fn get(
@@ -16,7 +16,7 @@ pub async fn get(
     );
 
     return crate::api::v1::basic_get::<ScoresWithPlayer>(data, async |x| {
-        ScoresWithPlayer::filter_charts(
+        return ScoresWithPlayer::filter_charts(
             x,
             path.into_inner(),
             params.category,
@@ -25,7 +25,7 @@ pub async fn get(
             params.region_id,
             params.limit,
         )
-        .await
+        .await;
     })
     .await;
 }

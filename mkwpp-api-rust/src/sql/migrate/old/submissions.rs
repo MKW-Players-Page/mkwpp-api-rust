@@ -35,7 +35,7 @@ impl super::OldFixtureJson for Submissions {
             track_id: self.track,
             date: self
                 .date
-                .map(|time_str| return chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap()),
+                .map(|time_str| chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap()),
             video_link: self.video_link,
             ghost_link: self.ghost_link,
             comment: self.comment,

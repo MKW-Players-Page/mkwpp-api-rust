@@ -10,13 +10,13 @@ pub enum AwardType {
 impl TryFrom<&str> for AwardType {
     type Error = ();
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        return match value {
+        match value {
             "weekly" => Ok(Self::Weekly),
             "monthly" => Ok(Self::Monthly),
             "quarterly" => Ok(Self::Quarterly),
             "yearly" => Ok(Self::Yearly),
             _ => Err(()),
-        };
+        }
     }
 }
 

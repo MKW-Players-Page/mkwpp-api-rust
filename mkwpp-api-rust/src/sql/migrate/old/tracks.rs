@@ -17,8 +17,8 @@ impl super::OldFixtureJson for Tracks {
                 .categories
                 .split(',')
                 .map(|v| {
-                    return crate::sql::tables::Category::try_from(v.parse::<u8>().unwrap())
-                        .unwrap();
+                    crate::sql::tables::Category::try_from(v.parse::<u8>().unwrap())
+                        .unwrap()
                 })
                 .collect(),
             abbr: self.abbr,

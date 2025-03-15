@@ -30,7 +30,7 @@ impl super::OldFixtureJson for Regions {
     fn get_sort()
     -> impl FnMut(&super::OldFixtureWrapper<Self>, &super::OldFixtureWrapper<Self>) -> std::cmp::Ordering
     {
-        return |a, b| {
+        |a, b| {
             let a_parent = a.fields.parent.unwrap_or(0);
             let b_parent = b.fields.parent.unwrap_or(0);
             let a_type_num: u8 =
@@ -42,12 +42,12 @@ impl super::OldFixtureJson for Regions {
                     .unwrap()
                     .into();
             if a_type_num != b_type_num {
-                return a_type_num.cmp(&b_type_num);
+                a_type_num.cmp(&b_type_num)
             } else if a_parent != b_parent {
                 return a_parent.cmp(&b_parent);
             } else {
                 return a.pk.cmp(&b.pk);
             }
-        };
+        }
     }
 }

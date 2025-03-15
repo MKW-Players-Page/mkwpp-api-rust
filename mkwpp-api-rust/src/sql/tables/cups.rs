@@ -10,7 +10,7 @@ pub struct Cups {
 
 impl Cups {
     pub fn reg_track_cups() -> Vec<Self> {
-        return vec![
+        vec![
             Cups {
                 id: 1,
                 code: "MUSHROOM",
@@ -51,6 +51,6 @@ impl Cups {
                 code: "LIGHTNING",
                 track_ids: [8 * 4 - 3, 8 * 4 - 2, 8 * 4 - 1, 8 * 4],
             },
-        ];
+        ]
     }
 }

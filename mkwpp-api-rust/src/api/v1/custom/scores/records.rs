@@ -3,7 +3,7 @@ use crate::sql::tables::scores::with_player::ScoresWithPlayer;
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn records() -> impl HttpServiceFactory {
-    return web::scope("/records").default_service(web::get().to(get));
+    web::scope("/records").default_service(web::get().to(get))
 }
 
 pub async fn get(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
@@ -12,14 +12,14 @@ pub async fn get(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResp
     );
 
     return crate::api::v1::basic_get::<ScoresWithPlayer>(data, async |x| {
-        ScoresWithPlayer::get_records(
+        return ScoresWithPlayer::get_records(
             x,
             params.category,
             params.lap_mode,
             params.date,
             params.region_id,
         )
-        .await
+        .await;
     })
     .await;
 }

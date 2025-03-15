@@ -15,7 +15,7 @@ impl LogInAttempts {
         }
 
         data.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
-        let latest = data.get(0).unwrap().timestamp;
+        let latest = data.first().unwrap().timestamp;
 
         let mut equal_ip = 0;
         let mut equal_user_id = 0;
@@ -30,8 +30,8 @@ impl LogInAttempts {
 
         let equal_ip = if equal_ip < 5 { 0 } else { equal_ip };
         let equal_user_id = if equal_user_id < 5 { 0 } else { equal_user_id };
-        return latest.timestamp() + (equal_ip * 30 + equal_user_id * 20)
-            > chrono::Utc::now().timestamp();
+        latest.timestamp() + (equal_ip * 30 + equal_user_id * 20)
+            > chrono::Utc::now().timestamp()
     }
 
     pub async fn get_from_sql(
@@ -47,7 +47,7 @@ impl LogInAttempts {
         .fetch_all(&mut *executor)
         .await?
         .into_iter()
-        .map(|r| return Self::from_row(&r))
+        .map(|r| Self::from_row(&r))
         .collect::<Result<Vec<Self>, sqlx::Error>>()?;
 
         user_data.extend(
@@ -60,10 +60,10 @@ impl LogInAttempts {
                 .fetch_all(executor)
                 .await?
                 .into_iter()
-                .map(|r| return Self::from_row(&r))
+                .map(|r| Self::from_row(&r))
                 .collect::<Result<Vec<Self>, sqlx::Error>>()?,
         );
 
-        return Ok(user_data);
+        Ok(user_data)
     }
 }

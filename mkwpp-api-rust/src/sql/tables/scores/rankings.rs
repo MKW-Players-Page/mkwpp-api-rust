@@ -32,7 +32,7 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Rankings {
             },
         };
 
-        return Ok(Rankings {
+        Ok(Rankings {
             rank: row.try_get("rank")?,
             player: PlayersBasic {
                 id: row.try_get("id")?,
@@ -41,7 +41,7 @@ impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Rankings {
                 region_id: row.try_get("region_id")?,
             },
             value: data,
-        });
+        })
     }
 }
 
@@ -551,31 +551,31 @@ pub enum RankingType {
 impl TryInto<f64> for RankingType {
     type Error = ();
     fn try_into(self) -> Result<f64, Self::Error> {
-        return match self {
+        match self {
             Self::AverageFinish(x) => Ok(x),
             Self::AverageRankRating(x) => Ok(x),
             Self::PersonalRecordWorldRecord(x) => Ok(x),
             _ => Err(()),
-        };
+        }
     }
 }
 
 impl TryInto<i32> for RankingType {
     type Error = ();
     fn try_into(self) -> Result<i32, Self::Error> {
-        return match self {
+        match self {
             Self::TotalTime(x) => Ok(x),
             _ => Err(()),
-        };
+        }
     }
 }
 
 impl TryInto<i16> for RankingType {
     type Error = ();
     fn try_into(self) -> Result<i16, Self::Error> {
-        return match self {
+        match self {
             Self::TallyPoints(x) => Ok(x),
             _ => Err(()),
-        };
+        }
     }
 }

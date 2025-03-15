@@ -13,13 +13,13 @@ impl AppState {
     pub async fn acquire_pg_connection(
         &self,
     ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, HttpResponse> {
-        return self.pg_pool.acquire().await.map_err(|e| {
-            return crate::api::generate_error_response(
+        self.pg_pool.acquire().await.map_err(|e| {
+            crate::api::generate_error_response(
                 "Couldn't get connection from data pool",
                 &e.to_string(),
                 HttpResponse::InternalServerError,
-            );
-        });
+            )
+        })
     }
 }
 
@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
 
     println!("- Reading CLI args");
     let args: Vec<String> = std::env::args().collect();
-    let args: Vec<&str> = args.iter().map(|v| return v.as_str()).collect();
+    let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
 
     if args.contains(&"import") && args.contains(&"old") {
         sql::migrate::old::load_data(&pg_pool).await;
@@ -63,7 +63,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let cors = Cors::permissive();
 
-        return App::new()
+        App::new()
             .wrap(cors)
             .wrap(middleware::NormalizePath::new(
                 middleware::TrailingSlash::Trim,
@@ -72,7 +72,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(AppState {
                 pg_pool: pg_pool.clone(),
             }))
-            .service(api::v1::v1());
+            .service(api::v1::v1())
     })
     .bind(("127.0.0.1", 8080))?
     .client_request_timeout(std::time::Duration::from_micros(

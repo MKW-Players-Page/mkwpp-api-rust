@@ -80,7 +80,7 @@ pub async fn log_in(
             .bind(data.id)
             .execute(executor)
             .await?;
-            return Err(anyhow::anyhow!("Data is wrong"));
+            Err(anyhow::anyhow!("Data is wrong"))
         }
         true => {
             let token_engine = base64::engine::GeneralPurpose::new(
@@ -104,7 +104,7 @@ pub async fn log_in(
             .bind(out_string)
             .fetch_one(&mut *executor)
             .await?;
-            return Ok(log_in_data);
+            Ok(log_in_data)
         }
     }
 }
@@ -136,7 +136,7 @@ pub async fn register(
     .execute(executor)
     .await?;
 
-    return Ok(());
+    Ok(())
 }
 
 pub async fn is_valid_token(

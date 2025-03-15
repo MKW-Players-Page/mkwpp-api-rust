@@ -21,45 +21,45 @@ pub enum Category {
 impl TryFrom<u8> for Category {
     type Error = ();
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        return match value {
+        match value {
             0 => Ok(Self::NonSc),
             1 => Ok(Self::Sc),
             2 => Ok(Self::Unres),
             _ => Err(()),
-        };
+        }
     }
 }
 
 impl TryFrom<&str> for Category {
     type Error = ();
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        return match value.to_lowercase().as_str() {
+        match value.to_lowercase().as_str() {
             "nonsc" | "nosc" | "normal" | "non-sc" | "non_sc" | "no-shortcut" | "noshortcut"
             | "n" => Ok(Self::NonSc),
             "shortcut" | "sc" | "s" => Ok(Self::Sc),
             "unrestricted" | "unres" | "unr" | "glitch" | "g" | "u" => Ok(Self::Unres),
             _ => Err(()),
-        };
+        }
     }
 }
 
 impl From<Category> for u8 {
     fn from(val: Category) -> Self {
-        return match val {
+        match val {
             Category::NonSc => 0,
             Category::Sc => 1,
             Category::Unres => 2,
-        };
+        }
     }
 }
 
 impl From<&Category> for u8 {
     fn from(val: &Category) -> Self {
-        return match val {
+        match val {
             Category::NonSc => 0,
             Category::Sc => 1,
             Category::Unres => 2,
-        };
+        }
     }
 }
 
@@ -68,7 +68,7 @@ impl serde::Serialize for Category {
     where
         S: serde::Serializer,
     {
-        return serializer.serialize_u8(self.into());
+        serializer.serialize_u8(self.into())
     }
 }
 
@@ -84,13 +84,13 @@ pub enum SubmissionStatus {
 impl TryFrom<u8> for SubmissionStatus {
     type Error = ();
     fn try_from(value: u8) -> Result<Self, Self::Error> {
-        return match value {
+        match value {
             0 => Ok(Self::Pending),
             1 => Ok(Self::Accepted),
             2 => Ok(Self::Rejected),
             3 => Ok(Self::OnHold),
             _ => Err(()),
-        };
+        }
     }
 }
 

@@ -9,7 +9,7 @@ pub enum EmailError {
 #[derive(sqlx::FromRow)]
 pub struct Email(String);
 
-impl<'a> ValidatedString<'a> for Email {
+impl ValidatedString for Email {
     type Err = EmailError;
     fn new_from_string(val: String) -> Result<Self, Self::Err> {
         if val.len() > 254 {
@@ -17,13 +17,13 @@ impl<'a> ValidatedString<'a> for Email {
         }
 
         let regex_checker = regex::Regex::new(r"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$").unwrap();
-        return match regex_checker.is_match(&val) {
+        match regex_checker.is_match(&val) {
             true => Ok(Self(val)),
             false => Err(EmailError::Invalid),
-        };
+        }
     }
 
     fn get_inner(self) -> String {
-        return self.0;
+        self.0
     }
 }

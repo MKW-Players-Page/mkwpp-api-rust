@@ -74,7 +74,7 @@ impl ChildrenTree {
             return Ok(());
         }
 
-        return Err(value);
+        Err(value)
     }
 }
 
@@ -95,7 +95,7 @@ impl serde::Serialize for ChildrenTree {
 }
 
 pub async fn get_region_child_tree(data: web::Data<crate::AppState>) -> HttpResponse {
-    return crate::api::v1::basic_get_with_data_mod::<Regions, ChildrenTree>(
+    crate::api::v1::basic_get_with_data_mod::<Regions, ChildrenTree>(
         data,
         Regions::select_star_query,
         async |data: Vec<Regions>| {
@@ -115,5 +115,5 @@ pub async fn get_region_child_tree(data: web::Data<crate::AppState>) -> HttpResp
             tree
         },
     )
-    .await;
+    .await
 }

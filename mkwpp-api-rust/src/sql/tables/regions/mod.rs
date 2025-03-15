@@ -16,7 +16,7 @@ pub enum RegionType {
 impl TryFrom<&str> for RegionType {
     type Error = ();
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        return match value {
+        match value {
             "world" | "World" | "WORLD" => Ok(Self::World),
             "continent" | "Continent" | "CONTINENT" => Ok(Self::Continent),
             "country_group" | "COUNTRYGROUP" | "COUNTRY_GROUP" | "CountryGroup"
@@ -26,33 +26,33 @@ impl TryFrom<&str> for RegionType {
             | "subnationalGroup" => Ok(Self::SubnationalGroup),
             "subnational" | "Subnational" | "SUBNATIONAL" => Ok(Self::Subnational),
             _ => Err(()),
-        };
+        }
     }
 }
 
 impl From<RegionType> for u8 {
     fn from(val: RegionType) -> Self {
-        return match val {
+        match val {
             RegionType::World => 0,
             RegionType::Continent => 1,
             RegionType::CountryGroup => 2,
             RegionType::Country => 3,
             RegionType::SubnationalGroup => 4,
             RegionType::Subnational => 5,
-        };
+        }
     }
 }
 
 impl From<&RegionType> for u8 {
     fn from(val: &RegionType) -> Self {
-        return match val {
+        match val {
             RegionType::World => 0,
             RegionType::Continent => 1,
             RegionType::CountryGroup => 2,
             RegionType::Country => 3,
             RegionType::SubnationalGroup => 4,
             RegionType::Subnational => 5,
-        };
+        }
     }
 }
 
@@ -61,7 +61,7 @@ impl serde::Serialize for RegionType {
     where
         S: serde::Serializer,
     {
-        return serializer.serialize_u8(self.into());
+        serializer.serialize_u8(self.into())
     }
 }
 

@@ -15,7 +15,7 @@ const SUBMISSIONS_PATH: &str = "/submissions";
 const TRACKS_PATH: &str = "/tracks";
 
 pub fn raw() -> impl HttpServiceFactory {
-    return web::scope("/raw")
+    web::scope("/raw")
         .guard(actix_web::guard::Get())
         .default_service(web::get().to(default))
         .route(
@@ -64,9 +64,9 @@ pub fn raw() -> impl HttpServiceFactory {
         .route(
             TRACKS_PATH,
             web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::tracks::Tracks>),
-        );
+        )
 }
 
 async fn default() -> impl actix_web::Responder {
-    return actix_web::HttpResponse::Ok().content_type("application/json").body(format!("{{\"paths\":[\"{PLAYER_AWARDS_PATH}\",\"{SITE_CHAMPS_PATH}\",\"{CUPS_PATH}\",\"{EDIT_SUBMISSIONS_PATH}\",\"{PLAYERS_PATH}\",\"{REGIONS_PATH}\",\"{SCORES_PATH}\",\"{STANDARD_LEVELS_PATH}\",\"{STANDARDS_PATH}\",\"{SUBMISSIONS_PATH}\",\"{TRACKS_PATH}\"]}}"));
+    actix_web::HttpResponse::Ok().content_type("application/json").body(format!("{{\"paths\":[\"{PLAYER_AWARDS_PATH}\",\"{SITE_CHAMPS_PATH}\",\"{CUPS_PATH}\",\"{EDIT_SUBMISSIONS_PATH}\",\"{PLAYERS_PATH}\",\"{REGIONS_PATH}\",\"{SCORES_PATH}\",\"{STANDARD_LEVELS_PATH}\",\"{STANDARDS_PATH}\",\"{SUBMISSIONS_PATH}\",\"{TRACKS_PATH}\"]}}"))
 }

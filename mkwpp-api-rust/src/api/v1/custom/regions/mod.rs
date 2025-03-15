@@ -16,7 +16,7 @@ macro_rules! region_fn {
 }
 
 pub fn regions() -> impl HttpServiceFactory {
-    return web::scope("/regions")
+    web::scope("/regions")
         .service(web::scope("/ancestors/{region_id}").default_service(web::get().to(get_ancestors)))
         .service(
             web::scope("/descendants/{region_id}").default_service(web::get().to(get_descendants)),
@@ -30,7 +30,7 @@ pub fn regions() -> impl HttpServiceFactory {
             "/with_player_count",
             web::get().to(crate::api::v1::get_star_query::<RegionsWithPlayerCount>),
         )
-        .default_service(web::get().to(default));
+        .default_service(web::get().to(default))
 }
 
 default_paths_fn!(
@@ -45,7 +45,7 @@ region_fn!(get_ancestors, Regions::get_ancestors);
 region_fn!(get_descendants, Regions::get_descendants);
 
 async fn get_region_type_hashmap(data: web::Data<crate::AppState>) -> HttpResponse {
-    return crate::api::v1::basic_get_with_data_mod::<Regions, HashMap<RegionType, Vec<i32>>>(
+    crate::api::v1::basic_get_with_data_mod::<Regions, HashMap<RegionType, Vec<i32>>>(
         data,
         Regions::select_star_query,
         async |data: Vec<Regions>| {
@@ -67,7 +67,7 @@ async fn get_region_type_hashmap(data: web::Data<crate::AppState>) -> HttpRespon
             hashmap
         },
     )
-    .await;
+    .await
 }
 
 pub async fn basic_get_i32(
@@ -97,5 +97,5 @@ pub async fn basic_get_i32(
         }
     };
 
-    return crate::api::v1::send_serialized_data(rows);
+    crate::api::v1::send_serialized_data(rows)
 }

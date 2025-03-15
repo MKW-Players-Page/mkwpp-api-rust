@@ -3,10 +3,10 @@ use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 use crate::auth::validated_strings::ValidatedString;
 
 pub fn auth() -> impl HttpServiceFactory {
-    return web::scope("/auth")
+    web::scope("/auth")
         .route("/register", web::put().to(register))
         .route("/login", web::put().to(login))
-        .default_service(web::get().to(default));
+        .default_service(web::get().to(default))
 }
 default_paths_fn!("/register", "/login");
 

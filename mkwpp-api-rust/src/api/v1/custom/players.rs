@@ -2,7 +2,7 @@ use crate::sql::tables::players::{FilterByPlayerId, Players, players_basic::Play
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn players() -> impl HttpServiceFactory {
-    return web::scope("/players")
+    web::scope("/players")
         .route(
             "/list",
             web::get().to(crate::api::v1::get_star_query::<PlayersBasic>),
@@ -12,7 +12,7 @@ pub fn players() -> impl HttpServiceFactory {
             "/select_basic",
             web::post().to(get_with_decode::<PlayersBasic>),
         )
-        .default_service(web::get().to(default));
+        .default_service(web::get().to(default))
 }
 default_paths_fn!("/list", "/select", "/select_basic");
 
@@ -24,7 +24,7 @@ pub async fn get_with_decode<
 ) -> HttpResponse {
     let player_ids = body.0;
     return crate::api::v1::basic_get::<Table>(data, async |x| {
-        Table::get_select_players(x, player_ids).await
+        return Table::get_select_players(x, player_ids).await;
     })
     .await;
 }

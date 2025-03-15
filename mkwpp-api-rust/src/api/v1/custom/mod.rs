@@ -8,13 +8,13 @@ mod scores;
 mod site_champs;
 
 pub fn custom() -> impl HttpServiceFactory {
-    return web::scope("/custom")
+    web::scope("/custom")
         .service(scores::scores())
         .service(rankings::rankings())
         .service(regions::regions())
         .service(players::players())
         .service(site_champs::site_champs())
-        .default_service(web::get().to(default));
+        .default_service(web::get().to(default))
 }
 default_paths_fn!(
     "/scores",
