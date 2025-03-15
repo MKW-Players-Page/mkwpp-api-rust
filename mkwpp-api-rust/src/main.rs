@@ -5,24 +5,6 @@ mod sql;
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
-const MAX_CONN_KEY: &str = "MAX_CONN";
-const MAX_CONN: u32 = 25;
-const DATABASE_URL_KEY: &str = "DATABASE_URL";
-const USERNAME_KEY: &str = "USERNAME";
-const USERNAME: &str = "postgres";
-const PASSWORD_KEY: &str = "PASSWORD";
-const PASSWORD: &str = "password";
-const DATABASE_NAME_KEY: &str = "DATABASE_NAME";
-const DATABASE_NAME: &str = "mkwppdb";
-const HOST_KEY: &str = "HOST";
-const HOST: &str = "localhost";
-const PORT_KEY: &str = "PORT";
-const PORT: &str = "5432";
-const CLIENT_REQUEST_TIMEOUT_KEY: &str = "CLIENT_REQUEST_TIMEOUT";
-const CLIENT_REQUEST_TIMEOUT: u64 = 120000;
-const KEEP_ALIVE_KEY: &str = "KEEP_ALIVE";
-const KEEP_ALIVE: u64 = 60000;
-
 struct AppState {
     pg_pool: sqlx::Pool<sqlx::Postgres>,
 }
@@ -44,35 +26,19 @@ impl AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("- Loading environment variables");
-    dotenvy::dotenv().expect("Couldn't read .env file");
-    let database_url = std::env::var(DATABASE_URL_KEY).unwrap_or(sql::config::to_url(
-        &std::env::var(USERNAME_KEY).unwrap_or(String::from(USERNAME)),
-        &std::env::var(PASSWORD_KEY).unwrap_or(String::from(PASSWORD)),
-        &std::env::var(DATABASE_NAME_KEY).unwrap_or(String::from(DATABASE_NAME)),
-        &std::env::var(HOST_KEY).unwrap_or(String::from(HOST)),
-        &std::env::var(PORT_KEY).unwrap_or(String::from(PORT)),
-    ));
+    let env_vars = env_handler::EnvSettings::from_env_vars().expect("Couldn't load env vars");
 
-    let max_conn = std::env::var(MAX_CONN_KEY)
-        .map(|v| v.parse::<u32>().unwrap_or(MAX_CONN))
-        .unwrap_or(MAX_CONN);
-
-    let client_request_timeout = std::env::var(CLIENT_REQUEST_TIMEOUT_KEY)
-        .map(|x| x.parse::<u64>().unwrap_or(CLIENT_REQUEST_TIMEOUT))
-        .unwrap_or(CLIENT_REQUEST_TIMEOUT);
-
-    let keep_alive = std::env::var(KEEP_ALIVE_KEY)
-        .map(|x| x.parse::<u64>().unwrap_or(KEEP_ALIVE))
-        .unwrap_or(KEEP_ALIVE);
-
-    println!("| DATABASE_URL: {database_url}");
-    println!("| MAX_CONN: {max_conn}");
-    println!("| CLIENT_REQUEST_TIMEOUT: {client_request_timeout}");
-    println!("| KEEP_ALIVE: {keep_alive}");
+    println!("| DATABASE URL: {}", env_vars.database_url);
+    println!("| DATABASE MAX CONNECTIONS IN POOL: {}", env_vars.max_conn);
+    println!(
+        "| SERVER CLIENT REQUEST TIMEOUT: {}",
+        env_vars.client_request_timeout
+    );
+    println!("| SERVER CONNECTION KEEP ALIVE: {}", env_vars.keep_alive);
 
     let pg_pool = sqlx::postgres::PgPoolOptions::new()
-        .max_connections(max_conn)
-        .connect(&database_url)
+        .max_connections(env_vars.max_conn)
+        .connect(&env_vars.database_url)
         .await
         .expect("Couldn't load Postgres Connection Pool");
 
@@ -89,7 +55,6 @@ async fn main() -> std::io::Result<()> {
 
     println!("- Dropping useless data");
     std::mem::drop(args);
-    std::mem::drop(database_url);
 
     println!("- Enabling environment logger");
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
@@ -111,9 +76,9 @@ async fn main() -> std::io::Result<()> {
     })
     .bind(("127.0.0.1", 8080))?
     .client_request_timeout(std::time::Duration::from_micros(
-        client_request_timeout * 1000,
+        env_vars.client_request_timeout * 1000,
     ))
-    .keep_alive(std::time::Duration::from_micros(keep_alive * 1000))
+    .keep_alive(std::time::Duration::from_micros(env_vars.keep_alive * 1000))
     .run()
     .await
 }

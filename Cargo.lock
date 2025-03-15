@@ -776,6 +776,10 @@ dependencies = [
 [[package]]
 name = "env_handler"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
+]
 
 [[package]]
 name = "env_logger"
@@ -1563,7 +1567,7 @@ dependencies = [
  "cached",
  "chrono",
  "const_format",
- "dotenvy",
+ "env_handler",
  "env_logger",
  "futures",
  "rand 0.9.0",
