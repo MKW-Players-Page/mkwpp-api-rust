@@ -36,11 +36,19 @@ pub fn v1() -> impl HttpServiceFactory {
 }
 
 async fn doc() -> HttpResponse {
-    return crate::api::read_file("frontend/doc/v1/index.html", "text/html", HttpResponse::Ok);
+    return crate::api::read_file(
+        "frontend/doc/v1/index.html",
+        "text/html",
+        &mut HttpResponse::Ok(),
+    );
 }
 
 async fn doc_css() -> HttpResponse {
-    return crate::api::read_file("frontend/doc/v1/style.css", "text/css", HttpResponse::Ok);
+    return crate::api::read_file(
+        "frontend/doc/v1/style.css",
+        "text/css",
+        &mut HttpResponse::Ok(),
+    );
 }
 
 pub async fn close_connection(

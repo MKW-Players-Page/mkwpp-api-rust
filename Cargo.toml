@@ -1,7 +1,12 @@
 [package]
 name = "mkwpp-api-rust"
 version = "0.1.0"
+authors = ["FallBackITA27 <leilamassanova@gmail.com>"]
 edition = "2024"
+description = "The Rust API for MKWPP"
+readme = true
+homepage = "https://mariokart64.com/mkw/"
+build = true
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
@@ -22,6 +27,10 @@ argon2 = "0.5.3"
 anyhow = "1.0.97"
 base64 = "0.22.1"
 rand = "0.9.0"
+cached = "0.55.1"
+
+[build-dependencies]
+anyhow = "1.0.97"
 
 [lints.rust]
 unused_imports = "deny"

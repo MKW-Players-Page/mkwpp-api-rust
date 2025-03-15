@@ -43,8 +43,6 @@ impl AppState {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let _ = clear_terminal().status(); // silent error
-
     println!("- Loading environment variables");
     dotenvy::dotenv().expect("Couldn't read .env file");
     let database_url = std::env::var(DATABASE_URL_KEY).unwrap_or(sql::config::to_url(
@@ -118,14 +116,4 @@ async fn main() -> std::io::Result<()> {
     .keep_alive(std::time::Duration::from_micros(keep_alive * 1000))
     .run()
     .await
-}
-
-#[cfg(target_family = "unix")]
-fn clear_terminal() -> std::process::Command {
-    return std::process::Command::new("clear");
-}
-
-#[cfg(target_family = "windows")]
-fn clear_terminal() -> std::process::Command {
-    return std::process::Command::new("cls");
 }

@@ -17,7 +17,7 @@ With `cargo` (to install it, visit [this link](https://rustup.rs/)) you want to 
 cargo install sqlx-cli
 ```
 
-To run migrations, you'll have to type
+To run migrations, you'll have to type (this will be run every time the package is compiled)
 ```bash
 sqlx database setup --source db/migrations
 ```

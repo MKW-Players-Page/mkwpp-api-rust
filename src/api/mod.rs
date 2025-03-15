@@ -1,15 +1,24 @@
-use actix_web::{HttpResponse, HttpResponseBuilder};
+use actix_web::{HttpResponse, HttpResponseBuilder, body::MessageBody};
 
 pub mod v1;
 
 pub fn read_file(
     file_path: &str,
     mime_type: &str,
-    callback: impl FnOnce() -> HttpResponseBuilder,
+    builder: &mut HttpResponseBuilder,
 ) -> HttpResponse {
-    return callback()
-        .content_type(mime_type)
-        .body(std::fs::read_to_string(file_path).expect("Missing file"));
+    builder.content_type(mime_type);
+    return response_builder(
+        builder,
+        std::fs::read_to_string(file_path).expect("Missing file"),
+    );
+}
+
+pub fn response_builder(
+    builder: &mut HttpResponseBuilder,
+    body: impl MessageBody + 'static,
+) -> HttpResponse {
+    return builder.body(body);
 }
 
 pub fn generate_error_json_string(personal_err: &str, lib_err: &str) -> String {
