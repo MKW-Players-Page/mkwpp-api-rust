@@ -152,30 +152,20 @@ pub async fn get(
         times,
         af.iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| {
-                <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()
-            }),
+            .map(|found| <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()),
         arr.iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| {
-                <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()
-            }),
+            .map(|found| <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()),
         totals
             .iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| {
-                <RankingType as TryInto<i32>>::try_into(found.value.clone()).unwrap()
-            }),
+            .map(|found| <RankingType as TryInto<i32>>::try_into(found.value.clone()).unwrap()),
         prwr.iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| {
-                <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()
-            }),
+            .map(|found| <RankingType as TryInto<f64>>::try_into(found.value.clone()).unwrap()),
         tally
             .iter()
             .find(|r| r.player.id == player_id)
-            .map(|found| {
-                <RankingType as TryInto<i16>>::try_into(found.value.clone()).unwrap()
-            }),
+            .map(|found| <RankingType as TryInto<i16>>::try_into(found.value.clone()).unwrap()),
     ))
 }

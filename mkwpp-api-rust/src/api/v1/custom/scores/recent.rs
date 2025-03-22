@@ -1,11 +1,11 @@
-use crate::sql::tables::scores::with_player::ScoresWithPlayer;
+use crate::sql::tables::scores::by_date::ScoresByDate;
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 macro_rules! get_fn {
     ($fn_name:ident, $handle:ident) => {
         async fn $fn_name(path: web::Path<i32>, data: web::Data<crate::AppState>) -> HttpResponse {
-            return crate::api::v1::basic_get::<ScoresWithPlayer>(data, async |x| {
-                ScoresWithPlayer::$handle(x, path.into_inner()).await
+            return crate::api::v1::basic_get::<ScoresByDate>(data, async |x| {
+                ScoresByDate::$handle(x, path.into_inner()).await
             })
             .await;
         }

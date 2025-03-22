@@ -1,43 +1,6 @@
-use crate::sql::tables::{BasicTableQueries, Category};
-use sqlx::{FromRow, Row};
+use crate::sql::tables::BasicTableQueries;
 
-#[derive(serde::Deserialize, Debug, serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Times {
-    pub rank: Option<i32>,
-    pub prwr: Option<f64>,
-    pub std_lvl_code: String,
-    pub id: i32,
-    pub value: i32,
-    pub category: Category,
-    pub is_lap: bool,
-    pub track_id: i32,
-    pub date: Option<chrono::NaiveDate>,
-    pub video_link: Option<String>,
-    pub ghost_link: Option<String>,
-    pub comment: Option<String>,
-    pub initial_rank: Option<i32>,
-}
-
-impl<'a> FromRow<'a, sqlx::postgres::PgRow> for Times {
-    fn from_row(row: &'a sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
-        Ok(Self {
-            rank: row.try_get("rank").unwrap_or(None),
-            prwr: row.try_get("prwr").unwrap_or(None),
-            id: row.try_get("s_id")?,
-            value: row.try_get("value")?,
-            category: row.try_get("category")?,
-            std_lvl_code: row.try_get("code")?,
-            is_lap: row.try_get("is_lap")?,
-            track_id: row.try_get("track_id")?,
-            date: row.try_get("date")?,
-            video_link: row.try_get("video_link")?,
-            ghost_link: row.try_get("ghost_link")?,
-            comment: row.try_get("comment")?,
-            initial_rank: row.try_get("initial_rank")?,
-        })
-    }
-}
+pub use super::Times;
 
 impl Times {
     // TODO: Hardcoded value for Newbie Code
@@ -84,7 +47,7 @@ impl Times {
                                 comment,
                                 initial_rank,
                                 {1}.id,
-                                COALESCE({3}.code, 'NW') AS code
+                                COALESCE({3}.code, 'NW') AS std_lvl_code
                             FROM {0}
                             LEFT JOIN {1} ON
                                 {0}.player_id = {1}.id

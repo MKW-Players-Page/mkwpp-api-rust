@@ -65,14 +65,22 @@ impl serde::Serialize for RegionType {
     }
 }
 
+#[either_field::make_template(
+    GenStructs: true,
+    DeleteTemplate: true,
+    OmitEmptyTupleFields: true;
+    pub Regions: [ player_count: _ ],
+    pub RegionsWithPlayerCount: [ player_count: i64 ],
+)]
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
-pub struct Regions {
+pub struct RegionsTemplate {
     pub id: i32,
     pub code: String,
     pub region_type: RegionType,
     pub parent_id: Option<i32>,
     pub is_ranked: bool,
+    pub player_count: either_field::either!(() | i64),
 }
 
 impl super::BasicTableQueries for Regions {

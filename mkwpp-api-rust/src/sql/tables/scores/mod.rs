@@ -1,22 +1,58 @@
+pub mod by_date;
 pub mod rankings;
 pub mod timesheet;
 pub mod with_player;
 
-#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
+use crate::sql::tables::players::players_basic::PlayersBasic;
+
+#[either_field::make_template(
+    GenStructs: true,
+    DeleteTemplate: true,
+    OmitEmptyTupleFields: true;
+    pub Scores: [
+        player_id: i32,
+        admin_note: Option<String>
+    ],
+    pub ScoresWithPlayer: [
+        player: PlayersBasic,
+        rank: i32,
+        prwr: f64,
+        std_lvl_code: String
+    ],
+    pub Times: [
+        rank: i32,
+        prwr: f64,
+        std_lvl_code: String
+    ],
+    pub ScoresByDate: [
+        player: PlayersBasic,
+        video_link: (),
+        ghost_link: (),
+        comment: (),
+        initial_rank: ()
+    ]
+)]
+#[serde_with::skip_serializing_none]
+#[derive(Debug, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Scores {
+pub struct ScoresTemplate {
     pub id: i32,
     pub value: i32,
+    pub rank: either_field::either!(() | i32),
+    pub prwr: either_field::either!(() | f64),
+    pub std_lvl_code: either_field::either!(() | String),
     pub category: super::Category,
     pub is_lap: bool,
-    pub player_id: i32,
+    #[sqlx(flatten)]
+    pub player: either_field::either!(() | PlayersBasic),
+    pub player_id: either_field::either!(() | i32),
     pub track_id: i32,
     pub date: Option<chrono::NaiveDate>,
-    pub video_link: Option<String>,
-    pub ghost_link: Option<String>,
-    pub comment: Option<String>,
-    pub admin_note: Option<String>,
-    pub initial_rank: Option<i32>,
+    pub video_link: either_field::either!(Option<String> | ()),
+    pub ghost_link: either_field::either!(Option<String> | ()),
+    pub comment: either_field::either!(Option<String> | ()),
+    pub admin_note: either_field::either!(() | Option<String>),
+    pub initial_rank: either_field::either!(Option<i32> | ()),
 }
 
 impl super::BasicTableQueries for Scores {

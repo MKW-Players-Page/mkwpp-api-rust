@@ -30,8 +30,7 @@ impl LogInAttempts {
 
         let equal_ip = if equal_ip < 5 { 0 } else { equal_ip };
         let equal_user_id = if equal_user_id < 5 { 0 } else { equal_user_id };
-        latest.timestamp() + (equal_ip * 30 + equal_user_id * 20)
-            > chrono::Utc::now().timestamp()
+        latest.timestamp() + (equal_ip * 30 + equal_user_id * 20) > chrono::Utc::now().timestamp()
     }
 
     pub async fn get_from_sql(

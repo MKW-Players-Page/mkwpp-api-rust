@@ -136,8 +136,7 @@ impl EnvSettings {
             port: std::env::var(DEFAULT_SCHEMA.port.key)
                 .map(|x| x.parse::<u16>().unwrap_or(DEFAULT_SCHEMA.port.value))
                 .unwrap_or(DEFAULT_SCHEMA.port.value),
-            database_url: std::env::var(DEFAULT_SCHEMA.database_url.key)
-                .unwrap_or(DEFAULT_SCHEMA.database_url.value.to_string()),
+            database_url: DEFAULT_SCHEMA.database_url.value.to_string(),
             max_conn: std::env::var(DEFAULT_SCHEMA.max_conn.key)
                 .map(|v| v.parse::<u32>().unwrap_or(DEFAULT_SCHEMA.max_conn.value))
                 .unwrap_or(DEFAULT_SCHEMA.max_conn.value),
@@ -146,8 +145,7 @@ impl EnvSettings {
                 .unwrap_or(DEFAULT_SCHEMA.keep_alive.value),
             client_request_timeout: std::env::var(DEFAULT_SCHEMA.client_request_timeout.key)
                 .map(|x| {
-                    x
-                        .parse::<u64>()
+                    x.parse::<u64>()
                         .unwrap_or(DEFAULT_SCHEMA.client_request_timeout.value)
                 })
                 .unwrap_or(DEFAULT_SCHEMA.client_request_timeout.value),

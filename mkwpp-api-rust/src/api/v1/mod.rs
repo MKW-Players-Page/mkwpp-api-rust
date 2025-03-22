@@ -78,8 +78,7 @@ pub fn match_rows(
 pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
     rows: Vec<sqlx::postgres::PgRow>,
 ) -> Result<Vec<Table>, HttpResponse> {
-    rows
-        .into_iter()
+    rows.into_iter()
         .map(|r| Table::from_row(&r))
         .collect::<Result<Vec<Table>, sqlx::Error>>()
         .map_err(|e| {
@@ -94,13 +93,11 @@ pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgR
 pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
     match serde_json::to_string(&data) {
         Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
-        Err(e) => {
-            crate::api::generate_error_response(
-                "Error serializing database data",
-                &e.to_string(),
-                HttpResponse::InternalServerError,
-            )
-        }
+        Err(e) => crate::api::generate_error_response(
+            "Error serializing database data",
+            &e.to_string(),
+            HttpResponse::InternalServerError,
+        ),
     }
 }
 

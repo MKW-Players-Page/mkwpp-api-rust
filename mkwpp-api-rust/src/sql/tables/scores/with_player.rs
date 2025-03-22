@@ -1,52 +1,7 @@
 use crate::sql::tables::BasicTableQueries;
 use crate::sql::tables::players::players_basic::PlayersBasic;
-use sqlx::{FromRow, Row};
 
-#[serde_with::skip_serializing_none]
-#[derive(serde::Deserialize, Debug, serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ScoresWithPlayer {
-    pub rank: Option<i32>,
-    pub prwr: Option<f64>,
-    pub std_lvl_code: String,
-    pub id: i32,
-    pub value: i32,
-    pub category: crate::sql::tables::Category,
-    pub is_lap: bool,
-    pub player: PlayersBasic,
-    pub track_id: i32,
-    pub date: Option<chrono::NaiveDate>,
-    pub video_link: Option<String>,
-    pub ghost_link: Option<String>,
-    pub comment: Option<String>,
-    pub initial_rank: Option<i32>,
-}
-
-impl<'a> FromRow<'a, sqlx::postgres::PgRow> for ScoresWithPlayer {
-    fn from_row(row: &'a sqlx::postgres::PgRow) -> Result<Self, sqlx::Error> {
-        Ok(Self {
-            rank: row.try_get("rank").unwrap_or(None),
-            prwr: row.try_get("prwr").unwrap_or(None),
-            id: row.try_get("s_id")?,
-            value: row.try_get("value")?,
-            category: row.try_get("category")?,
-            std_lvl_code: row.try_get("code")?,
-            is_lap: row.try_get("is_lap")?,
-            player: PlayersBasic {
-                id: row.try_get("id")?,
-                name: row.try_get("name")?,
-                alias: row.try_get("alias")?,
-                region_id: row.try_get("region_id")?,
-            },
-            track_id: row.try_get("track_id")?,
-            date: row.try_get("date")?,
-            video_link: row.try_get("video_link")?,
-            ghost_link: row.try_get("ghost_link")?,
-            comment: row.try_get("comment")?,
-            initial_rank: row.try_get("initial_rank")?,
-        })
-    }
-}
+pub use super::ScoresWithPlayer;
 
 impl BasicTableQueries for ScoresWithPlayer {
     const TABLE_NAME: &'static str = super::Scores::TABLE_NAME;
@@ -65,32 +20,6 @@ impl BasicTableQueries for ScoresWithPlayer {
 }
 
 impl ScoresWithPlayer {
-    pub async fn order_by_date(
-        executor: &mut sqlx::PgConnection,
-        limit: i32,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        return sqlx::query(&format!(
-                "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL ORDER BY date DESC LIMIT $1;",
-                super::Scores::TABLE_NAME,
-                PlayersBasic::TABLE_NAME,
-            )).bind(limit)
-            .fetch_all(executor)
-            .await;
-    }
-
-    pub async fn order_records_by_date(
-        executor: &mut sqlx::PgConnection,
-        limit: i32,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        return sqlx::query(&format!(
-                    "SELECT {0}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {1}.id, name, alias, region_id FROM {0} LEFT JOIN {1} ON {0}.player_id = {1}.id WHERE date IS NOT NULL AND initial_rank = 1 ORDER BY date DESC LIMIT $1;",
-                    super::Scores::TABLE_NAME,
-                    PlayersBasic::TABLE_NAME,
-                )).bind(limit)
-                .fetch_all(executor)
-                .await;
-    }
-
     // TODO: Hardcoded value for Newbie Code
     pub async fn filter_charts(
         executor: &mut sqlx::PgConnection,
@@ -136,7 +65,7 @@ impl ScoresWithPlayer {
                                 comment,
                                 initial_rank,
                                 {1}.id,
-                                COALESCE({3}.code, 'NW') AS code,
+                                COALESCE({3}.code, 'NW') AS std_lvl_code,
                                 name,
                                 alias,
                                 region_id FROM {0}
@@ -215,7 +144,7 @@ impl ScoresWithPlayer {
                             comment,
                             initial_rank,
                             {players_table}.id,
-                            COALESCE({standard_level_table}.code, 'NW') AS code,
+                            COALESCE({standard_level_table}.code, 'NW') AS std_lvl_code,
                             name,
                             alias,
                             region_id FROM {scores_table}

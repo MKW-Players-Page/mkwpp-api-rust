@@ -1,15 +1,6 @@
 use crate::sql::tables::BasicTableQueries;
 
-#[derive(Debug, serde::Serialize, sqlx::FromRow)]
-#[serde(rename_all = "camelCase")]
-pub struct RegionsWithPlayerCount {
-    pub id: i32,
-    pub code: String,
-    pub region_type: super::RegionType,
-    pub parent_id: Option<i32>,
-    pub is_ranked: bool,
-    pub player_count: i64,
-}
+pub use super::RegionsWithPlayerCount;
 
 impl BasicTableQueries for RegionsWithPlayerCount {
     const TABLE_NAME: &'static str = super::Regions::TABLE_NAME;
