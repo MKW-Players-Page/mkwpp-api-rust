@@ -26,10 +26,7 @@ pub fn regions() -> impl HttpServiceFactory {
             "/descendence_tree",
             web::get().to(child_tree::get_region_child_tree),
         )
-        .route(
-            "/with_player_count",
-            web::get().to(crate::api::v1::get_star_query::<RegionsWithPlayerCount>),
-        )
+        .route("/with_player_count", web::get().to(get_with_player_count))
         .default_service(web::get().to(default))
 }
 
@@ -65,6 +62,53 @@ async fn get_region_type_hashmap(data: web::Data<crate::AppState>) -> HttpRespon
             }
 
             hashmap
+        },
+    )
+    .await
+}
+
+// TODO: rewrite more optimally
+fn collapse_counts(
+    data: &Vec<RegionsWithPlayerCount>,
+    region_tree: &child_tree::ChildrenTree,
+    lookup_id: i32,
+    found: bool,
+) -> i64 {
+    let found = region_tree.id == lookup_id || found;
+
+    return match &region_tree.children {
+        None => {
+            if found {
+                data.iter()
+                    .find(|x| x.id == region_tree.id)
+                    .map_or(0, |x| x.player_count)
+            } else {
+                0
+            }
+        }
+        Some(children) => children
+            .iter()
+            .map(|x| collapse_counts(&data, x, lookup_id, found))
+            .sum(),
+    };
+}
+
+// TODO: rewrite more optimally
+async fn get_with_player_count(data: web::Data<crate::AppState>) -> HttpResponse {
+    crate::api::v1::basic_get_with_data_mod::<RegionsWithPlayerCount, Vec<RegionsWithPlayerCount>>(
+        data,
+        RegionsWithPlayerCount::select_star_query,
+        async |mut data: Vec<RegionsWithPlayerCount>| {
+            let region_tree = child_tree::generate_region_tree_player_count(data.clone()).await;
+
+            let counts = data
+                .iter()
+                .map(|x| collapse_counts(&data, &region_tree, x.id, false))
+                .collect::<Vec<i64>>();
+            data.iter_mut()
+                .zip(counts)
+                .for_each(|(x, new_count)| x.player_count = new_count);
+            data
         },
     )
     .await

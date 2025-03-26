@@ -521,9 +521,9 @@ impl Rankings {
             Self::TABLE_NAME,
             PlayersBasic::TABLE_NAME,
             if is_lap.is_some() {
-                "AND {0}.is_lap = $4"
+                format!("AND {0}.is_lap = $4", Self::TABLE_NAME)
             } else {
-                ""
+                "".to_string()
             }, // TODO: this is shit
             if is_lap.is_some() { 32 } else { 64 },
             crate::sql::tables::standards::Standards::TABLE_NAME,

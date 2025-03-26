@@ -1,12 +1,15 @@
-use crate::sql::tables::{BasicTableQueries, regions::Regions};
+use crate::sql::tables::{
+    BasicTableQueries,
+    regions::{Regions, RegionsWithPlayerCount},
+};
 use actix_web::{HttpResponse, web};
 use serde::ser::SerializeMap;
 use std::collections::HashMap;
 
 #[derive(Debug)]
-struct ChildrenTree {
-    id: i32,
-    children: Option<Vec<ChildrenTree>>,
+pub struct ChildrenTree {
+    pub id: i32,
+    pub children: Option<Vec<ChildrenTree>>,
 
     dangling: Option<HashMap<i32, Vec<ChildrenTree>>>,
     is_root: bool,
@@ -94,11 +97,9 @@ impl serde::Serialize for ChildrenTree {
     }
 }
 
-pub async fn get_region_child_tree(data: web::Data<crate::AppState>) -> HttpResponse {
-    crate::api::v1::basic_get_with_data_mod::<Regions, ChildrenTree>(
-        data,
-        Regions::select_star_query,
-        async |data: Vec<Regions>| {
+macro_rules! region_tree_generator {
+    ($region_subtype:ident, $fn_name:ident) => {
+        pub async fn $fn_name(data: Vec<$region_subtype>) -> ChildrenTree {
             let mut tree: ChildrenTree = ChildrenTree {
                 id: 1,
                 children: Some(vec![]),
@@ -113,7 +114,18 @@ pub async fn get_region_child_tree(data: web::Data<crate::AppState>) -> HttpResp
             }
 
             tree
-        },
+        }
+    };
+}
+
+region_tree_generator!(Regions, generate_region_tree);
+region_tree_generator!(RegionsWithPlayerCount, generate_region_tree_player_count);
+
+pub async fn get_region_child_tree(data: web::Data<crate::AppState>) -> HttpResponse {
+    crate::api::v1::basic_get_with_data_mod::<Regions, ChildrenTree>(
+        data,
+        Regions::select_star_query,
+        generate_region_tree,
     )
     .await
 }

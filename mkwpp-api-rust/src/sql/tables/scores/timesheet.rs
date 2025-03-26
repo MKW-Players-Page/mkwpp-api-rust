@@ -69,7 +69,7 @@ impl Times {
                 )
                 WHERE id = $1
                 ORDER BY track_id;
-                "#,
+            "#,
             super::Scores::TABLE_NAME,
             crate::sql::tables::players::Players::TABLE_NAME,
             crate::sql::tables::standards::Standards::TABLE_NAME,
@@ -92,6 +92,7 @@ impl Times {
 
 #[serde_with::skip_serializing_none]
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Timesheet {
     pub times: Vec<Times>,
     pub af: Option<f64>,

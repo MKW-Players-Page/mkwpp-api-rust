@@ -2,7 +2,7 @@ use super::BasicTableQueries;
 
 pub mod with_player_count;
 
-#[derive(sqlx::Type, Debug, serde::Deserialize, Hash, PartialEq, Eq)]
+#[derive(sqlx::Type, Debug, serde::Deserialize, Hash, PartialEq, Eq, Clone)]
 #[sqlx(type_name = "region_type", rename_all = "snake_case")]
 pub enum RegionType {
     World,
@@ -72,7 +72,7 @@ impl serde::Serialize for RegionType {
     pub Regions: [ player_count: _ ],
     pub RegionsWithPlayerCount: [ player_count: i64 ],
 )]
-#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+#[derive(Debug, serde::Serialize, sqlx::FromRow, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RegionsTemplate {
     pub id: i32,

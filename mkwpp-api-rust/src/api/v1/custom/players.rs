@@ -19,10 +19,10 @@ default_paths_fn!("/list", "/select", "/select_basic");
 pub async fn get_with_decode<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + FilterByPlayerId,
 >(
-    data: web::Data<crate::AppState>,
     body: web::Json<Vec<i32>>,
+    data: web::Data<crate::AppState>,
 ) -> HttpResponse {
-    let player_ids = body.0;
+    let player_ids = body.into_inner();
     return crate::api::v1::basic_get::<Table>(data, async |x| {
         return Table::get_select_players(x, player_ids).await;
     })

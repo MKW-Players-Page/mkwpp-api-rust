@@ -5,6 +5,7 @@ pub use super::RegionsWithPlayerCount;
 impl BasicTableQueries for RegionsWithPlayerCount {
     const TABLE_NAME: &'static str = super::Regions::TABLE_NAME;
 
+    // This returns the number of players with the region selected
     async fn select_star_query(
         executor: &mut sqlx::PgConnection,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
