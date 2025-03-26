@@ -1,6 +1,6 @@
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
-use crate::auth::validated_strings::ValidatedString;
+use crate::{api::FinalErrorResponse, auth::validated_strings::ValidatedString};
 
 pub fn auth() -> impl HttpServiceFactory {
     web::scope("/auth")
@@ -18,7 +18,7 @@ struct RegisterBody {
 }
 
 async fn register(body: web::Json<RegisterBody>, data: web::Data<crate::AppState>) -> HttpResponse {
-    let body = body.0;
+    let body = body.into_inner();
 
     let transaction_future = data.pg_pool.begin();
 
@@ -26,66 +26,77 @@ async fn register(body: web::Json<RegisterBody>, data: web::Data<crate::AppState
         match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
             Ok(v) => v,
             Err(e) => {
-                return crate::api::generate_error_response(
-                    "Error validating the username",
-                    &format!("{:?}", e),
-                    HttpResponse::BadRequest,
-                );
+                return FinalErrorResponse::new(
+                    vec![String::from("Error validating the username")],
+                    std::collections::HashMap::from([(
+                        String::from("username"),
+                        vec![format!("{:?}", e)],
+                    )]),
+                )
+                .generate_response(HttpResponse::BadRequest);
             }
         };
     let password =
         match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
             Ok(v) => v,
             Err(e) => {
-                return crate::api::generate_error_response(
-                    "Error validating the password",
-                    &format!("{:?}", e),
-                    HttpResponse::BadRequest,
-                );
+                return FinalErrorResponse::new(
+                    vec![String::from("Error validating the password")],
+                    std::collections::HashMap::from([(
+                        String::from("password"),
+                        vec![format!("{:?}", e)],
+                    )]),
+                )
+                .generate_response(HttpResponse::BadRequest);
             }
         };
 
     let email = match crate::auth::validated_strings::email::Email::new_from_string(body.email) {
         Ok(v) => v,
         Err(e) => {
-            return crate::api::generate_error_response(
-                "Error validating the email",
-                &format!("{:?}", e),
-                HttpResponse::BadRequest,
-            );
+            return FinalErrorResponse::new(
+                vec![String::from("Error validating the email")],
+                std::collections::HashMap::from([(
+                    String::from("email"),
+                    vec![format!("{:?}", e)],
+                )]),
+            )
+            .generate_response(HttpResponse::BadRequest);
         }
     };
+
+    println!("Deos this pass here!");
 
     let mut transaction = match transaction_future.await {
         Ok(v) => v,
         Err(error) => {
-            return crate::api::generate_error_response(
-                "Error starting transaction",
-                error.to_string().as_str(),
-                HttpResponse::InternalServerError,
-            );
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error starting transaction"),
+                error.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
         }
     };
 
     return match crate::auth::register(username, password, email, &mut transaction).await {
-        Err(e) => crate::api::generate_error_response(
-            "Error registering user",
-            e.to_string().as_str(),
-            HttpResponse::InternalServerError,
-        ),
+        Err(e) => FinalErrorResponse::new_no_fields(vec![
+            String::from("Error registering user"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError),
         Ok(v) => match serde_json::to_string(&v) {
-            Err(e) => crate::api::generate_error_response(
-                "Error serializing data",
-                e.to_string().as_str(),
-                HttpResponse::InternalServerError,
-            ),
+            Err(e) => FinalErrorResponse::new_no_fields(vec![
+                String::from("Error serializing data"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError),
             Ok(v) => {
                 if let Err(x) = transaction.commit().await {
-                    return crate::api::generate_error_response(
-                        "Couldn't commit transaction",
-                        x.to_string().as_str(),
-                        HttpResponse::InternalServerError,
-                    );
+                    return FinalErrorResponse::new_no_fields(vec![
+                        String::from("Couldn't commit transaction"),
+                        x.to_string(),
+                    ])
+                    .generate_response(HttpResponse::InternalServerError);
                 }
                 HttpResponse::Ok().content_type("application/json").body(v)
             }
@@ -116,54 +127,60 @@ async fn login(
         match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
             Ok(v) => v,
             Err(e) => {
-                return crate::api::generate_error_response(
-                    "Error validating the username",
-                    &format!("{:?}", e),
-                    HttpResponse::BadRequest,
-                );
+                return FinalErrorResponse::new(
+                    vec![String::from("Error validating the username")],
+                    std::collections::HashMap::from([(
+                        String::from("username"),
+                        vec![format!("{:?}", e)],
+                    )]),
+                )
+                .generate_response(HttpResponse::BadRequest);
             }
         };
     let password =
         match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
             Ok(v) => v,
             Err(e) => {
-                return crate::api::generate_error_response(
-                    "Error validating the password",
-                    &format!("{:?}", e),
-                    HttpResponse::BadRequest,
-                );
+                return FinalErrorResponse::new(
+                    vec![String::from("Error validating the password")],
+                    std::collections::HashMap::from([(
+                        String::from("password"),
+                        vec![format!("{:?}", e)],
+                    )]),
+                )
+                .generate_response(HttpResponse::BadRequest);
             }
         };
 
     let mut transaction = match transaction_future.await {
         Ok(v) => v,
         Err(error) => {
-            return crate::api::generate_error_response(
-                "Error starting transaction",
-                error.to_string().as_str(),
-                HttpResponse::InternalServerError,
-            );
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error starting transaction"),
+                error.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
         }
     };
     return match crate::auth::log_in(username, password, ip, &mut transaction).await {
-        Err(e) => crate::api::generate_error_response(
-            "Error logging into user",
-            e.to_string().as_str(),
-            HttpResponse::InternalServerError,
-        ),
+        Err(e) => FinalErrorResponse::new_no_fields(vec![
+            String::from("Error logging into user"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError),
         Ok(v) => match serde_json::to_string(&v) {
-            Err(e) => crate::api::generate_error_response(
-                "Error serializing data",
-                e.to_string().as_str(),
-                HttpResponse::InternalServerError,
-            ),
+            Err(e) => FinalErrorResponse::new_no_fields(vec![
+                String::from("Error serializing data"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError),
             Ok(v) => {
                 if let Err(x) = transaction.commit().await {
-                    return crate::api::generate_error_response(
-                        "Couldn't commit transaction",
-                        x.to_string().as_str(),
-                        HttpResponse::InternalServerError,
-                    );
+                    return FinalErrorResponse::new_no_fields(vec![
+                        String::from("Couldn't commit transaction"),
+                        x.to_string(),
+                    ])
+                    .generate_response(HttpResponse::InternalServerError);
                 }
                 HttpResponse::Ok().content_type("application/json").body(v)
             }

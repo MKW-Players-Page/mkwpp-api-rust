@@ -1,6 +1,8 @@
 use crate::sql::tables::BasicTableQueries;
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
+use super::FinalErrorResponse;
+
 macro_rules! default_paths_fn {
     ($($y:literal),+) => {
             async fn default() -> impl actix_web::Responder {
@@ -55,11 +57,11 @@ pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
 ) -> Result<(), HttpResponse> {
     connection.close().await.map_err(|e| {
-        crate::api::generate_error_response(
-            "Error closing Database connection",
-            &e.to_string(),
-            HttpResponse::InternalServerError,
-        )
+        FinalErrorResponse::new_no_fields(vec![
+            String::from("Error closing Database connection"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError)
     })
 }
 
@@ -67,11 +69,11 @@ pub fn match_rows(
     rows_request: Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
 ) -> Result<Vec<sqlx::postgres::PgRow>, HttpResponse> {
     rows_request.map_err(|e| {
-        crate::api::generate_error_response(
-            "Couldn't get rows from database",
-            &e.to_string(),
-            HttpResponse::InternalServerError,
-        )
+        FinalErrorResponse::new_no_fields(vec![
+            String::from("Couldn't get rows from database"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError)
     })
 }
 
@@ -82,22 +84,22 @@ pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgR
         .map(|r| Table::from_row(&r))
         .collect::<Result<Vec<Table>, sqlx::Error>>()
         .map_err(|e| {
-            crate::api::generate_error_response(
-                "Error decoding rows from database",
-                &e.to_string(),
-                HttpResponse::InternalServerError,
-            )
+            FinalErrorResponse::new_no_fields(vec![
+                String::from("Error decoding rows from database"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError)
         })
 }
 
 pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
     match serde_json::to_string(&data) {
         Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
-        Err(e) => crate::api::generate_error_response(
-            "Error serializing database data",
-            &e.to_string(),
-            HttpResponse::InternalServerError,
-        ),
+        Err(e) => FinalErrorResponse::new_no_fields(vec![
+            String::from("Error serializing database data"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError),
     }
 }
 

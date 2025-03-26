@@ -1,6 +1,9 @@
-use crate::sql::tables::{
-    BasicTableQueries,
-    regions::{RegionType, Regions, with_player_count::RegionsWithPlayerCount},
+use crate::{
+    api::FinalErrorResponse,
+    sql::tables::{
+        BasicTableQueries,
+        regions::{RegionType, Regions, with_player_count::RegionsWithPlayerCount},
+    },
 };
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 use std::collections::HashMap;
@@ -76,7 +79,7 @@ fn collapse_counts(
 ) -> i64 {
     let found = region_tree.id == lookup_id || found;
 
-    return match &region_tree.children {
+    match &region_tree.children {
         None => {
             if found {
                 data.iter()
@@ -88,9 +91,9 @@ fn collapse_counts(
         }
         Some(children) => children
             .iter()
-            .map(|x| collapse_counts(&data, x, lookup_id, found))
+            .map(|x| collapse_counts(data, x, lookup_id, found))
             .sum(),
-    };
+    }
 }
 
 // TODO: rewrite more optimally
@@ -133,11 +136,11 @@ pub async fn basic_get_i32(
     let rows = match rows_request {
         Ok(rows) => rows,
         Err(e) => {
-            return crate::api::generate_error_response(
-                "Couldn't get rows from database",
-                &e.to_string(),
-                HttpResponse::InternalServerError,
-            );
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Couldn't get rows from database"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
         }
     };
 

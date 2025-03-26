@@ -14,11 +14,11 @@ impl AppState {
         &self,
     ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, HttpResponse> {
         self.pg_pool.acquire().await.map_err(|e| {
-            crate::api::generate_error_response(
-                "Couldn't get connection from data pool",
-                &e.to_string(),
-                HttpResponse::InternalServerError,
-            )
+            crate::api::FinalErrorResponse::new_no_fields(vec![
+                String::from("Couldn't get connection from data pool"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError)
         })
     }
 }

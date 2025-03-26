@@ -523,7 +523,7 @@ impl Rankings {
             if is_lap.is_some() {
                 format!("AND {0}.is_lap = $4", Self::TABLE_NAME)
             } else {
-                "".to_string()
+                String::new()
             }, // TODO: this is shit
             if is_lap.is_some() { 32 } else { 64 },
             crate::sql::tables::standards::Standards::TABLE_NAME,
