@@ -62,10 +62,12 @@ pub async fn login(
         ip,
         data.id,
     ) {
+        cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
         return Err(anyhow::anyhow!("Player is on cooldown"));
     };
 
     if !data.is_verified {
+        cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
         return Err(anyhow::anyhow!("Player is not verified"));
     };
 
@@ -73,16 +75,7 @@ pub async fn login(
 
     match hash == data.password {
         false => {
-            sqlx::query(const_format::formatc!(
-                r#"
-                    INSERT INTO ip_request_throttles (ip, user_id, timestamp)
-                    VALUES($1, $2, NOW())
-                "#
-            ))
-            .bind(ip)
-            .bind(data.id)
-            .execute(executor)
-            .await?;
+            cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
             Err(anyhow::anyhow!("Data is wrong"))
         }
         true => {

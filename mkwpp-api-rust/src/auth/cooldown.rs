@@ -1,4 +1,4 @@
-use sqlx::FromRow;
+use sqlx::{FromRow, postgres::PgQueryResult};
 use std::net::IpAddr;
 
 #[derive(FromRow)]
@@ -9,6 +9,23 @@ pub struct LogInAttempts {
 }
 
 impl LogInAttempts {
+    pub async fn insert(
+        executor: &mut sqlx::PgConnection,
+        ip: IpAddr,
+        user_id: i32,
+    ) -> Result<PgQueryResult, sqlx::Error> {
+        sqlx::query(const_format::formatc!(
+            r#"
+                INSERT INTO ip_request_throttles (ip, user_id, timestamp)
+                VALUES($1, $2, NOW())
+            "#
+        ))
+        .bind(ip)
+        .bind(user_id)
+        .execute(executor)
+        .await
+    }
+
     pub fn is_on_cooldown(mut data: Vec<Self>, ip: IpAddr, user_id: i32) -> bool {
         if data.len() < 5 {
             return false;
@@ -50,17 +67,22 @@ impl LogInAttempts {
         .collect::<Result<Vec<Self>, sqlx::Error>>()?;
 
         user_data.extend(
-            sqlx::query("SELECT * FROM ip_request_throttles WHERE ip = $1 AND timestamp <= $2")
-                .bind(ip)
-                .bind(
-                    chrono::DateTime::from_timestamp(chrono::Utc::now().timestamp() - 86400, 0)
-                        .unwrap(),
-                )
-                .fetch_all(executor)
-                .await?
-                .into_iter()
-                .map(|r| Self::from_row(&r))
-                .collect::<Result<Vec<Self>, sqlx::Error>>()?,
+            sqlx::query(
+                r"
+                SELECT *
+                FROM ip_request_throttles
+                WHERE
+                    ip = $1 AND
+                    timestamp >= NOW() - interval '1' day
+                ORDER BY timestamp DESC
+                ",
+            )
+            .bind(ip)
+            .fetch_all(executor)
+            .await?
+            .into_iter()
+            .map(|r| Self::from_row(&r))
+            .collect::<Result<Vec<Self>, sqlx::Error>>()?,
         );
 
         Ok(user_data)

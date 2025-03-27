@@ -113,11 +113,8 @@ async fn login(
     data: web::Data<crate::AppState>,
 ) -> HttpResponse {
     let transaction_future = data.pg_pool.begin();
-
-    // default pause
     std::thread::sleep(std::time::Duration::from_secs(5));
-
-    let body = body.0;
+    let body = body.into_inner();
 
     let ip = req.peer_addr().unwrap().ip();
     let username =
@@ -159,30 +156,36 @@ async fn login(
             .generate_response(HttpResponse::InternalServerError);
         }
     };
-    return match crate::auth::login(username, password, ip, &mut transaction).await {
+
+    let login_attempt = crate::auth::login(username, password, ip, &mut transaction).await;
+
+    if let Err(x) = transaction.commit().await {
+        return FinalErrorResponse::new_no_fields(vec![
+            String::from("Couldn't commit transaction"),
+            x.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError);
+    }
+
+    let login_attempt = match login_attempt {
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error logging into user"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+        Ok(v) => v,
+    };
+
+    match serde_json::to_string(&login_attempt) {
         Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error logging into user"),
+            String::from("Error serializing data"),
             e.to_string(),
         ])
         .generate_response(HttpResponse::InternalServerError),
-        Ok(v) => match serde_json::to_string(&v) {
-            Err(e) => FinalErrorResponse::new_no_fields(vec![
-                String::from("Error serializing data"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError),
-            Ok(v) => {
-                if let Err(x) = transaction.commit().await {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Couldn't commit transaction"),
-                        x.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
-                HttpResponse::Ok().content_type("application/json").body(v)
-            }
-        },
-    };
+        Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
+    }
 }
 
 #[derive(serde::Deserialize)]
