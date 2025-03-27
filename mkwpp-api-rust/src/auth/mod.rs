@@ -2,6 +2,8 @@ use std::net::IpAddr;
 
 use base64::Engine;
 use rand::Rng;
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use validated_strings::ValidatedString;
 
 mod cooldown;
@@ -30,6 +32,7 @@ struct BareMinimumData {
 }
 
 #[derive(serde::Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct LogInData {
     pub session_token: String,
     pub expiry: chrono::DateTime<chrono::Utc>,
@@ -159,4 +162,35 @@ pub async fn is_valid_token(
     .fetch_optional(executor)
     .await
     .map(|x| x.is_some());
+}
+
+#[derive(sqlx::FromRow, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ClientSideUserData {
+    player_id: i32,
+    user_id: i32, username: String,
+}
+
+pub async fn get_user_data(
+    session_token: &str,
+    executor: &mut sqlx::PgConnection,
+) -> Result<Option<Result<ClientSideUserData, sqlx::Error>>, sqlx::Error> {
+    sqlx::query(const_format::formatc!(
+        r#"
+            SELECT
+                users.player_id,
+                users.id AS user_id,
+                username
+            FROM users
+            LEFT JOIN auth_tokens
+                ON auth_tokens.user_id = users.id
+            WHERE
+                session_token = $1 AND
+                expiry >= NOW()
+        "#
+    ))
+    .bind(session_token)
+    .fetch_optional(executor)
+    .await
+    .map(|x| x.map(|x| ClientSideUserData::from_row(&x)))
 }

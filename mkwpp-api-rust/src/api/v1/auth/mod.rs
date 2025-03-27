@@ -6,9 +6,10 @@ pub fn auth() -> impl HttpServiceFactory {
     web::scope("/auth")
         .route("/register", web::put().to(register))
         .route("/login", web::put().to(login))
+        .route("/user_data", web::post().to(user_data))
         .default_service(web::get().to(default))
 }
-default_paths_fn!("/register", "/login");
+default_paths_fn!("/register", "/login", "/user_data");
 
 #[derive(serde::Deserialize)]
 struct RegisterBody {
@@ -65,8 +66,6 @@ async fn register(body: web::Json<RegisterBody>, data: web::Data<crate::AppState
         }
     };
 
-    println!("Deos this pass here!");
-
     let mut transaction = match transaction_future.await {
         Ok(v) => v,
         Err(error) => {
@@ -84,23 +83,18 @@ async fn register(body: web::Json<RegisterBody>, data: web::Data<crate::AppState
             e.to_string(),
         ])
         .generate_response(HttpResponse::InternalServerError),
-        Ok(v) => match serde_json::to_string(&v) {
-            Err(e) => FinalErrorResponse::new_no_fields(vec![
-                String::from("Error serializing data"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError),
-            Ok(v) => {
-                if let Err(x) = transaction.commit().await {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Couldn't commit transaction"),
-                        x.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
-                HttpResponse::Ok().content_type("application/json").body(v)
+        Ok(_) => {
+            if let Err(x) = transaction.commit().await {
+                return FinalErrorResponse::new_no_fields(vec![
+                    String::from("Couldn't commit transaction"),
+                    x.to_string(),
+                ])
+                .generate_response(HttpResponse::InternalServerError);
             }
-        },
+            HttpResponse::Ok()
+                .content_type("application/json")
+                .body("{}")
+        }
     };
 }
 
@@ -186,4 +180,66 @@ async fn login(
             }
         },
     };
+}
+
+#[derive(serde::Deserialize)]
+struct UserDataBody {
+    session_token: String,
+}
+
+async fn user_data(
+    body: web::Json<UserDataBody>,
+    data: web::Data<crate::AppState>,
+) -> HttpResponse {
+    let body = body.into_inner();
+
+    let mut connection = match data.acquire_pg_connection().await {
+        Ok(conn) => conn,
+        Err(e) => return e,
+    };
+
+    let user_data = match crate::auth::get_user_data(&body.session_token, &mut connection).await {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error getting user data"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    let user_data = match user_data {
+        Some(v) => v,
+        None => {
+            return FinalErrorResponse::new_no_fields(vec![String::from("No user found")])
+                .generate_response(HttpResponse::BadRequest);
+        }
+    };
+
+    let user_data = match user_data {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error decoding user data rows"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    let user_data = match serde_json::to_string(&user_data) {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error serializing user data"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    HttpResponse::Ok()
+        .content_type("application/json")
+        .body(user_data)
 }
