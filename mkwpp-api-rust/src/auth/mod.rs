@@ -3,7 +3,7 @@ use std::net::IpAddr;
 use base64::Engine;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{FromRow, postgres::PgQueryResult};
 use validated_strings::ValidatedString;
 
 mod cooldown;
@@ -38,7 +38,7 @@ pub struct LogInData {
     pub expiry: chrono::DateTime<chrono::Utc>,
 }
 
-pub async fn log_in(
+pub async fn login(
     username: validated_strings::username::Username,
     password: validated_strings::password::Password,
     ip: IpAddr,
@@ -168,7 +168,8 @@ pub async fn is_valid_token(
 #[serde(rename_all = "camelCase")]
 pub struct ClientSideUserData {
     player_id: i32,
-    user_id: i32, username: String,
+    user_id: i32,
+    username: String,
 }
 
 pub async fn get_user_data(
@@ -193,4 +194,19 @@ pub async fn get_user_data(
     .fetch_optional(executor)
     .await
     .map(|x| x.map(|x| ClientSideUserData::from_row(&x)))
+}
+
+pub async fn logout(
+    session_token: &str,
+    executor: &mut sqlx::PgConnection,
+) -> Result<PgQueryResult, sqlx::Error> {
+    sqlx::query(const_format::formatc!(
+        r#"
+        DELETE FROM auth_tokens
+        WHERE session_token = $1
+        "#
+    ))
+    .bind(session_token)
+    .execute(executor)
+    .await
 }

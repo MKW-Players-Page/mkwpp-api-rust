@@ -6,12 +6,14 @@ pub fn auth() -> impl HttpServiceFactory {
     web::scope("/auth")
         .route("/register", web::put().to(register))
         .route("/login", web::put().to(login))
+        .route("/logout", web::put().to(logout))
         .route("/user_data", web::post().to(user_data))
         .default_service(web::get().to(default))
 }
 default_paths_fn!("/register", "/login", "/user_data");
 
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct RegisterBody {
     username: String,
     password: String,
@@ -99,6 +101,7 @@ async fn register(body: web::Json<RegisterBody>, data: web::Data<crate::AppState
 }
 
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct LoginBody {
     username: String,
     password: String,
@@ -156,7 +159,7 @@ async fn login(
             .generate_response(HttpResponse::InternalServerError);
         }
     };
-    return match crate::auth::log_in(username, password, ip, &mut transaction).await {
+    return match crate::auth::login(username, password, ip, &mut transaction).await {
         Err(e) => FinalErrorResponse::new_no_fields(vec![
             String::from("Error logging into user"),
             e.to_string(),
@@ -183,6 +186,7 @@ async fn login(
 }
 
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct UserDataBody {
     session_token: String,
 }
@@ -242,4 +246,37 @@ async fn user_data(
     HttpResponse::Ok()
         .content_type("application/json")
         .body(user_data)
+}
+
+async fn logout(body: web::Json<UserDataBody>, data: web::Data<crate::AppState>) -> HttpResponse {
+    let mut transaction = match data.pg_pool.begin().await {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error creating transaction"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+    let body = body.into_inner();
+
+    if let Err(e) = crate::auth::logout(&body.session_token, &mut transaction).await {
+        return FinalErrorResponse::new_no_fields(vec![
+            String::from("Error removing session"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError);
+    }
+
+    return match transaction.commit().await {
+        Ok(_) => HttpResponse::Ok()
+            .content_type("application/json")
+            .body("{}"),
+        Err(e) => FinalErrorResponse::new_no_fields(vec![
+            String::from("Error committing transaction"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError),
+    };
 }
