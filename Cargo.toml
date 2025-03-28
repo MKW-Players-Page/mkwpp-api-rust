@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
-sqlx = { version = "0.8.3", features = ["runtime-tokio", "chrono", "postgres"] }
+sqlx = { version = "0.8.3", features = ["runtime-tokio", "tls-rustls", "chrono", "postgres"] }
 chrono = { version= "0.4.39", features = ["serde"] }
 actix-web = "4.9.0"
 serde = "1.0.217"
