@@ -8,43 +8,46 @@ readme = true
 homepage = "https://mariokart64.com/mkw/"
 build = true
 
-[features]
-default = []
-import_data = []
-
 [dependencies]
-tokio = { version = "1", features = ["full"] }
-sqlx = { version = "0.8.3", features = [
-    "runtime-tokio",
-    "chrono",
-    "postgres",
-    "ipnetwork",
-] }
-chrono = { version = "0.4.39", features = ["serde"] }
+actix-cors = "0.7.0"
 actix-web = "4.10.2"
+anyhow = "1.0.97"
+argon2 = "0.5.3"
+base64 = "0.22.1"
+cached = "0.55.1"
+chrono = { version = "0.4.39", features = ["serde"] }
+const_format = { version = "0.2.34", features = ["fmt"] }
+either_field = "1.2.0"
+env_handler = { path = "../env_handler" }
+env_logger = "0.11.6"
+futures = { version = "0.3.31", features = ["executor"] }
+mail-send = "0.5.1"
+rand = "0.9.0"
+regex = "1.11.1"
 serde = "1.0.217"
 serde_json = "1.0.138"
-env_logger = "0.11.6"
-typetag = "0.2.19"
-futures = { version = "0.3.31", features = ["executor"] }
 serde_with = "3.12.0"
-actix-cors = "0.7.0"
-const_format = { version = "0.2.34", features = ["fmt"] }
-regex = "1.11.1"
-argon2 = "0.5.3"
-anyhow = "1.0.97"
-base64 = "0.22.1"
-rand = "0.9.0"
-cached = "0.55.1"
-env_handler = { path = "../env_handler" }
-either_field = "1.2.0"
-mail-send = "0.5.1"
+sqlx = { version = "0.8.3", features = [
+  "chrono",
+  "ipnetwork",
+  "postgres",
+  "runtime-tokio",
+  "tls-rustls",
+] }
+tokio = { version = "1", features = ["full"] }
+typetag = "0.2.19"
 
 [build-dependencies]
 anyhow = "1.0.97"
-sqlx = { version = "0.8.3", features = ["postgres"] }
-tokio = { version = "1", features = ["full"] }
 env_handler = { path = "../env_handler" }
+sqlx = { version = "0.8.3", features = [
+  "postgres",
+] }
+tokio = { version = "1", features = ["full"] }
+
+[features]
+default = []
+import_data = []
 
 [lints]
 workspace = true
