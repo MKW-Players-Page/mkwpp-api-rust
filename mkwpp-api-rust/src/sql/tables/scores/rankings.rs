@@ -54,14 +54,8 @@ impl Rankings {
         max_date: chrono::NaiveDate,
         region_id: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        let region_ids = match crate::sql::tables::regions::Regions::get_descendants(
-            executor, region_id,
-        )
-        .await
-        {
-            Ok(v) => v,
-            Err(e) => return Err(e),
-        };
+        let region_ids =
+            crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
 
         match ranking_type {
             RankingType::AverageFinish(_) => {
@@ -227,18 +221,20 @@ impl Rankings {
                     CROSS JOIN (VALUES (TRUE),(FALSE)) AS t (is_lap)
                 )
             SELECT *,
-                id, region_id, name, alias,
-                ((FIRST_VALUE(total_time) OVER(ORDER BY total_time ASC))::FLOAT8 / total_time::FLOAT8) AS personal_record_world_record,
-                (RANK() OVER(ORDER BY total_time ASC))::INTEGER AS rank
+                (RANK() OVER(ORDER BY personal_record_world_record DESC))::INTEGER AS rank
             FROM (
                 SELECT
                     id,
                     MAX(name) AS name,
                     MAX(alias) AS alias,
                     MAX(region_id) AS region_id,
-                    SUM(value)::INTEGER AS total_time
+                    (SUM(prwr)::FLOAT8 / {4}::FLOAT8) AS personal_record_world_record
                 FROM (
-                    SELECT * FROM (
+                    SELECT *,
+                        ((FIRST_VALUE(value) OVER(
+                            PARTITION BY track_id, is_lap ORDER BY value ASC
+                        ))::FLOAT8 / value::FLOAT8) AS prwr
+                    FROM (
                         SELECT *,
                             ROW_NUMBER() OVER (
                                 PARTITION BY
@@ -279,7 +275,7 @@ impl Rankings {
                         {3}
                 )
                 GROUP BY id
-            ) ORDER BY total_time ASC;
+            ) ORDER BY personal_record_world_record DESC;
             "#,
             Self::TABLE_NAME,
             PlayersBasic::TABLE_NAME,
@@ -289,6 +285,7 @@ impl Rankings {
             } else {
                 ""
             }, // TODO: this is shit
+            if is_lap.is_some() { 32 } else { 64 }
         ))
         .bind(category)
         .bind(max_date)
