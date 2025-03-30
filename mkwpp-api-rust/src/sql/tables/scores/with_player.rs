@@ -30,14 +30,8 @@ impl ScoresWithPlayer {
         region_id: i32,
         limit: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        let region_ids = match crate::sql::tables::regions::Regions::get_descendants(
-            executor, region_id,
-        )
-        .await
-        {
-            Ok(v) => v,
-            Err(e) => return Err(e),
-        };
+        let region_ids =
+            crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
 
         return sqlx::query(&format!(
             r#"
@@ -112,14 +106,9 @@ impl ScoresWithPlayer {
         max_date: chrono::NaiveDate,
         region_id: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
-        let region_ids = match crate::sql::tables::regions::Regions::get_descendants(
-            executor, region_id,
-        )
-        .await
-        {
-            Ok(v) => v,
-            Err(e) => return Err(e),
-        };
+        let region_ids =
+            crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
+
         return sqlx::query(&format!(
             r#"
                 SELECT *,

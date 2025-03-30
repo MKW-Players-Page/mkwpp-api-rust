@@ -10,7 +10,7 @@ pub fn auth() -> impl HttpServiceFactory {
         .route("/user_data", web::post().to(user_data))
         .default_service(web::get().to(default))
 }
-default_paths_fn!("/register", "/login", "/user_data");
+default_paths_fn!("/register", "/logout", "/login", "/user_data");
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
