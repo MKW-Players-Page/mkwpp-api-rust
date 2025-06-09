@@ -20,8 +20,11 @@ struct RegisterBody {
     email: String,
 }
 
-async fn register(body: web::Json<RegisterBody>, data: web::Data<crate::AppState>) -> HttpResponse {
+async fn register(body: web::Json<RegisterBody>) -> HttpResponse {
     let body = body.into_inner();
+
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
 
     let transaction_future = data.pg_pool.begin();
 
@@ -107,11 +110,10 @@ struct LoginBody {
     password: String,
 }
 
-async fn login(
-    req: HttpRequest,
-    body: web::Json<LoginBody>,
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
+async fn login(req: HttpRequest, body: web::Json<LoginBody>) -> HttpResponse {
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
+
     let transaction_future = data.pg_pool.begin();
     std::thread::sleep(std::time::Duration::from_secs(5));
     let body = body.into_inner();
@@ -194,11 +196,11 @@ struct UserDataBody {
     session_token: String,
 }
 
-async fn user_data(
-    body: web::Json<UserDataBody>,
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
+async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {
     let body = body.into_inner();
+
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
 
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
@@ -251,7 +253,10 @@ async fn user_data(
         .body(user_data)
 }
 
-async fn logout(body: web::Json<UserDataBody>, data: web::Data<crate::AppState>) -> HttpResponse {
+async fn logout(body: web::Json<UserDataBody>) -> HttpResponse {
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
+
     let mut transaction = match data.pg_pool.begin().await {
         Ok(v) => v,
         Err(e) => {

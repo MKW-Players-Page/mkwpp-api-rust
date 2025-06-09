@@ -2,7 +2,7 @@ use crate::sql::tables::BasicTableQueries;
 use crate::sql::tables::players::FilterByPlayerId;
 
 #[serde_with::skip_serializing_none]
-#[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayersBasic {
     pub id: i32,

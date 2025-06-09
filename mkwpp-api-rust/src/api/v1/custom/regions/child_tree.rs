@@ -2,7 +2,7 @@ use crate::sql::tables::{
     BasicTableQueries,
     regions::{Regions, RegionsWithPlayerCount},
 };
-use actix_web::{HttpResponse, web};
+use actix_web::HttpResponse;
 use serde::ser::SerializeMap;
 use std::collections::HashMap;
 
@@ -121,9 +121,8 @@ macro_rules! region_tree_generator {
 region_tree_generator!(Regions, generate_region_tree);
 region_tree_generator!(RegionsWithPlayerCount, generate_region_tree_player_count);
 
-pub async fn get_region_child_tree(data: web::Data<crate::AppState>) -> HttpResponse {
+pub async fn get_region_child_tree() -> HttpResponse {
     crate::api::v1::basic_get_with_data_mod::<Regions, ChildrenTree>(
-        data,
         Regions::select_star_query,
         generate_region_tree,
     )

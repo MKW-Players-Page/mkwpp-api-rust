@@ -129,11 +129,13 @@ pub async fn handle_basic_get<
 pub async fn basic_get<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize,
 >(
-    data: web::Data<crate::AppState>,
     rows_function: impl AsyncFnOnce(
         &mut sqlx::PgConnection,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
 ) -> HttpResponse {
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
+
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
         Err(e) => return e,
@@ -147,12 +149,14 @@ pub async fn basic_get_with_data_mod<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>,
     T: serde::Serialize,
 >(
-    data: web::Data<crate::AppState>,
     rows_function: impl AsyncFnOnce(
         &mut sqlx::PgConnection,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
     modifier_function: impl AsyncFnOnce(Vec<Table>) -> T,
 ) -> HttpResponse {
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
+
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
         Err(e) => return e,
@@ -179,8 +183,6 @@ pub async fn basic_get_with_data_mod<
 
 pub async fn get_star_query<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + BasicTableQueries,
->(
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
-    basic_get::<Table>(data, Table::select_star_query).await
+>() -> HttpResponse {
+    basic_get::<Table>(Table::select_star_query).await
 }

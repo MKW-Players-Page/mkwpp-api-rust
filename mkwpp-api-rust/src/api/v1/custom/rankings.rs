@@ -4,8 +4,8 @@ use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 macro_rules! ranking {
     ($fn_name:ident, $enum_variant:ident, $default_val:expr) => {
-        async fn $fn_name(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
-            return get(RankingType::$enum_variant($default_val), req, data).await;
+        async fn $fn_name(req: HttpRequest) -> HttpResponse {
+            return get(RankingType::$enum_variant($default_val), req).await;
         }
     };
 }
@@ -27,16 +27,12 @@ ranking!(prwr, PersonalRecordWorldRecord, 0.0);
 ranking!(tally, TallyPoints, 0);
 ranking!(total_time, TotalTime, 0);
 
-async fn get(
-    ranking_type: RankingType,
-    req: HttpRequest,
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
+async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
 
-    return crate::api::v1::basic_get::<Rankings>(data, async |x| {
+    return crate::api::v1::basic_get::<Rankings>(async |x| {
         return Rankings::get(
             x,
             ranking_type,

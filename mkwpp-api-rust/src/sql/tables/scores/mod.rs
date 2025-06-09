@@ -1,5 +1,8 @@
 pub mod by_date;
+pub mod matchup;
 pub mod rankings;
+pub mod slowest_times;
+pub mod timesets;
 pub mod timesheet;
 pub mod with_player;
 
@@ -30,24 +33,33 @@ use crate::sql::tables::players::players_basic::PlayersBasic;
         ghost_link: (),
         comment: (),
         initial_rank: ()
+    ],
+    pub SlowestTimes: [
+        id: (),
+        date: (),
+        category: (),
+        video_link: (),
+        ghost_link: (),
+        comment: (),
+        initial_rank: ()
     ]
 )]
 #[serde_with::skip_serializing_none]
-#[derive(Debug, sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, sqlx::FromRow, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ScoresTemplate {
-    pub id: i32,
-    pub value: i32,
+    pub id: either_field::either!(i32 | ()),
+    pub value: either_field::either!(i32 | ()),
     pub rank: either_field::either!(() | i32),
     pub prwr: either_field::either!(() | f64),
     pub std_lvl_code: either_field::either!(() | String),
-    pub category: super::Category,
-    pub is_lap: bool,
+    pub category: either_field::either!(super::Category | ()),
+    pub is_lap: either_field::either!(bool | ()),
     #[sqlx(flatten)]
     pub player: either_field::either!(() | PlayersBasic),
     pub player_id: either_field::either!(() | i32),
-    pub track_id: i32,
-    pub date: Option<chrono::NaiveDate>,
+    pub track_id: either_field::either!(i32 | ()),
+    pub date: either_field::either!(Option<chrono::NaiveDate> | ()),
     pub video_link: either_field::either!(Option<String> | ()),
     pub ghost_link: either_field::either!(Option<String> | ()),
     pub comment: either_field::either!(Option<String> | ()),

@@ -9,8 +9,8 @@ pub fn site_champs() -> impl HttpServiceFactory {
 }
 default_paths_fn!("/category/:categoryId");
 
-async fn by_category(path: web::Path<u8>, data: web::Data<crate::AppState>) -> HttpResponse {
-    return crate::api::v1::basic_get::<Champs>(data, async |x| {
+async fn by_category(path: web::Path<u8>) -> HttpResponse {
+    return crate::api::v1::basic_get::<Champs>(async |x| {
         return Champs::filter_by_category(
             Category::try_from(path.into_inner()).unwrap_or(Category::NonSc),
             x,

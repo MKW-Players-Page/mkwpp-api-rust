@@ -12,8 +12,8 @@ mod child_tree;
 
 macro_rules! region_fn {
     ($fn_name:ident, $handle:expr) => {
-        async fn $fn_name(path: web::Path<i32>, data: web::Data<crate::AppState>) -> HttpResponse {
-            return basic_get_i32(path, data, $handle).await;
+        async fn $fn_name(path: web::Path<i32>) -> HttpResponse {
+            return basic_get_i32(path, $handle).await;
         }
     };
 }
@@ -44,9 +44,8 @@ default_paths_fn!(
 region_fn!(get_ancestors, Regions::get_ancestors);
 region_fn!(get_descendants, Regions::get_descendants);
 
-async fn get_region_type_hashmap(data: web::Data<crate::AppState>) -> HttpResponse {
+async fn get_region_type_hashmap() -> HttpResponse {
     crate::api::v1::basic_get_with_data_mod::<Regions, HashMap<RegionType, Vec<i32>>>(
-        data,
         Regions::select_star_query,
         async |data: Vec<Regions>| {
             let mut hashmap: HashMap<RegionType, Vec<i32>> = HashMap::new();
@@ -97,9 +96,8 @@ fn collapse_counts(
 }
 
 // TODO: rewrite more optimally
-async fn get_with_player_count(data: web::Data<crate::AppState>) -> HttpResponse {
+async fn get_with_player_count() -> HttpResponse {
     crate::api::v1::basic_get_with_data_mod::<RegionsWithPlayerCount, Vec<RegionsWithPlayerCount>>(
-        data,
         RegionsWithPlayerCount::select_star_query,
         async |mut data: Vec<RegionsWithPlayerCount>| {
             let region_tree = child_tree::generate_region_tree_player_count(data.clone()).await;
@@ -119,9 +117,11 @@ async fn get_with_player_count(data: web::Data<crate::AppState>) -> HttpResponse
 
 pub async fn basic_get_i32(
     path: web::Path<i32>,
-    data: web::Data<crate::AppState>,
     rows_function: impl AsyncFnOnce(&mut sqlx::PgConnection, i32) -> Result<Vec<i32>, sqlx::Error>,
 ) -> HttpResponse {
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
+
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
         Err(e) => return e,

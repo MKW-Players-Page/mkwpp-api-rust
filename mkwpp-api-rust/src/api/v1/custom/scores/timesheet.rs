@@ -7,12 +7,10 @@ pub fn timesheet() -> impl HttpServiceFactory {
     web::scope("/timesheet/{player_id}").default_service(web::get().to(get))
 }
 
-// TODO: Incredibly, incredibly unoptimized
-pub async fn get(
-    req: HttpRequest,
-    path: web::Path<i32>,
-    data: web::Data<crate::AppState>,
-) -> HttpResponse {
+pub async fn get(req: HttpRequest, path: web::Path<i32>) -> HttpResponse {
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
+
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
         Err(e) => return e,

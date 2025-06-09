@@ -6,12 +6,12 @@ pub fn records() -> impl HttpServiceFactory {
     web::scope("/records").default_service(web::get().to(get))
 }
 
-pub async fn get(req: HttpRequest, data: web::Data<crate::AppState>) -> HttpResponse {
+pub async fn get(req: HttpRequest) -> HttpResponse {
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
 
-    return crate::api::v1::basic_get::<ScoresWithPlayer>(data, async |x| {
+    return crate::api::v1::basic_get::<ScoresWithPlayer>(async |x| {
         return ScoresWithPlayer::get_records(
             x,
             params.category,

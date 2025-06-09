@@ -10,12 +10,18 @@ pub mod standards;
 pub mod submissions;
 pub mod tracks;
 
-#[derive(sqlx::Type, serde::Deserialize, Debug, Clone, Copy)]
+#[derive(sqlx::Type, serde::Deserialize, Debug, Clone, Copy, Hash, PartialEq, Eq)]
 #[sqlx(type_name = "category", rename_all = "lowercase")]
 pub enum Category {
     NonSc,
     Sc,
     Unres,
+}
+
+impl Default for Category {
+    fn default() -> Self {
+        Category::NonSc
+    }
 }
 
 impl TryFrom<u8> for Category {
