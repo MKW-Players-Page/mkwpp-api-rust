@@ -46,7 +46,7 @@ impl CacheItem for Standards {
     {
         match sqlx::query(
             format!(
-                "SELECT * FROM {this_table} WHERE is_legacy = TRUE;",
+                "SELECT * FROM {this_table} ORDER BY track_id ASC, is_lap ASC, category DESC, value ASC;",
                 this_table = Self::TABLE_NAME
             )
             .as_str(),
@@ -58,11 +58,11 @@ impl CacheItem for Standards {
                 .into_iter()
                 .map(|r| {
                     Standards::from_row(&r)
-                        .map_err(|e| anyhow!("Error in loading Legacy Standards. {e}"))
+                        .map_err(|e| anyhow!("Error in loading Standards. {e}"))
                 })
                 .collect::<Result<Vec<Standards>, anyhow::Error>>(),
 
-            Err(e) => Err(anyhow!("Error in loading Legacy Standards, {e}")),
+            Err(e) => Err(anyhow!("Error in loading Standards, {e}")),
         }
     }
 }

@@ -34,57 +34,21 @@ impl AppState {
     pub async fn get_slowest_times(
         &mut self,
         input: SlowestTimesInputs,
-    ) -> Result<Arc<[SlowestTimes]>, HttpResponse> {
-        let mut executor = self
-            .acquire_pg_connection()
-            .await
-            .map_err(Self::pg_conn_http_error)?;
-        self.cache
-            .get_slowest_times(&mut executor, input)
-            .await
-            .map_err(|e| {
-                crate::api::FinalErrorResponse::new_no_fields(vec![
-                    String::from("Couldn't get slowest times"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError)
-            })
+    ) -> Result<Arc<[SlowestTimes]>, anyhow::Error> {
+        let mut executor = self.acquire_pg_connection().await?;
+        self.cache.get_slowest_times(&mut executor, input).await
     }
 
     pub async fn get_legacy_standard_levels(
         &mut self,
-    ) -> Result<Arc<[StandardLevels]>, HttpResponse> {
-        let mut executor = self
-            .acquire_pg_connection()
-            .await
-            .map_err(Self::pg_conn_http_error)?;
-        self.cache
-            .get_legacy_standard_levels(&mut executor)
-            .await
-            .map_err(|e| {
-                crate::api::FinalErrorResponse::new_no_fields(vec![
-                    String::from("Couldn't get standard levels"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError)
-            })
+    ) -> Result<Arc<[StandardLevels]>, anyhow::Error> {
+        let mut executor = self.acquire_pg_connection().await?;
+        self.cache.get_legacy_standard_levels(&mut executor).await
     }
 
-    pub async fn get_legacy_standards(&mut self) -> Result<Arc<[Standards]>, HttpResponse> {
-        let mut executor = self
-            .acquire_pg_connection()
-            .await
-            .map_err(Self::pg_conn_http_error)?;
-        self.cache
-            .get_legacy_standards(&mut executor)
-            .await
-            .map_err(|e| {
-                crate::api::FinalErrorResponse::new_no_fields(vec![
-                    String::from("Couldn't get standards"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError)
-            })
+    pub async fn get_standards(&mut self) -> Result<Arc<[Standards]>, anyhow::Error> {
+        let mut executor = self.acquire_pg_connection().await?;
+        self.cache.get_standards(&mut executor).await
     }
 }
 

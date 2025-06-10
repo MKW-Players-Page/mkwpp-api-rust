@@ -10,7 +10,9 @@ pub mod standards;
 pub mod submissions;
 pub mod tracks;
 
-#[derive(sqlx::Type, serde::Deserialize, Debug, Clone, Copy, Hash, PartialEq, Eq)]
+#[derive(
+    sqlx::Type, serde::Deserialize, Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord,
+)]
 #[sqlx(type_name = "category", rename_all = "lowercase")]
 pub enum Category {
     NonSc,

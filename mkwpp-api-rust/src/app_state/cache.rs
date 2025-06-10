@@ -13,7 +13,7 @@ const STANDARDS_REFRESH: i64 = 1200;
 pub struct Cache {
     slowest_times: HashMap<SlowestTimesInputs, (i64, Arc<[SlowestTimes]>)>,
     legacy_standard_levels: (i64, Arc<[StandardLevels]>),
-    legacy_standards: (i64, Arc<[Standards]>),
+    standards: (i64, Arc<[Standards]>),
 }
 
 impl Cache {
@@ -25,8 +25,8 @@ impl Cache {
             self.legacy_standard_levels.1 = Arc::new([]);
         }
 
-        if self.legacy_standards.0 > chrono::Utc::now().timestamp() {
-            self.legacy_standards.1 = Arc::new([]);
+        if self.standards.0 > chrono::Utc::now().timestamp() {
+            self.standards.1 = Arc::new([]);
         }
     }
 
@@ -92,28 +92,28 @@ impl Cache {
         })
     }
 
-    pub async fn get_legacy_standards(
+    pub async fn get_standards(
         &mut self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<Arc<[Standards]>, anyhow::Error> {
-        if self.legacy_standards.0 > chrono::Utc::now().timestamp() {
-            return Ok(self.legacy_standards.1.clone());
+        if self.standards.0 > chrono::Utc::now().timestamp() {
+            return Ok(self.standards.1.clone());
         }
 
-        let out = self.insert_legacy_standards(executor).await;
+        let out = self.insert_standards(executor).await;
 
         self.flush();
 
         out
     }
 
-    async fn insert_legacy_standards(
+    async fn insert_standards(
         &mut self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<Arc<[Standards]>, anyhow::Error> {
         Standards::load(executor, ()).await.map(|x| {
             let x: Arc<[Standards]> = x.into();
-            self.legacy_standards = (
+            self.standards = (
                 chrono::Utc::now().timestamp() + STANDARDS_REFRESH,
                 x.clone(),
             );

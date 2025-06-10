@@ -24,7 +24,13 @@ pub fn rankings() -> impl HttpServiceFactory {
 }
 default_paths_fn!("/af", "/arr", "/tally", "/prwr", "/totaltime");
 
-async fn af(req: HttpRequest) -> HttpResponse {
+ranking!(af, AverageFinish, 0.0);
+ranking!(arr, AverageRankRating, 0.0);
+ranking!(prwr, PersonalRecordWorldRecord, 0.0);
+ranking!(tally, TallyPoints, 0);
+ranking!(total_time, TotalTime, 0);
+
+async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
@@ -41,7 +47,7 @@ async fn af(req: HttpRequest) -> HttpResponse {
 
     let data = match Rankings::get(
         &mut connection,
-        RankingType::AverageFinish(0.0),
+        ranking_type,
         params.category,
         params.lap_mode,
         params.date,
@@ -63,28 +69,4 @@ async fn af(req: HttpRequest) -> HttpResponse {
         return e;
     }
     send_serialized_data(data)
-}
-
-ranking!(arr, AverageRankRating, 0.0);
-ranking!(prwr, PersonalRecordWorldRecord, 0.0);
-ranking!(tally, TallyPoints, 0);
-ranking!(total_time, TotalTime, 0);
-
-async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
-    let params = ParamsDestructured::from_query(
-        web::Query::<Params>::from_query(req.query_string()).unwrap(),
-    );
-
-    return crate::api::v1::basic_get::<Rankings>(async |x| {
-        return Rankings::get_old(
-            x,
-            ranking_type,
-            params.category,
-            params.lap_mode,
-            params.date,
-            params.region_id,
-        )
-        .await;
-    })
-    .await;
 }

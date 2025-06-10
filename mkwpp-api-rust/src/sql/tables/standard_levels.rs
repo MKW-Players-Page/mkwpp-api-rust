@@ -3,7 +3,7 @@ use sqlx::FromRow;
 
 use crate::{app_state::cache::CacheItem, sql::tables::BasicTableQueries};
 
-#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow)]
+#[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct StandardLevels {
     pub id: i32,
