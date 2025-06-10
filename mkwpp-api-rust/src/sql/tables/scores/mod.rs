@@ -42,6 +42,16 @@ use crate::sql::tables::players::players_basic::PlayersBasic;
         ghost_link: (),
         comment: (),
         initial_rank: ()
+    ],
+    pub RankingsScoresData: [
+        id: (),
+        category: (),
+        player_id: i32,
+        date: (),
+        initial_rank: (),
+        video_link: (),
+        ghost_link: (),
+        comment: ()
     ]
 )]
 #[serde_with::skip_serializing_none]

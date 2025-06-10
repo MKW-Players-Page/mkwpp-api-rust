@@ -1,5 +1,6 @@
 use crate::{
     api::FinalErrorResponse,
+    app_state::AppState,
     sql::tables::{
         BasicTableQueries,
         regions::{RegionType, Regions, with_player_count::RegionsWithPlayerCount},
@@ -124,7 +125,7 @@ pub async fn basic_get_i32(
 
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
-        Err(e) => return e,
+        Err(e) => return AppState::pg_conn_http_error(e),
     };
 
     let rows_request = rows_function(&mut connection, path.into_inner()).await;

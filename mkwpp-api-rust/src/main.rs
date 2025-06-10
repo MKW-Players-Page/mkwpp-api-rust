@@ -23,18 +23,15 @@ async fn main() -> std::io::Result<()> {
     );
     println!("| SERVER CONNECTION KEEP ALIVE: {}", ENV_VARS.keep_alive);
 
-    let pg_pool = sqlx::postgres::PgPoolOptions::new()
-        .max_connections(ENV_VARS.max_conn)
-        .connect(&ENV_VARS.database_url)
-        .await
-        .expect("Couldn't load Postgres Connection Pool");
+    let app_state = app_state::access_app_state().await;
+    let app_state = app_state.write().unwrap();
 
     println!("- Reading CLI args");
     let args: Vec<String> = std::env::args().collect();
     let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
 
     if args.contains(&"import") && args.contains(&"old") {
-        sql::migrate::old::load_data(&pg_pool).await;
+        sql::migrate::old::load_data(&app_state.pg_pool).await;
     }
     if args.contains(&"exit") {
         std::process::exit(0);
@@ -42,6 +39,7 @@ async fn main() -> std::io::Result<()> {
 
     println!("- Dropping useless data");
     std::mem::drop(args);
+    std::mem::drop(app_state);
 
     println!("- Enabling environment logger");
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));

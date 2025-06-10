@@ -1,8 +1,8 @@
 use crate::sql::tables::BasicTableQueries;
-use crate::sql::tables::players::FilterByPlayerId;
+use crate::sql::tables::players::FilterPlayers;
 
 #[serde_with::skip_serializing_none]
-#[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayersBasic {
     pub id: i32,
@@ -26,9 +26,14 @@ impl BasicTableQueries for PlayersBasic {
     }
 }
 
-impl FilterByPlayerId for PlayersBasic {
+impl FilterPlayers for PlayersBasic {
     const GET_SELECT_PLAYERS_QUERY_STR: &'static str = const_format::formatc!(
-        "SELECT * FROM {} WHERE id = ANY($1);",
+        "SELECT id, name, alias, region_id FROM {} WHERE id = ANY($1);",
+        PlayersBasic::TABLE_NAME
+    );
+
+    const GET_SELECT_PLAYERS_BY_REGION_QUERY_STR: &'static str = const_format::formatc!(
+        "SELECT id, name, alias, region_id FROM {} WHERE region_id = ANY($1);",
         PlayersBasic::TABLE_NAME
     );
 }

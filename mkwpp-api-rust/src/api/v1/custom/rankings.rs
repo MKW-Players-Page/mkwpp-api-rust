@@ -1,4 +1,7 @@
+use crate::api::FinalErrorResponse;
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
+use crate::api::v1::{close_connection, send_serialized_data};
+use crate::app_state::AppState;
 use crate::sql::tables::scores::rankings::{RankingType, Rankings};
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
@@ -21,7 +24,47 @@ pub fn rankings() -> impl HttpServiceFactory {
 }
 default_paths_fn!("/af", "/arr", "/tally", "/prwr", "/totaltime");
 
-ranking!(af, AverageFinish, 0.0);
+async fn af(req: HttpRequest) -> HttpResponse {
+    let params = ParamsDestructured::from_query(
+        web::Query::<Params>::from_query(req.query_string()).unwrap(),
+    );
+
+    let data = crate::app_state::access_app_state().await;
+    let data = data.read().unwrap();
+
+    let mut connection = match data.acquire_pg_connection().await {
+        Ok(conn) => conn,
+        Err(e) => return AppState::pg_conn_http_error(e),
+    };
+
+    std::mem::drop(data);
+
+    let data = match Rankings::get(
+        &mut connection,
+        RankingType::AverageFinish(0.0),
+        params.category,
+        params.lap_mode,
+        params.date,
+        params.region_id,
+    )
+    .await
+    {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error getting data from database"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    if let Err(e) = close_connection(connection).await {
+        return e;
+    }
+    send_serialized_data(data)
+}
+
 ranking!(arr, AverageRankRating, 0.0);
 ranking!(prwr, PersonalRecordWorldRecord, 0.0);
 ranking!(tally, TallyPoints, 0);
@@ -33,7 +76,7 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
     );
 
     return crate::api::v1::basic_get::<Rankings>(async |x| {
-        return Rankings::get(
+        return Rankings::get_old(
             x,
             ranking_type,
             params.category,

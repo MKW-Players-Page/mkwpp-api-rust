@@ -1,4 +1,4 @@
-use crate::sql::tables::BasicTableQueries;
+use crate::{app_state::AppState, sql::tables::BasicTableQueries};
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 use super::FinalErrorResponse;
@@ -138,7 +138,7 @@ pub async fn basic_get<
 
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
-        Err(e) => return e,
+        Err(e) => return AppState::pg_conn_http_error(e),
     };
 
     let rows_request = rows_function(&mut connection).await;
@@ -159,7 +159,7 @@ pub async fn basic_get_with_data_mod<
 
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
-        Err(e) => return e,
+        Err(e) => return AppState::pg_conn_http_error(e),
     };
 
     let rows_request = rows_function(&mut connection).await;

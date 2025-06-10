@@ -1,6 +1,7 @@
 use std::sync::{Arc, RwLock};
 
 use actix_web::HttpResponse;
+use anyhow::anyhow;
 
 use crate::sql::tables::{
     scores::{SlowestTimes, slowest_times::SlowestTimesInputs},
@@ -18,21 +19,26 @@ pub struct AppState {
 impl AppState {
     pub async fn acquire_pg_connection(
         &self,
-    ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, HttpResponse> {
-        self.pg_pool.acquire().await.map_err(|e| {
-            crate::api::FinalErrorResponse::new_no_fields(vec![
-                String::from("Couldn't get connection from data pool"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError)
-        })
+    ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, anyhow::Error> {
+        self.pg_pool.acquire().await.map_err(|e| anyhow!("{e}"))
+    }
+
+    pub fn pg_conn_http_error(error: anyhow::Error) -> HttpResponse {
+        crate::api::FinalErrorResponse::new_no_fields(vec![
+            String::from("Couldn't get connection from data pool"),
+            error.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError)
     }
 
     pub async fn get_slowest_times(
         &mut self,
         input: SlowestTimesInputs,
     ) -> Result<Arc<[SlowestTimes]>, HttpResponse> {
-        let mut executor = self.acquire_pg_connection().await?;
+        let mut executor = self
+            .acquire_pg_connection()
+            .await
+            .map_err(Self::pg_conn_http_error)?;
         self.cache
             .get_slowest_times(&mut executor, input)
             .await
@@ -48,7 +54,10 @@ impl AppState {
     pub async fn get_legacy_standard_levels(
         &mut self,
     ) -> Result<Arc<[StandardLevels]>, HttpResponse> {
-        let mut executor = self.acquire_pg_connection().await?;
+        let mut executor = self
+            .acquire_pg_connection()
+            .await
+            .map_err(Self::pg_conn_http_error)?;
         self.cache
             .get_legacy_standard_levels(&mut executor)
             .await
@@ -62,7 +71,10 @@ impl AppState {
     }
 
     pub async fn get_legacy_standards(&mut self) -> Result<Arc<[Standards]>, HttpResponse> {
-        let mut executor = self.acquire_pg_connection().await?;
+        let mut executor = self
+            .acquire_pg_connection()
+            .await
+            .map_err(Self::pg_conn_http_error)?;
         self.cache
             .get_legacy_standards(&mut executor)
             .await

@@ -1,4 +1,4 @@
-use crate::sql::tables::players::{FilterByPlayerId, Players, players_basic::PlayersBasic};
+use crate::sql::tables::players::{FilterPlayers, Players, players_basic::PlayersBasic};
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn players() -> impl HttpServiceFactory {
@@ -17,7 +17,7 @@ pub fn players() -> impl HttpServiceFactory {
 default_paths_fn!("/list", "/select", "/select_basic");
 
 pub async fn get_with_decode<
-    Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + FilterByPlayerId,
+    Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + FilterPlayers,
 >(
     body: web::Json<Vec<i32>>,
 ) -> HttpResponse {

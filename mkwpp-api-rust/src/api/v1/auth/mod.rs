@@ -1,6 +1,8 @@
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
-use crate::{api::FinalErrorResponse, auth::validated_strings::ValidatedString};
+use crate::{
+    api::FinalErrorResponse, app_state::AppState, auth::validated_strings::ValidatedString,
+};
 
 pub fn auth() -> impl HttpServiceFactory {
     web::scope("/auth")
@@ -204,7 +206,7 @@ async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {
 
     let mut connection = match data.acquire_pg_connection().await {
         Ok(conn) => conn,
-        Err(e) => return e,
+        Err(e) => return AppState::pg_conn_http_error(e),
     };
 
     let user_data = match crate::auth::get_user_data(&body.session_token, &mut connection).await {
