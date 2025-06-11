@@ -27,6 +27,9 @@ use crate::sql::tables::players::players_basic::PlayersBasic;
         prwr: f64,
         std_lvl_code: String
     ],
+    pub TimesheetTimesetData: [
+        player_id: i32
+    ],
     pub ScoresByDate: [
         player: PlayersBasic,
         video_link: (),
@@ -43,7 +46,7 @@ use crate::sql::tables::players::players_basic::PlayersBasic;
         comment: (),
         initial_rank: ()
     ],
-    pub RankingsScoresData: [
+    pub RankingsTimesetData: [
         id: (),
         category: (),
         player_id: i32,

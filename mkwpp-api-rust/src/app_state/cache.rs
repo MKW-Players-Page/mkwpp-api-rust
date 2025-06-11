@@ -21,11 +21,11 @@ impl Cache {
         self.slowest_times
             .retain(|_, (date, _)| *date > chrono::Utc::now().timestamp());
 
-        if self.legacy_standard_levels.0 > chrono::Utc::now().timestamp() {
+        if self.legacy_standard_levels.0 < chrono::Utc::now().timestamp() {
             self.legacy_standard_levels.1 = Arc::new([]);
         }
 
-        if self.standards.0 > chrono::Utc::now().timestamp() {
+        if self.standards.0 < chrono::Utc::now().timestamp() {
             self.standards.1 = Arc::new([]);
         }
     }

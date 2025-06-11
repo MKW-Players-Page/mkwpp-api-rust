@@ -1,6 +1,6 @@
-pub use super::{RankingsScoresData, timesets::ValidTimesetItem};
+pub use super::{RankingsTimesetData, timesets::ValidTimesetItem};
 use crate::sql::tables::{
-    BasicTableQueries,
+    BasicTableQueries, Category,
     players::{FilterPlayers, players_basic::PlayersBasic},
     scores::timesets::Timeset,
 };
@@ -18,7 +18,7 @@ impl BasicTableQueries for Rankings {
     const TABLE_NAME: &'static str = super::Scores::TABLE_NAME;
 }
 
-impl ValidTimesetItem for RankingsScoresData {
+impl ValidTimesetItem for RankingsTimesetData {
     fn get_time(&self) -> i32 {
         self.value
     }
@@ -33,6 +33,27 @@ impl ValidTimesetItem for RankingsScoresData {
     }
     fn set_rank(&mut self, _rank: i32) {}
     fn set_prwr(&mut self, _prwr: f64) {}
+    fn get_date(&self) -> Option<chrono::NaiveDate> {
+        None
+    }
+    fn get_comment(&self) -> Option<String> {
+        None
+    }
+    fn get_time_id(&self) -> i32 {
+        0
+    }
+    fn get_category(&self) -> crate::sql::tables::Category {
+        Category::NonSc
+    }
+    fn get_ghost_link(&self) -> Option<String> {
+        None
+    }
+    fn get_video_link(&self) -> Option<String> {
+        None
+    }
+    fn get_initial_rank(&self) -> Option<i32> {
+        None
+    }
 }
 
 impl Rankings {
@@ -96,8 +117,8 @@ impl Rankings {
         .fetch_all(executor)
         .await?
         .into_iter()
-        .map(|score_row| RankingsScoresData::from_row(&score_row))
-        .collect::<Result<Vec<RankingsScoresData>, sqlx::Error>>()?;
+        .map(|score_row| RankingsTimesetData::from_row(&score_row))
+        .collect::<Result<Vec<RankingsTimesetData>, sqlx::Error>>()?;
 
         let mut timeset_encoder = Timeset::default();
         timeset_encoder.timeset = timeset;

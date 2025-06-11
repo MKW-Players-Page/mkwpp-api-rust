@@ -3,7 +3,11 @@ use chrono::NaiveDate;
 
 use crate::{
     app_state::access_app_state,
-    sql::tables::{Category, scores::rankings::RankingType, standard_levels::StandardLevels},
+    sql::tables::{
+        Category,
+        scores::{Times, rankings::RankingType, timesheet::Timesheet},
+        standard_levels::StandardLevels,
+    },
 };
 
 pub struct Timeset<K: ValidTimesetItem> {
@@ -29,36 +33,52 @@ pub struct TimesetFilters {
 enum TimesetOutput {
     None,
     AverageFinishCharts {
-        out: Vec<Option<f64>>,
+        rank_sums: Vec<Option<f64>>,
         players_found: Vec<bool>,
         players_found_counter: i32,
     },
     TotalTimeCharts {
-        out: Vec<Option<i32>>,
+        total_times: Vec<Option<i32>>,
         players_found: Vec<bool>,
         players_found_counter: i32,
     },
     PersonalRecordWorldRecordCharts {
-        out: Vec<Option<f64>>,
+        prwr_sums: Vec<Option<f64>>,
         players_found: Vec<bool>,
         players_found_counter: i32,
     },
     TallyPointsCharts {
-        out: Vec<Option<i16>>,
+        tally_points: Vec<Option<i16>>,
         players_found: Vec<bool>,
     },
     AverageRankRatingCharts {
-        out: Vec<Option<f64>>,
+        arr_value_sums: Vec<Option<f64>>,
         players_found: Vec<bool>,
         players_found_counter: i32,
+    },
+    PlayerTimesheet {
+        times: Vec<Option<Times>>,
+        rank_sum: f64,
+        total_time: i32,
+        prwr_sum: f64,
+        tally_points: i16,
+        arr_value_sum: f64,
     },
 }
 
 pub trait ValidTimesetItem {
     fn get_time(&self) -> i32;
+    fn get_time_id(&self) -> i32;
     fn get_track_id(&self) -> i32;
     fn get_is_lap(&self) -> bool;
     fn get_player_id(&self) -> i32;
+    fn get_date(&self) -> Option<chrono::NaiveDate>;
+    fn get_initial_rank(&self) -> Option<i32>;
+    fn get_category(&self) -> Category;
+    fn get_video_link(&self) -> Option<String>;
+    fn get_ghost_link(&self) -> Option<String>;
+    fn get_comment(&self) -> Option<String>;
+
     fn set_rank(&mut self, rank: i32);
     fn set_prwr(&mut self, prwr: f64);
 }
@@ -81,7 +101,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         &mut self,
     ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
         self.internal_rankings_charts(TimesetOutput::AverageFinishCharts {
-            out: vec![None; 0],
+            rank_sums: vec![None; 0],
             players_found: vec![false; 0],
             players_found_counter: 0,
         })
@@ -92,7 +112,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         &mut self,
     ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
         self.internal_rankings_charts(TimesetOutput::TotalTimeCharts {
-            out: vec![None; 0],
+            total_times: vec![None; 0],
             players_found: vec![false; 0],
             players_found_counter: 0,
         })
@@ -103,7 +123,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         &mut self,
     ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
         self.internal_rankings_charts(TimesetOutput::TallyPointsCharts {
-            out: vec![None; 0],
+            tally_points: vec![None; 0],
             players_found: vec![false; 0],
         })
         .await
@@ -113,7 +133,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         &mut self,
     ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
         self.internal_rankings_charts(TimesetOutput::PersonalRecordWorldRecordCharts {
-            out: vec![None; 0],
+            prwr_sums: vec![None; 0],
             players_found: vec![false; 0],
             players_found_counter: 0,
         })
@@ -124,7 +144,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         &mut self,
     ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
         self.internal_rankings_charts(TimesetOutput::AverageRankRatingCharts {
-            out: vec![None; 0],
+            arr_value_sums: vec![None; 0],
             players_found: vec![false; 0],
             players_found_counter: 0,
         })
@@ -146,17 +166,17 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
         match &mut output_type {
             TimesetOutput::AverageFinishCharts {
-                out,
+                rank_sums: out,
                 players_found,
                 players_found_counter,
             }
             | TimesetOutput::PersonalRecordWorldRecordCharts {
-                out,
+                prwr_sums: out,
                 players_found,
                 players_found_counter,
             }
             | TimesetOutput::AverageRankRatingCharts {
-                out,
+                arr_value_sums: out,
                 players_found,
                 players_found_counter,
             } => {
@@ -168,33 +188,38 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 *players_found = vec![false; reserve_space];
             }
             TimesetOutput::TotalTimeCharts {
-                out,
+                total_times,
                 players_found,
                 players_found_counter,
             } => {
-                *out = vec![None; reserve_space];
+                *total_times = vec![None; reserve_space];
                 for player_id in &self.filters.player_ids {
-                    out[*player_id as usize] = Some(0)
+                    total_times[*player_id as usize] = Some(0)
                 }
                 *players_found_counter = 0;
                 *players_found = vec![false; reserve_space];
             }
-            TimesetOutput::TallyPointsCharts { out, players_found } => {
-                *out = vec![None; reserve_space];
+            TimesetOutput::TallyPointsCharts {
+                tally_points,
+                players_found,
+            } => {
+                *tally_points = vec![None; reserve_space];
                 for player_id in &self.filters.player_ids {
-                    out[*player_id as usize] = Some(0)
+                    tally_points[*player_id as usize] = Some(0)
                 }
                 *players_found = vec![false; reserve_space];
             }
-            TimesetOutput::None => panic!("This code should never be encountered"),
+            TimesetOutput::None | TimesetOutput::PlayerTimesheet { .. } => {
+                panic!("This code should never be encountered")
+            }
         };
         self.output = output_type;
 
         self.core_loop().await?;
 
         match &self.output {
-            TimesetOutput::AverageFinishCharts { out, .. } => {
-                let mut af_and_ids = out
+            TimesetOutput::AverageFinishCharts { rank_sums, .. } => {
+                let mut af_and_ids = rank_sums
                     .iter()
                     .enumerate()
                     .filter_map(|(id, rank_sum)| {
@@ -210,8 +235,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     })
                     .collect())
             }
-            TimesetOutput::TotalTimeCharts { out, .. } => {
-                let mut tt_and_ids = out
+            TimesetOutput::TotalTimeCharts { total_times, .. } => {
+                let mut tt_and_ids = total_times
                     .iter()
                     .enumerate()
                     .filter_map(|(id, time_sum)| time_sum.map(|time_sum| ((id as i32), time_sum)))
@@ -225,8 +250,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     })
                     .collect())
             }
-            TimesetOutput::TallyPointsCharts { out, .. } => {
-                let mut tp_and_ids = out
+            TimesetOutput::TallyPointsCharts { tally_points, .. } => {
+                let mut tp_and_ids = tally_points
                     .iter()
                     .enumerate()
                     .filter_map(|(id, points_sum)| {
@@ -242,8 +267,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     })
                     .collect())
             }
-            TimesetOutput::PersonalRecordWorldRecordCharts { out, .. } => {
-                let mut prwr_and_ids = out
+            TimesetOutput::PersonalRecordWorldRecordCharts { prwr_sums, .. } => {
+                let mut prwr_and_ids = prwr_sums
                     .iter()
                     .enumerate()
                     .filter_map(|(id, prwr_sum)| {
@@ -263,8 +288,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     })
                     .collect())
             }
-            TimesetOutput::AverageRankRatingCharts { out, .. } => {
-                let mut arr_and_ids = out
+            TimesetOutput::AverageRankRatingCharts { arr_value_sums, .. } => {
+                let mut arr_and_ids = arr_value_sums
                     .iter()
                     .enumerate()
                     .filter_map(|(id, arr_sum)| {
@@ -284,7 +309,48 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     })
                     .collect())
             }
-            TimesetOutput::None => Err(anyhow!(
+            TimesetOutput::None | TimesetOutput::PlayerTimesheet { .. } => Err(anyhow!(
+                "Something went very wrong, the output type changed unexpectedly"
+            )),
+        }
+    }
+
+    pub async fn timesheet(&mut self, player_id: i32) -> Result<Timesheet, anyhow::Error> {
+        self.calculate_divvie_value();
+        self.output = TimesetOutput::PlayerTimesheet {
+            times: vec![None; self.divvie_value as usize],
+            rank_sum: 0.0,
+            total_time: 0,
+            prwr_sum: 0.0,
+            tally_points: 0,
+            arr_value_sum: 0.0,
+        };
+        self.core_loop().await?;
+        self.filters.player_ids = vec![player_id; 1];
+
+        match &mut self.output {
+            TimesetOutput::PlayerTimesheet {
+                times,
+                rank_sum,
+                total_time,
+                prwr_sum,
+                tally_points,
+                arr_value_sum,
+                ..
+            } => Ok(Timesheet {
+                times: times.iter_mut().filter_map(|x| std::mem::take(x)).collect(),
+                af: *rank_sum / self.divvie_value,
+                total_time: *total_time,
+                tally: *tally_points,
+                arr: *arr_value_sum / self.divvie_value,
+                prwr: *prwr_sum / self.divvie_value,
+            }),
+            TimesetOutput::None
+            | TimesetOutput::AverageFinishCharts { .. }
+            | TimesetOutput::TotalTimeCharts { .. }
+            | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
+            | TimesetOutput::TallyPointsCharts { .. }
+            | TimesetOutput::AverageRankRatingCharts { .. } => Err(anyhow!(
                 "Something went very wrong, the output type changed unexpectedly"
             )),
         }
@@ -295,12 +361,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
             return Ok(());
         }
 
-        let mut executor = access_app_state()
-            .await
-            .read()
-            .unwrap()
-            .acquire_pg_connection()
-            .await?;
+        let app_state = access_app_state().await.read().unwrap();
+        let mut executor = app_state.acquire_pg_connection().await?;
+        std::mem::drop(app_state);
 
         self.filters.player_ids = crate::sql::tables::players::Players::get_ids_but_list(
             &mut executor,
@@ -313,6 +376,13 @@ impl<K: ValidTimesetItem> Timeset<K> {
         Ok(())
     }
 
+    fn calculate_divvie_value(&mut self) {
+        self.divvie_value = match self.filters.is_lap {
+            Some(_) => 32.0,
+            None => 64.0,
+        };
+    }
+
     async fn core_loop(&mut self) -> Result<(), anyhow::Error> {
         let app_state = crate::app_state::access_app_state().await;
         let mut app_state = app_state.write().unwrap();
@@ -321,11 +391,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         let standards = app_state.get_standards().await?;
 
         std::mem::drop(app_state);
-
-        self.divvie_value = match self.filters.is_lap {
-            Some(_) => 32.0,
-            None => 64.0,
-        };
+        self.calculate_divvie_value();
 
         let mut last_track = 0;
         let mut last_lap_type = false;
@@ -350,54 +416,55 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 if !has_found_all_times {
                     match &mut self.output {
                         TimesetOutput::AverageFinishCharts {
-                            out,
+                            rank_sums,
                             players_found,
                             players_found_counter: _,
                         } => {
                             let rank = (last_rank + 1) as f64;
                             for player_id in &self.filters.player_ids {
                                 if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = out[*player_id as usize] {
+                                    if let Some(ref mut x) = rank_sums[*player_id as usize] {
                                         *x += rank;
                                     }
                                 }
                             }
                         }
                         TimesetOutput::TotalTimeCharts {
-                            out,
+                            total_times,
                             players_found,
                             players_found_counter: _,
                         } => {
                             let time = last_time + 1;
                             for player_id in &self.filters.player_ids {
                                 if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = out[*player_id as usize] {
+                                    if let Some(ref mut x) = total_times[*player_id as usize] {
                                         *x += time;
                                     }
                                 }
                             }
                         }
                         TimesetOutput::PersonalRecordWorldRecordCharts {
-                            out,
+                            prwr_sums,
                             players_found,
                             players_found_counter: _,
                         } => {
                             let prwr = (wr_time as f64) / ((last_time + 1) as f64);
                             for player_id in &self.filters.player_ids {
                                 if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = out[*player_id as usize] {
+                                    if let Some(ref mut x) = prwr_sums[*player_id as usize] {
                                         *x += prwr;
                                     }
                                 }
                             }
                         }
-                        TimesetOutput::TallyPointsCharts { out, players_found }
-                            if last_rank < 11 =>
-                        {
+                        TimesetOutput::TallyPointsCharts {
+                            tally_points,
+                            players_found,
+                        } if last_rank < 11 => {
                             let pts = 11 - (last_rank as i16);
                             for player_id in &self.filters.player_ids {
                                 if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = out[*player_id as usize] {
+                                    if let Some(ref mut x) = tally_points[*player_id as usize] {
                                         *x += pts;
                                     }
                                 }
@@ -406,7 +473,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         TimesetOutput::TallyPointsCharts { .. } => (),
 
                         TimesetOutput::AverageRankRatingCharts {
-                            out,
+                            arr_value_sums,
                             players_found,
                             players_found_counter: _,
                         } => {
@@ -433,16 +500,57 @@ impl<K: ValidTimesetItem> Timeset<K> {
                                                 .map(|standard| standard.standard_level_id)
                                                 .unwrap_or(34)
                                     })
-                                    .unwrap()
+                                    .expect("It should always find a standard level")
                                     .value
                             } as f64;
                             for player_id in &self.filters.player_ids {
                                 if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = out[*player_id as usize] {
+                                    if let Some(ref mut x) = arr_value_sums[*player_id as usize] {
                                         *x += arr_value;
                                     }
                                 }
                             }
+                        }
+                        TimesetOutput::PlayerTimesheet {
+                            times: _,
+                            rank_sum,
+                            total_time,
+                            prwr_sum,
+                            tally_points,
+                            arr_value_sum,
+                        } => {
+                            let time = last_time + 1;
+                            let rank = last_rank + 1;
+                            *rank_sum += rank as f64;
+                            *total_time += time;
+                            *prwr_sum += (wr_time as f64) / (time as f64);
+                            *tally_points += std::cmp::max(11 - (rank as i16), 0);
+                            // TODO: Hardcoded Newbie Value
+                            *arr_value_sum += if last_standard_level.id == 34 {
+                                last_standard_level.value
+                            } else {
+                                standard_levels
+                                    .iter()
+                                    .find(|standard_level| {
+                                        standard_level.id
+                                            == standards
+                                                .iter()
+                                                .find(|standard| match standard.value {
+                                                    None => false,
+                                                    Some(value) => {
+                                                        standard.is_lap == last_lap_type
+                                                            && standard.track_id == last_track
+                                                            && standard.category
+                                                                <= self.filters.category
+                                                            && value >= last_time + 1
+                                                    }
+                                                })
+                                                .map(|standard| standard.standard_level_id)
+                                                .unwrap_or(34)
+                                    })
+                                    .expect("It should always find a standard level")
+                                    .value
+                            } as f64
                         }
                         TimesetOutput::None => (),
                     }
@@ -457,32 +565,35 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
                 match &mut self.output {
                     TimesetOutput::AverageFinishCharts {
-                        out: _,
+                        rank_sums: _,
                         players_found,
                         players_found_counter,
                     }
                     | TimesetOutput::TotalTimeCharts {
-                        out: _,
+                        total_times: _,
                         players_found,
                         players_found_counter,
                     }
                     | TimesetOutput::PersonalRecordWorldRecordCharts {
-                        out: _,
+                        prwr_sums: _,
                         players_found,
                         players_found_counter,
                     }
                     | TimesetOutput::AverageRankRatingCharts {
-                        out: _,
+                        arr_value_sums: _,
                         players_found,
                         players_found_counter,
                     } => {
                         *players_found = vec![false; players_found.len()];
                         *players_found_counter = 0;
                     }
-                    TimesetOutput::TallyPointsCharts { out, players_found } => {
+                    TimesetOutput::TallyPointsCharts {
+                        tally_points: _,
+                        players_found,
+                    } => {
                         *players_found = vec![false; players_found.len()];
                     }
-                    TimesetOutput::None => (),
+                    TimesetOutput::PlayerTimesheet { .. } | TimesetOutput::None => (),
                 }
                 has_found_all_times = false;
             }
@@ -503,6 +614,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
             last_time = time_data.get_time();
 
+            // TODO: Hardcoded Newbie Value
             last_standard_level = standard_levels
                 .iter()
                 .find(|standard_level| {
@@ -521,7 +633,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                             .map(|standard| standard.standard_level_id)
                             .unwrap_or(34)
                 })
-                .unwrap()
+                .expect("It should always find a standard level")
                 .clone();
 
             let prwr = (wr_time as f64) / (last_time as f64);
@@ -540,7 +652,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             // Set relevant values
             match &mut self.output {
                 TimesetOutput::AverageFinishCharts {
-                    out,
+                    rank_sums,
                     players_found,
                     players_found_counter,
                 } => {
@@ -556,13 +668,13 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         has_found_all_times = true;
                     }
 
-                    if let Some(ref mut x) = out[player_id as usize] {
+                    if let Some(ref mut x) = rank_sums[player_id as usize] {
                         *x += last_rank as f64;
                     }
                 }
 
                 TimesetOutput::TotalTimeCharts {
-                    out,
+                    total_times,
                     players_found,
                     players_found_counter,
                 } => {
@@ -578,13 +690,13 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         has_found_all_times = true;
                     }
 
-                    if let Some(ref mut x) = out[player_id as usize] {
+                    if let Some(ref mut x) = total_times[player_id as usize] {
                         *x += last_time;
                     }
                 }
 
                 TimesetOutput::PersonalRecordWorldRecordCharts {
-                    out,
+                    prwr_sums,
                     players_found,
                     players_found_counter,
                 } => {
@@ -600,12 +712,15 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         has_found_all_times = true;
                     }
 
-                    if let Some(ref mut x) = out[player_id as usize] {
+                    if let Some(ref mut x) = prwr_sums[player_id as usize] {
                         *x += prwr;
                     }
                 }
 
-                TimesetOutput::TallyPointsCharts { out, players_found } => {
+                TimesetOutput::TallyPointsCharts {
+                    tally_points: out,
+                    players_found,
+                } => {
                     if players_found[player_id as usize] {
                         continue;
                     }
@@ -622,7 +737,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 }
 
                 TimesetOutput::AverageRankRatingCharts {
-                    out,
+                    arr_value_sums,
                     players_found,
                     players_found_counter,
                 } => {
@@ -638,11 +753,46 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         has_found_all_times = true;
                     }
 
-                    if let Some(ref mut x) = out[player_id as usize] {
+                    if let Some(ref mut x) = arr_value_sums[player_id as usize] {
                         *x += last_standard_level.value as f64;
                     }
                 }
+                TimesetOutput::PlayerTimesheet {
+                    times,
+                    rank_sum,
+                    total_time,
+                    prwr_sum,
+                    tally_points,
+                    arr_value_sum,
+                } => {
+                    has_found_all_times = true;
 
+                    let index = match self.filters.is_lap {
+                        Some(_) => ((last_track as usize) * 2) + (last_lap_type as usize),
+                        None => last_track as usize,
+                    };
+                    times[index] = Some(Times {
+                        value: last_time,
+                        rank: last_rank,
+                        id: time_data.get_time_id(),
+                        prwr: prwr,
+                        std_lvl_code: last_standard_level.code,
+                        category: time_data.get_category(),
+                        is_lap: last_lap_type,
+                        track_id: last_track,
+                        date: time_data.get_date(),
+                        video_link: time_data.get_video_link(),
+                        ghost_link: time_data.get_ghost_link(),
+                        comment: time_data.get_comment(),
+                        initial_rank: time_data.get_initial_rank(),
+                    });
+
+                    *rank_sum += last_rank as f64;
+                    *total_time += last_time;
+                    *prwr_sum += prwr;
+                    *tally_points += std::cmp::max(11 - (last_rank as i16), 0);
+                    *arr_value_sum += last_standard_level.value as f64;
+                }
                 TimesetOutput::None => (),
             }
         }
