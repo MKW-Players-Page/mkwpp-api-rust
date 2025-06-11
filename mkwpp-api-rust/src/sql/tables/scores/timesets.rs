@@ -3,7 +3,7 @@ use chrono::NaiveDate;
 
 use crate::{
     app_state::access_app_state,
-    sql::tables::{Category, standard_levels::StandardLevels},
+    sql::tables::{Category, scores::rankings::RankingType, standard_levels::StandardLevels},
 };
 
 pub struct Timeset<K: ValidTimesetItem> {
@@ -79,7 +79,62 @@ impl<K: ValidTimesetItem> Default for Timeset<K> {
 impl<K: ValidTimesetItem> Timeset<K> {
     pub async fn calculate_average_finish_charts(
         &mut self,
-    ) -> Result<Vec<(i32, i32, f64)>, anyhow::Error> {
+    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+        self.internal_rankings_charts(TimesetOutput::AverageFinishCharts {
+            out: vec![None; 0],
+            players_found: vec![false; 0],
+            players_found_counter: 0,
+        })
+        .await
+    }
+
+    pub async fn calculate_total_time_charts(
+        &mut self,
+    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+        self.internal_rankings_charts(TimesetOutput::TotalTimeCharts {
+            out: vec![None; 0],
+            players_found: vec![false; 0],
+            players_found_counter: 0,
+        })
+        .await
+    }
+
+    pub async fn calculate_tally_points_charts(
+        &mut self,
+    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+        self.internal_rankings_charts(TimesetOutput::TallyPointsCharts {
+            out: vec![None; 0],
+            players_found: vec![false; 0],
+        })
+        .await
+    }
+
+    pub async fn calculate_personal_record_world_record_charts(
+        &mut self,
+    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+        self.internal_rankings_charts(TimesetOutput::PersonalRecordWorldRecordCharts {
+            out: vec![None; 0],
+            players_found: vec![false; 0],
+            players_found_counter: 0,
+        })
+        .await
+    }
+
+    pub async fn calculate_average_rank_rating_charts(
+        &mut self,
+    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+        self.internal_rankings_charts(TimesetOutput::AverageRankRatingCharts {
+            out: vec![None; 0],
+            players_found: vec![false; 0],
+            players_found_counter: 0,
+        })
+        .await
+    }
+
+    async fn internal_rankings_charts(
+        &mut self,
+        mut output_type: TimesetOutput,
+    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
         if self.filters.player_ids.len() == 0 && self.filters.whitelist_player_ids {
             return Ok(vec![]);
         }
@@ -89,16 +144,51 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
         let reserve_space = *self.filters.player_ids.iter().last().unwrap() as usize + 1;
 
-        let mut out = vec![None; reserve_space];
-        for player_id in &self.filters.player_ids {
-            out[*player_id as usize] = Some(0.0)
-        }
-
-        self.output = TimesetOutput::AverageFinishCharts {
-            out,
-            players_found: vec![false; reserve_space],
-            players_found_counter: 0,
+        match &mut output_type {
+            TimesetOutput::AverageFinishCharts {
+                out,
+                players_found,
+                players_found_counter,
+            }
+            | TimesetOutput::PersonalRecordWorldRecordCharts {
+                out,
+                players_found,
+                players_found_counter,
+            }
+            | TimesetOutput::AverageRankRatingCharts {
+                out,
+                players_found,
+                players_found_counter,
+            } => {
+                *out = vec![None; reserve_space];
+                for player_id in &self.filters.player_ids {
+                    out[*player_id as usize] = Some(0.0)
+                }
+                *players_found_counter = 0;
+                *players_found = vec![false; reserve_space];
+            }
+            TimesetOutput::TotalTimeCharts {
+                out,
+                players_found,
+                players_found_counter,
+            } => {
+                *out = vec![None; reserve_space];
+                for player_id in &self.filters.player_ids {
+                    out[*player_id as usize] = Some(0)
+                }
+                *players_found_counter = 0;
+                *players_found = vec![false; reserve_space];
+            }
+            TimesetOutput::TallyPointsCharts { out, players_found } => {
+                *out = vec![None; reserve_space];
+                for player_id in &self.filters.player_ids {
+                    out[*player_id as usize] = Some(0)
+                }
+                *players_found = vec![false; reserve_space];
+            }
+            TimesetOutput::None => panic!("This code should never be encountered"),
         };
+        self.output = output_type;
 
         self.core_loop().await?;
 
@@ -115,41 +205,11 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 Ok(af_and_ids
                     .into_iter()
                     .enumerate()
-                    .map(|(ranking, (id, af))| ((ranking as i32) + 1, id, af))
+                    .map(|(ranking, (id, af))| {
+                        ((ranking as i32) + 1, id, RankingType::AverageFinish(af))
+                    })
                     .collect())
             }
-            _ => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
-        }
-    }
-
-    pub async fn calculate_total_time_charts(
-        &mut self,
-    ) -> Result<Vec<(i32, i32, i32)>, anyhow::Error> {
-        if self.filters.player_ids.len() == 0 && self.filters.whitelist_player_ids {
-            return Ok(vec![]);
-        }
-
-        self.invert_blacklist().await?;
-        self.filters.player_ids.sort_unstable();
-
-        let reserve_space = *self.filters.player_ids.iter().last().unwrap() as usize + 1;
-
-        let mut out = vec![None; reserve_space];
-        for player_id in &self.filters.player_ids {
-            out[*player_id as usize] = Some(0)
-        }
-
-        self.output = TimesetOutput::TotalTimeCharts {
-            out,
-            players_found: vec![false; reserve_space],
-            players_found_counter: 0,
-        };
-
-        self.core_loop().await?;
-
-        match &self.output {
             TimesetOutput::TotalTimeCharts { out, .. } => {
                 let mut tt_and_ids = out
                     .iter()
@@ -160,44 +220,12 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 Ok(tt_and_ids
                     .into_iter()
                     .enumerate()
-                    .map(|(ranking, (id, tt))| ((ranking as i32) + 1, id, tt))
+                    .map(|(ranking, (id, tt))| {
+                        ((ranking as i32) + 1, id, RankingType::TotalTime(tt))
+                    })
                     .collect())
             }
-            _ => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
-        }
-    }
-
-    pub async fn calculate_tally_points_charts(
-        &mut self,
-    ) -> Result<Vec<(i32, i32, i16)>, anyhow::Error> {
-        if self.filters.player_ids.len() == 0 && self.filters.whitelist_player_ids {
-            return Ok(vec![]);
-        }
-
-        self.invert_blacklist().await?;
-        self.filters.player_ids.sort_unstable();
-
-        let reserve_space = *self.filters.player_ids.iter().last().unwrap() as usize + 1;
-
-        let mut out = vec![None; reserve_space];
-        for player_id in &self.filters.player_ids {
-            out[*player_id as usize] = Some(0)
-        }
-
-        self.output = TimesetOutput::TallyPointsCharts {
-            players_found: vec![false; reserve_space],
-            out,
-        };
-
-        self.core_loop().await?;
-
-        match &self.output {
-            TimesetOutput::TallyPointsCharts {
-                out,
-                players_found: _,
-            } => {
+            TimesetOutput::TallyPointsCharts { out, .. } => {
                 let mut tp_and_ids = out
                     .iter()
                     .enumerate()
@@ -209,41 +237,11 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 Ok(tp_and_ids
                     .into_iter()
                     .enumerate()
-                    .map(|(ranking, (id, tp))| ((ranking as i32) + 1, id, tp))
+                    .map(|(ranking, (id, tp))| {
+                        ((ranking as i32) + 1, id, RankingType::TallyPoints(tp))
+                    })
                     .collect())
             }
-            _ => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
-        }
-    }
-
-    pub async fn calculate_personal_record_world_record_charts(
-        &mut self,
-    ) -> Result<Vec<(i32, i32, f64)>, anyhow::Error> {
-        if self.filters.player_ids.len() == 0 && self.filters.whitelist_player_ids {
-            return Ok(vec![]);
-        }
-
-        self.invert_blacklist().await?;
-        self.filters.player_ids.sort_unstable();
-
-        let reserve_space = *self.filters.player_ids.iter().last().unwrap() as usize + 1;
-
-        let mut out = vec![None; reserve_space];
-        for player_id in &self.filters.player_ids {
-            out[*player_id as usize] = Some(0.0)
-        }
-
-        self.output = TimesetOutput::PersonalRecordWorldRecordCharts {
-            out,
-            players_found: vec![false; reserve_space],
-            players_found_counter: 0,
-        };
-
-        self.core_loop().await?;
-
-        match &self.output {
             TimesetOutput::PersonalRecordWorldRecordCharts { out, .. } => {
                 let mut prwr_and_ids = out
                     .iter()
@@ -256,41 +254,15 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 Ok(prwr_and_ids
                     .into_iter()
                     .enumerate()
-                    .map(|(ranking, (id, prwr))| ((ranking as i32) + 1, id, prwr))
+                    .map(|(ranking, (id, prwr))| {
+                        (
+                            (ranking as i32) + 1,
+                            id,
+                            RankingType::PersonalRecordWorldRecord(prwr),
+                        )
+                    })
                     .collect())
             }
-            _ => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
-        }
-    }
-
-    pub async fn calculate_average_rank_rating_charts(
-        &mut self,
-    ) -> Result<Vec<(i32, i32, f64)>, anyhow::Error> {
-        if self.filters.player_ids.len() == 0 && self.filters.whitelist_player_ids {
-            return Ok(vec![]);
-        }
-
-        self.invert_blacklist().await?;
-        self.filters.player_ids.sort_unstable();
-
-        let reserve_space = *self.filters.player_ids.iter().last().unwrap() as usize + 1;
-
-        let mut out = vec![None; reserve_space];
-        for player_id in &self.filters.player_ids {
-            out[*player_id as usize] = Some(0.0)
-        }
-
-        self.output = TimesetOutput::AverageRankRatingCharts {
-            out,
-            players_found: vec![false; reserve_space],
-            players_found_counter: 0,
-        };
-
-        self.core_loop().await?;
-
-        match &self.output {
             TimesetOutput::AverageRankRatingCharts { out, .. } => {
                 let mut arr_and_ids = out
                     .iter()
@@ -303,10 +275,16 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 Ok(arr_and_ids
                     .into_iter()
                     .enumerate()
-                    .map(|(ranking, (id, arr))| ((ranking as i32) + 1, id, arr))
+                    .map(|(ranking, (id, arr))| {
+                        (
+                            (ranking as i32) + 1,
+                            id,
+                            RankingType::AverageRankRating(arr),
+                        )
+                    })
                     .collect())
             }
-            _ => Err(anyhow!(
+            TimesetOutput::None => Err(anyhow!(
                 "Something went very wrong, the output type changed unexpectedly"
             )),
         }
