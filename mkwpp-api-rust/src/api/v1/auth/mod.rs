@@ -28,7 +28,9 @@ async fn register(body: web::Json<RegisterBody>) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
     let data = data.read().unwrap();
 
-    let transaction_future = data.pg_pool.begin();
+    let transaction = data.pg_pool.begin().await;
+
+    std::mem::drop(data);
 
     let username =
         match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
@@ -73,7 +75,7 @@ async fn register(body: web::Json<RegisterBody>) -> HttpResponse {
         }
     };
 
-    let mut transaction = match transaction_future.await {
+    let mut transaction = match transaction {
         Ok(v) => v,
         Err(error) => {
             return FinalErrorResponse::new_no_fields(vec![
@@ -116,7 +118,8 @@ async fn login(req: HttpRequest, body: web::Json<LoginBody>) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
     let data = data.read().unwrap();
 
-    let transaction_future = data.pg_pool.begin();
+    let transaction = data.pg_pool.begin().await;
+    std::mem::drop(data);
     std::thread::sleep(std::time::Duration::from_secs(5));
     let body = body.into_inner();
 
@@ -150,7 +153,7 @@ async fn login(req: HttpRequest, body: web::Json<LoginBody>) -> HttpResponse {
             }
         };
 
-    let mut transaction = match transaction_future.await {
+    let mut transaction = match transaction {
         Ok(v) => v,
         Err(error) => {
             return FinalErrorResponse::new_no_fields(vec![
@@ -209,6 +212,7 @@ async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {
         Err(e) => return AppState::pg_conn_http_error(e),
     };
 
+    std::mem::drop(data);
     let user_data = match crate::auth::get_user_data(&body.session_token, &mut connection).await {
         Ok(v) => v,
         Err(e) => {
@@ -269,6 +273,7 @@ async fn logout(body: web::Json<UserDataBody>) -> HttpResponse {
             .generate_response(HttpResponse::InternalServerError);
         }
     };
+    std::mem::drop(data);
     let body = body.into_inner();
 
     if let Err(e) = crate::auth::logout(&body.session_token, &mut transaction).await {

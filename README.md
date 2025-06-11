@@ -48,7 +48,7 @@ This will be actually faster, by the nature of not being an interpreted language
 
 ## TODO
 - ~[Normalizing of data](https://github.com/FallBackITA27/mkwpp-api-rust/tree/start-frontend-integration)~
-- Matchup Page API
+- ~[Matchup Page API](https://github.com/FallBackITA27/mkwpp-api-rust/tree/start-frontend-integration)~
 - Rewrite of Standard Levels / Standards handling to avoid hardcoded values
 - Submission Pages API
 - SMTP Handling
@@ -56,3 +56,4 @@ This will be actually faster, by the nature of not being an interpreted language
 - Account Actions
     - Creating Profiles
     - Claiming Profiles
+- Admin API / Admin UI

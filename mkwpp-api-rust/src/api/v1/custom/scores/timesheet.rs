@@ -62,19 +62,19 @@ pub async fn get_matchup(req: HttpRequest, body: web::Json<Vec<i32>>) -> HttpRes
         Ok(conn) => conn,
         Err(e) => return AppState::pg_conn_http_error(e),
     };
+    std::mem::drop(data);
 
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
 
-    let data = match MatchupData::get_data(
+    let data = match MatchupData::get(
         &mut connection,
         body.into_inner(),
         params.category,
         params.lap_mode,
         params.date,
         params.region_id,
-        params.calculate_rgb,
     )
     .await
     {

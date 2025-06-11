@@ -128,6 +128,8 @@ pub async fn basic_get_i32(
         Err(e) => return AppState::pg_conn_http_error(e),
     };
 
+    std::mem::drop(data);
+
     let rows_request = rows_function(&mut connection, path.into_inner()).await;
 
     if let Err(e) = crate::api::v1::close_connection(connection).await {

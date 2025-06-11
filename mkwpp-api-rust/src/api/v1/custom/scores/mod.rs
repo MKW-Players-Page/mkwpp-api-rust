@@ -11,11 +11,13 @@ pub fn scores() -> impl HttpServiceFactory {
         .service(chart::chart())
         .service(records::records())
         .service(timesheet::timesheet())
+        .service(timesheet::matchup())
         .default_service(web::get().to(default))
 }
 default_paths_fn!(
     "/recent",
     "/chart/:trackId",
     "/timesheet/:playerId",
-    "/records"
+    "/records",
+    "/matchup"
 );

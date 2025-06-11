@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::anyhow;
 use chrono::NaiveDate;
 
@@ -5,7 +7,7 @@ use crate::{
     app_state::access_app_state,
     sql::tables::{
         Category,
-        scores::{Times, rankings::RankingType, timesheet::Timesheet},
+        scores::{Times, matchup::MatchupData, rankings::RankingType, timesheet::Timesheet},
         standard_levels::StandardLevels,
     },
 };
@@ -63,6 +65,22 @@ enum TimesetOutput {
         prwr_sum: f64,
         tally_points: i16,
         arr_value_sum: f64,
+    },
+    PlayerMatchup {
+        times: Vec<Vec<Option<Times>>>,
+        difference_to_first_times: Vec<Vec<i32>>,
+        difference_to_next_times: Vec<Vec<i32>>,
+        rank_sums: Vec<f64>,
+        total_times: Vec<i32>,
+        prwr_sums: Vec<f64>,
+        tally_points: Vec<i16>,
+        arr_value_sums: Vec<f64>,
+        wins: Vec<i8>,
+        first_time: i32,
+        last_time: i32,
+        players_found: Vec<bool>,
+        players_found_counter: i32,
+        player_ids_to_index: HashMap<i32, usize>,
     },
 }
 
@@ -209,7 +227,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 }
                 *players_found = vec![false; reserve_space];
             }
-            TimesetOutput::None | TimesetOutput::PlayerTimesheet { .. } => {
+            TimesetOutput::None
+            | TimesetOutput::PlayerTimesheet { .. }
+            | TimesetOutput::PlayerMatchup { .. } => {
                 panic!("This code should never be encountered")
             }
         };
@@ -309,7 +329,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     })
                     .collect())
             }
-            TimesetOutput::None | TimesetOutput::PlayerTimesheet { .. } => Err(anyhow!(
+            TimesetOutput::None
+            | TimesetOutput::PlayerTimesheet { .. }
+            | TimesetOutput::PlayerMatchup { .. } => Err(anyhow!(
                 "Something went very wrong, the output type changed unexpectedly"
             )),
         }
@@ -325,8 +347,11 @@ impl<K: ValidTimesetItem> Timeset<K> {
             tally_points: 0,
             arr_value_sum: 0.0,
         };
-        self.core_loop().await?;
+
+        self.filters.whitelist_player_ids = true;
         self.filters.player_ids = vec![player_id; 1];
+
+        self.core_loop().await?;
 
         match &mut self.output {
             TimesetOutput::PlayerTimesheet {
@@ -346,6 +371,331 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 prwr: *prwr_sum / self.divvie_value,
             }),
             TimesetOutput::None
+            | TimesetOutput::AverageFinishCharts { .. }
+            | TimesetOutput::TotalTimeCharts { .. }
+            | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
+            | TimesetOutput::TallyPointsCharts { .. }
+            | TimesetOutput::AverageRankRatingCharts { .. }
+            | TimesetOutput::PlayerMatchup { .. } => Err(anyhow!(
+                "Something went very wrong, the output type changed unexpectedly"
+            )),
+        }
+    }
+
+    pub async fn matchup(&mut self, player_ids: Vec<i32>) -> Result<MatchupData, anyhow::Error> {
+        self.calculate_divvie_value();
+        let player_numbers = player_ids.len();
+
+        self.output = TimesetOutput::PlayerMatchup {
+            times: vec![vec![None; self.divvie_value as usize]; player_numbers],
+            difference_to_first_times: vec![vec![0; self.divvie_value as usize]; player_numbers],
+            difference_to_next_times: vec![vec![0; self.divvie_value as usize]; player_numbers],
+            rank_sums: vec![0.0; player_numbers],
+            total_times: vec![0; player_numbers],
+            prwr_sums: vec![0.0; player_numbers],
+            tally_points: vec![0; player_numbers],
+            arr_value_sums: vec![0.0; player_numbers],
+            wins: vec![0; player_numbers],
+            first_time: 0,
+            last_time: 0,
+            players_found: vec![false; player_numbers],
+            players_found_counter: 0,
+            player_ids_to_index: player_ids
+                .iter()
+                .enumerate()
+                .map(|(index, player_id)| (*player_id, index))
+                .collect::<HashMap<i32, usize>>(),
+        };
+        self.filters.player_ids = player_ids;
+        self.filters.whitelist_player_ids = true;
+
+        self.core_loop().await?;
+
+        match &mut self.output {
+            TimesetOutput::PlayerMatchup {
+                times,
+                difference_to_first_times,
+                difference_to_next_times,
+                rank_sums,
+                total_times,
+                prwr_sums,
+                tally_points,
+                arr_value_sums,
+                wins,
+                first_time: _,
+                last_time: _,
+                players_found: _,
+                players_found_counter: _,
+                player_ids_to_index: _,
+            } => {
+                let afs = rank_sums
+                    .into_iter()
+                    .map(|x| *x / self.divvie_value)
+                    .collect::<Vec<f64>>();
+                let prwrs = prwr_sums
+                    .into_iter()
+                    .map(|x| *x / self.divvie_value)
+                    .collect::<Vec<f64>>();
+                let arr_values = arr_value_sums
+                    .into_iter()
+                    .map(|x| *x / self.divvie_value)
+                    .collect::<Vec<f64>>();
+
+                let first_af = *afs.iter().min_by(|x, y| x.total_cmp(y)).unwrap();
+                let first_total_time = *total_times.iter().min().unwrap();
+                let first_prwr = *prwrs.iter().max_by(|x, y| x.total_cmp(y)).unwrap();
+                let first_tally_points = *tally_points.iter().max().unwrap();
+                let first_arr = *arr_values.iter().min_by(|x, y| x.total_cmp(y)).unwrap();
+                let first_wins = *wins.iter().max().unwrap();
+
+                let delta_af = *afs.iter().max_by(|x, y| x.total_cmp(y)).unwrap() - first_af;
+                let delta_total_time = *total_times.iter().max().unwrap() - first_total_time;
+                let delta_prwr = first_prwr - *prwrs.iter().min_by(|x, y| x.total_cmp(y)).unwrap();
+                let delta_tally_points = first_tally_points - *tally_points.iter().min().unwrap();
+                let delta_arr =
+                    *arr_values.iter().max_by(|x, y| x.total_cmp(y)).unwrap() - first_arr;
+                let delta_wins = first_wins - *wins.iter().min().unwrap();
+
+                let diff_af_first: Vec<_> = afs.iter().map(|x| x - first_af).collect();
+                let diff_total_time_first: Vec<_> =
+                    total_times.iter().map(|x| x - first_total_time).collect();
+                let diff_tally_first: Vec<_> = tally_points
+                    .iter()
+                    .map(|x| first_tally_points - x)
+                    .collect();
+                let diff_arr_first: Vec<_> = arr_values.iter().map(|x| x - first_arr).collect();
+                let diff_prwr_first: Vec<_> = prwrs.iter().map(|x| first_prwr - x).collect();
+                let diff_wins_first: Vec<_> = wins.iter().map(|x| first_wins - x).collect();
+
+                let mut rgb_diff = vec![vec![0; self.divvie_value as usize]; player_numbers];
+                for track_index in 0..(self.divvie_value as usize) {
+                    let mut delta = i32::MIN;
+                    for player_index in 0..player_numbers {
+                        delta = std::cmp::max(
+                            difference_to_first_times[player_index][track_index],
+                            delta,
+                        );
+                    }
+
+                    for player_index in 0..player_numbers {
+                        rgb_diff[player_index][track_index] = (255.0
+                            - ((difference_to_first_times[player_index][track_index] as f64
+                                / (delta as f64))
+                                * 155.0))
+                            as u8;
+                    }
+                }
+
+                let mut timesheet_vec = Vec::with_capacity(player_numbers);
+                for player_index in 0..player_numbers {
+                    timesheet_vec.push(Timesheet {
+                        times: std::mem::take(&mut times[player_index])
+                            .into_iter()
+                            .filter_map(|x| x)
+                            .collect(),
+                        af: afs[player_index],
+                        arr: arr_values[player_index],
+                        prwr: prwrs[player_index],
+                        tally: tally_points[player_index],
+                        total_time: total_times[player_index],
+                    });
+                }
+
+                // TODO: Whatever the fuck this is, please rewrite
+                Ok(MatchupData {
+                    player_data: timesheet_vec,
+                    diff_first: std::mem::take(difference_to_first_times),
+                    diff_next: std::mem::take(difference_to_next_times),
+                    diff_af_next: {
+                        let mut tmp = afs
+                            .iter()
+                            .map(|x| *x)
+                            .enumerate()
+                            .collect::<Vec<(usize, f64)>>();
+                        tmp.sort_by(|(_, x), (_, y)| y.total_cmp(x));
+                        let mut tmp = tmp.into_iter().peekable();
+                        let mut out = vec![];
+                        while let Some((z, x)) = tmp.next() {
+                            out.push((
+                                z,
+                                match tmp.peek() {
+                                    Some((_, y)) => x - y,
+                                    None => 0.0,
+                                },
+                            ));
+                        }
+                        out.sort_by(|(x, _), (y, _)| x.cmp(y));
+                        out.into_iter().map(|(_, x)| x).collect()
+                    },
+                    diff_total_time_next: {
+                        let mut tmp = total_times
+                            .iter()
+                            .map(|x| *x)
+                            .enumerate()
+                            .collect::<Vec<(usize, i32)>>();
+                        tmp.sort_by(|(_, x), (_, y)| y.cmp(x));
+                        let mut tmp = tmp.into_iter().peekable();
+                        let mut out = vec![];
+                        while let Some((z, x)) = tmp.next() {
+                            out.push((
+                                z,
+                                match tmp.peek() {
+                                    Some((_, y)) => x - y,
+                                    None => 0,
+                                },
+                            ));
+                        }
+                        out.sort_by(|(x, _), (y, _)| x.cmp(y));
+                        out.into_iter().map(|(_, x)| x).collect()
+                    },
+                    diff_tally_next: {
+                        let mut tmp = tally_points
+                            .iter()
+                            .map(|x| *x)
+                            .enumerate()
+                            .collect::<Vec<(usize, i16)>>();
+                        tmp.sort_by(|(_, x), (_, y)| x.cmp(y));
+                        let mut tmp = tmp.into_iter().peekable();
+                        let mut out = vec![];
+                        while let Some((z, x)) = tmp.next() {
+                            out.push((
+                                z,
+                                match tmp.peek() {
+                                    Some((_, y)) => y-x,
+                                    None => 0,
+                                },
+                            ));
+                        }
+                        out.sort_by(|(x, _), (y, _)| x.cmp(y));
+                        out.into_iter().map(|(_, x)| x).collect()
+                    },
+                    diff_arr_next: {
+                        let mut tmp = arr_values
+                            .iter()
+                            .map(|x| *x)
+                            .enumerate()
+                            .collect::<Vec<(usize, f64)>>();
+                        tmp.sort_by(|(_, x), (_, y)| y.total_cmp(x));
+                        let mut tmp = tmp.into_iter().peekable();
+                        let mut out = vec![];
+                        while let Some((z, x)) = tmp.next() {
+                            out.push((
+                                z,
+                                match tmp.peek() {
+                                    Some((_, y)) => x - y,
+                                    None => 0.0,
+                                },
+                            ));
+                        }
+                        out.sort_by(|(x, _), (y, _)| x.cmp(y));
+                        out.into_iter().map(|(_, x)| x).collect()
+                    },
+                    diff_prwr_next: {
+                        let mut tmp = prwrs
+                            .iter()
+                            .map(|x| *x)
+                            .enumerate()
+                            .collect::<Vec<(usize, f64)>>();
+                        tmp.sort_by(|(_, x), (_, y)| x.total_cmp(y));
+                        let mut tmp = tmp.into_iter().peekable();
+                        let mut out = vec![];
+                        while let Some((z, x)) = tmp.next() {
+                            out.push((
+                                z,
+                                match tmp.peek() {
+                                    Some((_, y)) => y-x,
+                                    None => 0.0,
+                                },
+                            ));
+                        }
+                        out.sort_by(|(x, _), (y, _)| x.cmp(y));
+                        out.into_iter().map(|(_, x)| x).collect()
+                    },
+                    diff_wins_next: {
+                        let mut tmp = wins
+                            .iter()
+                            .map(|x| *x)
+                            .enumerate()
+                            .collect::<Vec<(usize, i8)>>();
+                        tmp.sort_by(|(_, x), (_, y)| x.cmp(y));
+                        let mut tmp = tmp.into_iter().peekable();
+                        let mut out = vec![];
+                        while let Some((z, x)) = tmp.next() {
+                            out.push((
+                                z,
+                                match tmp.peek() {
+                                    Some((_, y)) => y-x,
+                                    None => 0,
+                                },
+                            ));
+                        }
+                        out.sort_by(|(x, _), (y, _)| x.cmp(y));
+                        out.into_iter().map(|(_, x)| x).collect()
+                    },
+                    rgb_diff,
+                    rgb_diff_af: if delta_af == 0.0 {
+                        vec![0; player_numbers]
+                    } else {
+                        diff_af_first
+                            .iter()
+                            .map(|x| (255.0 - (x / delta_af * 155.0)) as u8)
+                            .collect()
+                    },
+                    rgb_diff_total_time: if delta_total_time == 0 {
+                        vec![0; player_numbers]
+                    } else {
+                        diff_total_time_first
+                            .iter()
+                            .map(|x| {
+                                (255.0 - ((*x as f64) / (delta_total_time as f64) * 155.0)) as u8
+                            })
+                            .collect()
+                    },
+                    rgb_diff_tally: if delta_tally_points == 0 {
+                        vec![0; player_numbers]
+                    } else {
+                        diff_tally_first
+                            .iter()
+                            .map(|x| {
+                                (255.0 - ((*x as f64) / (delta_tally_points as f64) * 155.0)) as u8
+                            })
+                            .collect()
+                    },
+                    rgb_diff_arr: if delta_arr == 0.0 {
+                        vec![0; player_numbers]
+                    } else {
+                        diff_arr_first
+                            .iter()
+                            .map(|x| (255.0 - (x / delta_arr * 155.0)) as u8)
+                            .collect()
+                    },
+                    rgb_diff_prwr: if delta_prwr == 0.0 {
+                        vec![0; player_numbers]
+                    } else {
+                        diff_prwr_first
+                            .iter()
+                            .map(|x| (255.0 - (x / delta_prwr * 155.0)) as u8)
+                            .collect()
+                    },
+                    rgb_diff_wins: if delta_wins == 0 {
+                        vec![0; player_numbers]
+                    } else {
+                        diff_wins_first
+                            .iter()
+                            .map(|x| (255.0 - ((*x as f64) / (delta_wins as f64) * 155.0)) as u8)
+                            .collect()
+                    },
+                    diff_af_first,
+                    diff_prwr_first,
+                    diff_total_time_first,
+                    diff_tally_first,
+                    diff_arr_first,
+                    diff_wins_first,
+                    wins: std::mem::take(wins),
+                })
+            }
+            TimesetOutput::None
+            | TimesetOutput::PlayerTimesheet { .. }
             | TimesetOutput::AverageFinishCharts { .. }
             | TimesetOutput::TotalTimeCharts { .. }
             | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
@@ -542,7 +892,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                                                             && standard.track_id == last_track
                                                             && standard.category
                                                                 <= self.filters.category
-                                                            && value >= last_time + 1
+                                                            && value >= time
                                                     }
                                                 })
                                                 .map(|standard| standard.standard_level_id)
@@ -551,6 +901,80 @@ impl<K: ValidTimesetItem> Timeset<K> {
                                     .expect("It should always find a standard level")
                                     .value
                             } as f64
+                        }
+
+                        TimesetOutput::PlayerMatchup {
+                            times: _,
+                            difference_to_first_times,
+                            difference_to_next_times,
+                            rank_sums,
+                            total_times,
+                            prwr_sums,
+                            tally_points,
+                            arr_value_sums,
+                            wins: _,
+                            first_time,
+                            last_time: last_time_selected,
+                            players_found,
+                            players_found_counter: _,
+                            player_ids_to_index,
+                        } => {
+                            let time = last_time + 1;
+                            let rank = last_rank + 1;
+                            let prwr = (wr_time as f64) / (time as f64);
+                            let tally_points_default = std::cmp::max(11 - (rank as i16), 0);
+                            // TODO: Hardcoded Newbie Value
+                            let arr_value = if last_standard_level.id == 34 {
+                                last_standard_level.value
+                            } else {
+                                standard_levels
+                                    .iter()
+                                    .find(|standard_level| {
+                                        standard_level.id
+                                            == standards
+                                                .iter()
+                                                .find(|standard| match standard.value {
+                                                    None => false,
+                                                    Some(value) => {
+                                                        standard.is_lap == last_lap_type
+                                                            && standard.track_id == last_track
+                                                            && standard.category
+                                                                <= self.filters.category
+                                                            && value >= time
+                                                    }
+                                                })
+                                                .map(|standard| standard.standard_level_id)
+                                                .unwrap_or(34)
+                                    })
+                                    .expect("It should always find a standard level")
+                                    .value
+                            } as f64;
+                            for player_id in &self.filters.player_ids {
+                                if !players_found[*player_id as usize] {
+                                    let player_index = *player_ids_to_index.get(&player_id).expect(
+                                        "Somehow there is no player id in relevant player_ids_to_index hashmap",
+                                    );
+
+                                    let track_index = match self.filters.is_lap {
+                                        Some(_) => (last_track as usize) - 1,
+                                        None => {
+                                            (((last_track as usize) - 1) * 2)
+                                                + (last_lap_type as usize)
+                                        }
+                                    };
+
+                                    difference_to_first_times[player_index][track_index] =
+                                        time - *first_time;
+                                    difference_to_next_times[player_index][track_index] =
+                                        time - *last_time_selected;
+
+                                    rank_sums[player_index] += rank as f64;
+                                    total_times[player_index] += time;
+                                    prwr_sums[player_index] += prwr;
+                                    tally_points[player_index] += tally_points_default;
+                                    arr_value_sums[player_index] += arr_value;
+                                }
+                            }
                         }
                         TimesetOutput::None => (),
                     }
@@ -592,6 +1016,27 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         players_found,
                     } => {
                         *players_found = vec![false; players_found.len()];
+                    }
+                    TimesetOutput::PlayerMatchup {
+                        times: _,
+                        difference_to_first_times: _,
+                        difference_to_next_times: _,
+                        rank_sums: _,
+                        total_times: _,
+                        prwr_sums: _,
+                        tally_points: _,
+                        arr_value_sums: _,
+                        wins: _,
+                        first_time,
+                        last_time,
+                        players_found,
+                        players_found_counter,
+                        player_ids_to_index: _,
+                    } => {
+                        *players_found_counter = 0;
+                        *players_found = vec![false; self.filters.player_ids.len()];
+                        *first_time = 0;
+                        *last_time = 0;
                     }
                     TimesetOutput::PlayerTimesheet { .. } | TimesetOutput::None => (),
                 }
@@ -645,7 +1090,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             let player_id = time_data.get_player_id();
             match self.filters.whitelist_player_ids {
                 false if self.filters.player_ids.iter().any(|x| *x == player_id) => continue,
-                true if self.filters.player_ids.iter().all(|x| *x != player_id) => continue,
+                true if !self.filters.player_ids.iter().any(|x| *x == player_id) => continue,
                 _ => (),
             }
 
@@ -768,9 +1213,10 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     has_found_all_times = true;
 
                     let index = match self.filters.is_lap {
-                        Some(_) => ((last_track as usize) * 2) + (last_lap_type as usize),
-                        None => last_track as usize,
+                        Some(_) => (last_track as usize) - 1,
+                        None => (((last_track as usize) - 1) * 2) + (last_lap_type as usize),
                     };
+
                     times[index] = Some(Times {
                         value: last_time,
                         rank: last_rank,
@@ -793,6 +1239,78 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     *tally_points += std::cmp::max(11 - (last_rank as i16), 0);
                     *arr_value_sum += last_standard_level.value as f64;
                 }
+
+                TimesetOutput::PlayerMatchup {
+                    times,
+                    difference_to_first_times,
+                    difference_to_next_times,
+                    rank_sums,
+                    total_times,
+                    prwr_sums,
+                    tally_points,
+                    arr_value_sums,
+                    wins,
+                    players_found,
+                    players_found_counter,
+                    player_ids_to_index,
+                    first_time,
+                    last_time: last_time_selected,
+                } => {
+                    let player_index = *player_ids_to_index.get(&player_id).expect(
+                        "Somehow there is no player id in relevant player_ids_to_index hashmap",
+                    );
+                    if players_found[player_index] {
+                        continue;
+                    }
+
+                    if *players_found_counter == 0 {
+                        *first_time = last_time;
+                        *last_time_selected = last_time;
+                        wins[player_index] += 1;
+                    }
+
+                    players_found[player_index] = true;
+                    *players_found_counter += 1;
+                    if self.filters.whitelist_player_ids
+                        && (self.filters.player_ids.len() as i32) == *players_found_counter
+                    {
+                        has_found_all_times = true;
+                    }
+
+                    let track_index = match self.filters.is_lap {
+                        Some(_) => (last_track as usize) - 1,
+                        None => (((last_track as usize) - 1) * 2) + (last_lap_type as usize),
+                    };
+
+                    difference_to_first_times[player_index][track_index] = last_time - *first_time;
+                    difference_to_next_times[player_index][track_index] =
+                        last_time - *last_time_selected;
+
+                    *last_time_selected = last_time;
+
+                    times[player_index][track_index] = Some(Times {
+                        value: last_time,
+                        rank: last_rank,
+                        id: time_data.get_time_id(),
+                        prwr: prwr,
+                        std_lvl_code: last_standard_level.code,
+                        category: time_data.get_category(),
+                        is_lap: last_lap_type,
+                        track_id: last_track,
+                        date: time_data.get_date(),
+                        video_link: time_data.get_video_link(),
+                        ghost_link: time_data.get_ghost_link(),
+                        comment: time_data.get_comment(),
+                        initial_rank: time_data.get_initial_rank(),
+                    });
+
+                    rank_sums[player_index] += last_rank as f64;
+                    total_times[player_index] += last_time;
+                    prwr_sums[player_index] += prwr;
+                    tally_points[player_index] += std::cmp::max(11 - (last_rank as i16), 0);
+                    arr_value_sums[player_index] += last_standard_level.value as f64;
+                }
+
                 TimesetOutput::None => (),
             }
         }

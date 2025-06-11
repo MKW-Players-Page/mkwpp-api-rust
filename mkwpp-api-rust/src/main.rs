@@ -15,6 +15,8 @@ static ENV_VARS: LazyLock<env_handler::EnvSettings> = LazyLock::new(|| {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    println!("\x07");
+
     println!("| DATABASE URL: {}", ENV_VARS.database_url);
     println!("| DATABASE MAX CONNECTIONS IN POOL: {}", ENV_VARS.max_conn);
     println!(

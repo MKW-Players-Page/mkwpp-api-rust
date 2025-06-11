@@ -141,6 +141,8 @@ pub async fn basic_get<
         Err(e) => return AppState::pg_conn_http_error(e),
     };
 
+    std::mem::drop(data);
+
     let rows_request = rows_function(&mut connection).await;
     handle_basic_get::<Table>(rows_request, connection).await
 }
@@ -161,6 +163,8 @@ pub async fn basic_get_with_data_mod<
         Ok(conn) => conn,
         Err(e) => return AppState::pg_conn_http_error(e),
     };
+
+    std::mem::drop(data);
 
     let rows_request = rows_function(&mut connection).await;
 
