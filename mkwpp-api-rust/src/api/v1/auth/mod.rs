@@ -26,11 +26,10 @@ async fn register(body: web::Json<RegisterBody>) -> HttpResponse {
     let body = body.into_inner();
 
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let transaction = data.pg_pool.begin().await;
-
-    std::mem::drop(data);
+    let transaction = {
+        let data = data.read().await;
+        data.pg_pool.begin().await
+    };
 
     let username =
         match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
@@ -116,10 +115,11 @@ struct LoginBody {
 
 async fn login(req: HttpRequest, body: web::Json<LoginBody>) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
+    let transaction = {
+        let data = data.read().await;
+        data.pg_pool.begin().await
+    };
 
-    let transaction = data.pg_pool.begin().await;
-    std::mem::drop(data);
     std::thread::sleep(std::time::Duration::from_secs(5));
     let body = body.into_inner();
 
@@ -205,14 +205,14 @@ async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {
     let body = body.into_inner();
 
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return AppState::pg_conn_http_error(e),
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
     };
 
-    std::mem::drop(data);
     let user_data = match crate::auth::get_user_data(&body.session_token, &mut connection).await {
         Ok(v) => v,
         Err(e) => {
@@ -261,19 +261,20 @@ async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {
 
 async fn logout(body: web::Json<UserDataBody>) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let mut transaction = match data.pg_pool.begin().await {
-        Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error creating transaction"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
+    let mut transaction = {
+        let data = data.read().await;
+        match data.pg_pool.begin().await {
+            Ok(v) => v,
+            Err(e) => {
+                return FinalErrorResponse::new_no_fields(vec![
+                    String::from("Error creating transaction"),
+                    e.to_string(),
+                ])
+                .generate_response(HttpResponse::InternalServerError);
+            }
         }
     };
-    std::mem::drop(data);
+
     let body = body.into_inner();
 
     if let Err(e) = crate::auth::logout(&body.session_token, &mut transaction).await {

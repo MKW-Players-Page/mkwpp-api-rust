@@ -36,11 +36,12 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
     );
 
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return AppState::pg_conn_http_error(e),
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
     };
 
     std::mem::drop(data);

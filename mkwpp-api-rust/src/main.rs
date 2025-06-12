@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
     println!("| SERVER CONNECTION KEEP ALIVE: {}", ENV_VARS.keep_alive);
 
     let app_state = app_state::access_app_state().await;
-    let app_state = app_state.write().unwrap();
+    let app_state = app_state.write().await;
 
     println!("- Reading CLI args");
     let args: Vec<String> = std::env::args().collect();
@@ -42,6 +42,9 @@ async fn main() -> std::io::Result<()> {
     println!("- Dropping useless data");
     std::mem::drop(args);
     std::mem::drop(app_state);
+
+    println!("- Starting Cache Update Loop");
+    tokio::task::spawn(app_state::cache::update_loop());
 
     println!("- Enabling environment logger");
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));

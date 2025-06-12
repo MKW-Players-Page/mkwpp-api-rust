@@ -1,13 +1,10 @@
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 use actix_web::HttpResponse;
 use anyhow::anyhow;
 
-use crate::sql::tables::{
-    scores::{SlowestTimes, slowest_times::SlowestTimesInputs},
-    standard_levels::StandardLevels,
-    standards::Standards,
-};
+use crate::sql::tables::{standard_levels::StandardLevels, standards::Standards};
 
 pub mod cache;
 
@@ -31,24 +28,12 @@ impl AppState {
         .generate_response(HttpResponse::InternalServerError)
     }
 
-    pub async fn get_slowest_times(
-        &mut self,
-        input: SlowestTimesInputs,
-    ) -> Result<Arc<[SlowestTimes]>, anyhow::Error> {
-        let mut executor = self.acquire_pg_connection().await?;
-        self.cache.get_slowest_times(&mut executor, input).await
+    pub async fn get_legacy_standard_levels(&self) -> Arc<[StandardLevels]> {
+        self.cache.get_legacy_standard_levels().await
     }
 
-    pub async fn get_legacy_standard_levels(
-        &mut self,
-    ) -> Result<Arc<[StandardLevels]>, anyhow::Error> {
-        let mut executor = self.acquire_pg_connection().await?;
-        self.cache.get_legacy_standard_levels(&mut executor).await
-    }
-
-    pub async fn get_standards(&mut self) -> Result<Arc<[Standards]>, anyhow::Error> {
-        let mut executor = self.acquire_pg_connection().await?;
-        self.cache.get_standards(&mut executor).await
+    pub async fn get_standards(&self) -> Arc<[Standards]> {
+        self.cache.get_standards().await
     }
 }
 

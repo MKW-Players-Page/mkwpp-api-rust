@@ -561,7 +561,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                             out.push((
                                 z,
                                 match tmp.peek() {
-                                    Some((_, y)) => y-x,
+                                    Some((_, y)) => y - x,
                                     None => 0,
                                 },
                             ));
@@ -603,7 +603,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                             out.push((
                                 z,
                                 match tmp.peek() {
-                                    Some((_, y)) => y-x,
+                                    Some((_, y)) => y - x,
                                     None => 0.0,
                                 },
                             ));
@@ -624,7 +624,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                             out.push((
                                 z,
                                 match tmp.peek() {
-                                    Some((_, y)) => y-x,
+                                    Some((_, y)) => y - x,
                                     None => 0,
                                 },
                             ));
@@ -711,7 +711,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             return Ok(());
         }
 
-        let app_state = access_app_state().await.read().unwrap();
+        let app_state = access_app_state().await.read().await;
         let mut executor = app_state.acquire_pg_connection().await?;
         std::mem::drop(app_state);
 
@@ -735,12 +735,11 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
     async fn core_loop(&mut self) -> Result<(), anyhow::Error> {
         let app_state = crate::app_state::access_app_state().await;
-        let mut app_state = app_state.write().unwrap();
-
-        let standard_levels = app_state.get_legacy_standard_levels().await?;
-        let standards = app_state.get_standards().await?;
-
+        let app_state = app_state.read().await;
+        let standard_levels = app_state.get_legacy_standard_levels().await;
+        let standards = app_state.get_standards().await;
         std::mem::drop(app_state);
+
         self.calculate_divvie_value();
 
         let mut last_track = 0;
@@ -950,11 +949,10 @@ impl<K: ValidTimesetItem> Timeset<K> {
                                     .value
                             } as f64;
                             for player_id in &self.filters.player_ids {
-                                if !players_found[*player_id as usize] {
-                                    let player_index = *player_ids_to_index.get(&player_id).expect(
-                                        "Somehow there is no player id in relevant player_ids_to_index hashmap",
-                                    );
-
+                                let player_index = *player_ids_to_index.get(&player_id).expect(
+                                    "Somehow there is no player id in relevant player_ids_to_index hashmap",
+                                );
+                                if !players_found[player_index] {
                                     let track_index = match self.filters.is_lap {
                                         Some(_) => (last_track as usize) - 1,
                                         None => {

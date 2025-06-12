@@ -134,14 +134,13 @@ pub async fn basic_get<
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
 ) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return AppState::pg_conn_http_error(e),
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
     };
-
-    std::mem::drop(data);
 
     let rows_request = rows_function(&mut connection).await;
     handle_basic_get::<Table>(rows_request, connection).await
@@ -157,14 +156,13 @@ pub async fn basic_get_with_data_mod<
     modifier_function: impl AsyncFnOnce(Vec<Table>) -> T,
 ) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return AppState::pg_conn_http_error(e),
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
     };
-
-    std::mem::drop(data);
 
     let rows_request = rows_function(&mut connection).await;
 

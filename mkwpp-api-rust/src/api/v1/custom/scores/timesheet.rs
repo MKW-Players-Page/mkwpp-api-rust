@@ -15,12 +15,13 @@ pub fn matchup() -> impl HttpServiceFactory {
 
 pub async fn get(req: HttpRequest, path: web::Path<i32>) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return AppState::pg_conn_http_error(e),
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
     };
-    std::mem::drop(data);
 
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
@@ -56,13 +57,13 @@ pub async fn get(req: HttpRequest, path: web::Path<i32>) -> HttpResponse {
 
 pub async fn get_matchup(req: HttpRequest, body: web::Json<Vec<i32>>) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return AppState::pg_conn_http_error(e),
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
     };
-    std::mem::drop(data);
 
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),

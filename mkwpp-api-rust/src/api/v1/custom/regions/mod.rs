@@ -121,14 +121,13 @@ pub async fn basic_get_i32(
     rows_function: impl AsyncFnOnce(&mut sqlx::PgConnection, i32) -> Result<Vec<i32>, sqlx::Error>,
 ) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
-    let data = data.read().unwrap();
-
-    let mut connection = match data.acquire_pg_connection().await {
-        Ok(conn) => conn,
-        Err(e) => return AppState::pg_conn_http_error(e),
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
     };
-
-    std::mem::drop(data);
 
     let rows_request = rows_function(&mut connection, path.into_inner()).await;
 

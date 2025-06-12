@@ -1,124 +1,23 @@
-use std::{collections::hash_map::HashMap, hash::Hash, sync::Arc};
+use std::{hash::Hash, sync::Arc};
 
-use crate::sql::tables::{
-    scores::slowest_times::{SlowestTimes, SlowestTimesInputs},
-    standard_levels::StandardLevels,
-    standards::Standards,
-};
+use crate::sql::tables::{standard_levels::StandardLevels, standards::Standards};
 
-const SLOWEST_TIMES_REFRESH: i64 = 1200;
-const STANDARDS_REFRESH: i64 = 1200;
+const CACHE_REFRESH: u64 = 1200;
 
 #[derive(Default)]
 pub struct Cache {
-    slowest_times: HashMap<SlowestTimesInputs, (i64, Arc<[SlowestTimes]>)>,
-    legacy_standard_levels: (i64, Arc<[StandardLevels]>),
-    standards: (i64, Arc<[Standards]>),
+    // Non Variable Inputs
+    legacy_standard_levels: Arc<[StandardLevels]>,
+    standards: Arc<[Standards]>,
 }
 
 impl Cache {
-    fn flush(&mut self) {
-        self.slowest_times
-            .retain(|_, (date, _)| *date > chrono::Utc::now().timestamp());
-
-        if self.legacy_standard_levels.0 < chrono::Utc::now().timestamp() {
-            self.legacy_standard_levels.1 = Arc::new([]);
-        }
-
-        if self.standards.0 < chrono::Utc::now().timestamp() {
-            self.standards.1 = Arc::new([]);
-        }
+    pub async fn get_legacy_standard_levels(&self) -> Arc<[StandardLevels]> {
+        self.legacy_standard_levels.clone()
     }
 
-    pub async fn get_slowest_times(
-        &mut self,
-        executor: &mut sqlx::PgConnection,
-        input: SlowestTimesInputs,
-    ) -> Result<Arc<[SlowestTimes]>, anyhow::Error> {
-        let out = match self.slowest_times.get(&input) {
-            Some((date, dataset)) if *date > chrono::Utc::now().timestamp() => Ok(dataset.clone()),
-            _ => self.insert_slowest_times(executor, input).await,
-        };
-
-        self.flush();
-
-        out
-    }
-
-    async fn insert_slowest_times(
-        &mut self,
-        executor: &mut sqlx::PgConnection,
-        input: SlowestTimesInputs,
-    ) -> Result<Arc<[SlowestTimes]>, anyhow::Error> {
-        SlowestTimes::load(executor, input.clone()).await.map(|x| {
-            let x: Arc<[SlowestTimes]> = x.into();
-            self.slowest_times.insert(
-                input,
-                (
-                    chrono::Utc::now().timestamp() + SLOWEST_TIMES_REFRESH,
-                    x.clone(),
-                ),
-            );
-            x
-        })
-    }
-
-    pub async fn get_legacy_standard_levels(
-        &mut self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<Arc<[StandardLevels]>, anyhow::Error> {
-        if self.legacy_standard_levels.0 > chrono::Utc::now().timestamp() {
-            return Ok(self.legacy_standard_levels.1.clone());
-        }
-
-        let out = self.insert_legacy_standard_levels(executor).await;
-
-        self.flush();
-
-        out
-    }
-
-    async fn insert_legacy_standard_levels(
-        &mut self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<Arc<[StandardLevels]>, anyhow::Error> {
-        StandardLevels::load(executor, ()).await.map(|x| {
-            let x: Arc<[StandardLevels]> = x.into();
-            self.legacy_standard_levels = (
-                chrono::Utc::now().timestamp() + STANDARDS_REFRESH,
-                x.clone(),
-            );
-            x
-        })
-    }
-
-    pub async fn get_standards(
-        &mut self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<Arc<[Standards]>, anyhow::Error> {
-        if self.standards.0 > chrono::Utc::now().timestamp() {
-            return Ok(self.standards.1.clone());
-        }
-
-        let out = self.insert_standards(executor).await;
-
-        self.flush();
-
-        out
-    }
-
-    async fn insert_standards(
-        &mut self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<Arc<[Standards]>, anyhow::Error> {
-        Standards::load(executor, ()).await.map(|x| {
-            let x: Arc<[Standards]> = x.into();
-            self.standards = (
-                chrono::Utc::now().timestamp() + STANDARDS_REFRESH,
-                x.clone(),
-            );
-            x
-        })
+    pub async fn get_standards(&self) -> Arc<[Standards]> {
+        self.standards.clone()
     }
 }
 
@@ -130,4 +29,31 @@ pub trait CacheItem {
     ) -> Result<Vec<Self>, anyhow::Error>
     where
         Self: Sized;
+}
+
+macro_rules! update_loop_if_let_ok {
+    ($table_name: ident, $var_name: ident, $executor: ident, $app_state: ident) => {
+        if let Ok(v) = $table_name::load(&mut $executor, ()).await {
+            let mut app_state_guard = $app_state.write().await;
+            app_state_guard.cache.$var_name = v.into();
+        }
+    };
+}
+
+pub async fn update_loop() {
+    let mut interval = tokio::time::interval(core::time::Duration::new(CACHE_REFRESH, 0));
+    loop {
+        interval.tick().await;
+        let app_state = super::access_app_state().await;
+        let mut executor = {
+            let app_state_guard = app_state.read().await;
+            match app_state_guard.acquire_pg_connection().await {
+                Ok(v) => v,
+                Err(_) => continue,
+            }
+        };
+
+        update_loop_if_let_ok!(Standards, standards, executor, app_state);
+        update_loop_if_let_ok!(StandardLevels, legacy_standard_levels, executor, app_state);
+    }
 }

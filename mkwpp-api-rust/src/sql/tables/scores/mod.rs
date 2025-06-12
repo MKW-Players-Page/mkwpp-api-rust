@@ -1,7 +1,6 @@
 pub mod by_date;
 pub mod matchup;
 pub mod rankings;
-pub mod slowest_times;
 pub mod timesets;
 pub mod timesheet;
 pub mod with_player;
@@ -32,15 +31,6 @@ use crate::sql::tables::players::players_basic::PlayersBasic;
     ],
     pub ScoresByDate: [
         player: PlayersBasic,
-        video_link: (),
-        ghost_link: (),
-        comment: (),
-        initial_rank: ()
-    ],
-    pub SlowestTimes: [
-        id: (),
-        date: (),
-        category: (),
         video_link: (),
         ghost_link: (),
         comment: (),
