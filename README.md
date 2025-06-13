@@ -49,7 +49,6 @@ This will be actually faster, by the nature of not being an interpreted language
 ## TODO
 - Submission Pages API
 - Account Actions
-    - Update User Password
     - Creating Profiles
     - Claiming Profiles
 - Admin API / Admin UI

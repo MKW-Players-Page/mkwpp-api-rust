@@ -1,5 +1,6 @@
 use std::net::IpAddr;
 
+use anyhow::anyhow;
 use base64::Engine;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -129,6 +130,48 @@ pub async fn register(
     .bind(hash_string)
     .bind(email.get_inner())
     .bind(salt.as_str())
+    .execute(executor)
+    .await?;
+
+    Ok(())
+}
+
+pub async fn update_password(
+    id: i32,
+    old_password: validated_strings::password::Password,
+    new_password: validated_strings::password::Password,
+    // This should be a transaction!
+    executor: &mut sqlx::PgConnection,
+) -> Result<(), anyhow::Error> {
+    let data = sqlx::query_as::<_, BareMinimumData>(const_format::formatc!(
+        r#"
+        SELECT
+            id, password, salt, is_verified
+        FROM users
+        WHERE id = $1
+    "#
+    ))
+    .bind(id)
+    .fetch_one(&mut *executor)
+    .await?;
+
+    if old_password.hash(data.salt.as_bytes()) != data.password {
+        return Err(anyhow!("Old Password is wrong!"));
+    };
+    
+    let salt =
+        argon2::password_hash::SaltString::generate(&mut argon2::password_hash::rand_core::OsRng);
+    let hash_string = new_password.hash(salt.as_str().as_bytes());
+
+
+    sqlx::query(const_format::formatc!(
+        r#"
+            UPDATE users SET password = $1, salt = $2 WHERE id = $3
+        "#
+    ))
+    .bind(hash_string)
+    .bind(salt.as_str())
+    .bind(id)
     .execute(executor)
     .await?;
 
