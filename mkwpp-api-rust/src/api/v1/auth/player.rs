@@ -17,6 +17,7 @@ pub fn player() -> impl HttpServiceFactory {
         .route("/remsubmitter", web::post().to(remove_submitter))
         .route("/addsubmitter", web::post().to(add_submitter))
         .route("/submitters", web::post().to(get_submitters))
+        .route("/submittees", web::post().to(get_submittees))
         .default_service(web::get().to(default))
 }
 default_paths_fn!(
@@ -24,7 +25,8 @@ default_paths_fn!(
     "/updalias",
     "/remsubmitter",
     "/addsubmitter",
-    "/submitters"
+    "/submitters",
+    "/submittees"
 );
 
 #[derive(serde::Deserialize)]
@@ -175,7 +177,68 @@ async fn get_submitters(data: web::Json<BareMinimumValidationData>) -> HttpRespo
         Ok(v) => v,
         Err(e) => {
             return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting player submitters list"),
+                String::from("Error getting user ids from submitters list"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    let data = match Players::get_player_ids_from_user_ids(&mut executor, &data).await {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error getting player ids from user ids"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    if let Err(e) = close_connection(executor).await {
+        return e;
+    }
+
+    send_serialized_data(data)
+}
+
+async fn get_submittees(data: web::Json<BareMinimumValidationData>) -> HttpResponse {
+    let data = data.0;
+
+    let app_state = access_app_state().await;
+    let mut executor = {
+        let app_state = app_state.read().await;
+        match app_state.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
+    };
+
+    if let Ok(false) | Err(_) =
+        is_valid_token(&data.session_token, data.user_id, &mut executor).await
+    {
+        return FinalErrorResponse::new_no_fields(vec![String::from(
+            "Error validating session token",
+        )])
+        .generate_response(HttpResponse::BadRequest);
+    }
+
+    let data = match Players::get_submittees(&mut executor, data.user_id).await {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error getting player ids from submittees list"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    let data = match Players::get_player_ids_from_user_ids(&mut executor, &data).await {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error getting player ids from user ids"),
                 e.to_string(),
             ])
             .generate_response(HttpResponse::InternalServerError);
@@ -391,7 +454,7 @@ async fn remove_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
     if !submitters_list.contains(&associated_user_id) {
         return HttpResponse::Ok().content_type("application/json").body("");
     }
-    submitters_list.retain(|x| *x != data.player_id);
+    submitters_list.retain(|x| *x != associated_user_id);
 
     let data =
         match Players::update_player_submitters(&mut executor, player_id, submitters_list).await {

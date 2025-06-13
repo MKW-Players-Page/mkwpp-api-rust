@@ -158,11 +158,10 @@ pub async fn update_password(
     if old_password.hash(data.salt.as_bytes()) != data.password {
         return Err(anyhow!("Old Password is wrong!"));
     };
-    
+
     let salt =
         argon2::password_hash::SaltString::generate(&mut argon2::password_hash::rand_core::OsRng);
     let hash_string = new_password.hash(salt.as_str().as_bytes());
-
 
     sqlx::query(const_format::formatc!(
         r#"

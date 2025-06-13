@@ -1,7 +1,9 @@
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
-    api::FinalErrorResponse, app_state::AppState, auth::{ is_valid_token, validated_strings::ValidatedString, BareMinimumValidationData},
+    api::FinalErrorResponse,
+    app_state::AppState,
+    auth::{BareMinimumValidationData, is_valid_token, validated_strings::ValidatedString},
 };
 
 mod player;
@@ -307,14 +309,14 @@ struct UpdatePasswordBody {
     old_password: String,
     new_password: String,
     #[serde(flatten)]
-    validation_data: BareMinimumValidationData
+    validation_data: BareMinimumValidationData,
 }
 
 async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
     let mut transaction = {
         let data = data.read().await;
-       match data.pg_pool.begin().await {
+        match data.pg_pool.begin().await {
             Ok(v) => v,
             Err(error) => {
                 return FinalErrorResponse::new_no_fields(vec![
@@ -339,37 +341,46 @@ async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
         )])
         .generate_response(HttpResponse::BadRequest);
     }
-    
-    let old_password =
-        match crate::auth::validated_strings::password::Password::new_from_string(body.old_password) {
-            Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new(
-                    vec![String::from("Error validating the password")],
-                    std::collections::HashMap::from([(
-                        String::from("old_password"),
-                        vec![format!("{:?}", e)],
-                    )]),
-                )
-                .generate_response(HttpResponse::BadRequest);
-            }
-        };
-    let new_password =
-        match crate::auth::validated_strings::password::Password::new_from_string(body.new_password) {
-            Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new(
-                    vec![String::from("Error validating the password")],
-                    std::collections::HashMap::from([(
-                        String::from("new_password"),
-                        vec![format!("{:?}", e)],
-                    )]),
-                )
-                .generate_response(HttpResponse::BadRequest);
-            }
-        };
 
-    if let Err(x) = crate::auth::update_password(body.validation_data.user_id, old_password, new_password,&mut transaction).await {
+    let old_password = match crate::auth::validated_strings::password::Password::new_from_string(
+        body.old_password,
+    ) {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new(
+                vec![String::from("Error validating the password")],
+                std::collections::HashMap::from([(
+                    String::from("old_password"),
+                    vec![format!("{:?}", e)],
+                )]),
+            )
+            .generate_response(HttpResponse::BadRequest);
+        }
+    };
+    let new_password = match crate::auth::validated_strings::password::Password::new_from_string(
+        body.new_password,
+    ) {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new(
+                vec![String::from("Error validating the password")],
+                std::collections::HashMap::from([(
+                    String::from("new_password"),
+                    vec![format!("{:?}", e)],
+                )]),
+            )
+            .generate_response(HttpResponse::BadRequest);
+        }
+    };
+
+    if let Err(x) = crate::auth::update_password(
+        body.validation_data.user_id,
+        old_password,
+        new_password,
+        &mut transaction,
+    )
+    .await
+    {
         return FinalErrorResponse::new_no_fields(vec![
             String::from("Error updating password"),
             x.to_string(),
@@ -384,8 +395,8 @@ async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
         ])
         .generate_response(HttpResponse::InternalServerError);
     }
-    
+
     return HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}")
+        .body("{}");
 }

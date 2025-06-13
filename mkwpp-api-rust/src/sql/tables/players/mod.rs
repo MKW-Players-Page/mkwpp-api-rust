@@ -93,6 +93,29 @@ impl Players {
         .await;
     }
 
+    pub async fn get_submittees(
+        executor: &mut sqlx::PgConnection,
+        user_id: i32,
+    ) -> Result<Vec<i32>, sqlx::Error> {
+        return sqlx::query_scalar(const_format::formatc!(
+            "SELECT id FROM {} WHERE $1 = ANY(submitters)",
+            Players::TABLE_NAME
+        ))
+        .bind(user_id)
+        .fetch_all(executor)
+        .await;
+    }
+
+    pub async fn get_player_ids_from_user_ids(
+        executor: &mut sqlx::PgConnection,
+        user_ids: &[i32],
+    ) -> Result<Vec<i32>, sqlx::Error> {
+        return sqlx::query_scalar("SELECT player_id FROM users WHERE id != ANY($1);")
+            .bind(user_ids)
+            .fetch_all(executor)
+            .await;
+    }
+
     pub async fn get_ids_but_list(
         executor: &mut sqlx::PgConnection,
         player_ids: &[i32],
