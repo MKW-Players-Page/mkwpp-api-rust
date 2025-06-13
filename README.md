@@ -53,7 +53,18 @@ This will be actually faster, by the nature of not being an interpreted language
     - Creating Profiles
     - Claiming Profiles
 - Admin API / Admin UI
+    - Users UI
+    - Players UI
+    - Submissions UI
+    - Scores UI
+    - Standards UI
+    - Tracks UI
+    - Regions UI
+    - Awards UI
+    - News Updates UI
+    - Logs UI
 - SMTP Handling
     - Password reset
 - Rewrite of /api/raw/ to account for HIDING DATA THAT SHOULD NOT BE VISIBLE WITHOUT AUTH
 - Rewrite of Standard Levels / Standards handling to avoid hardcoded values
+- Various optimizations and removing duplicate code
