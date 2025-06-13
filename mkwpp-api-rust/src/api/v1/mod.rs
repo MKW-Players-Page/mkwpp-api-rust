@@ -92,6 +92,18 @@ pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgR
         })
 }
 
+pub fn decode_row_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
+    row: sqlx::postgres::PgRow,
+) -> Result<Table, HttpResponse> {
+    Table::from_row(&row).map_err(|e| {
+        FinalErrorResponse::new_no_fields(vec![
+            String::from("Error decoding rows from database"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError)
+    })
+}
+
 pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
     match serde_json::to_string(&data) {
         Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),

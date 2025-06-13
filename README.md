@@ -22,7 +22,7 @@ To run migrations, you'll have to type (this will be run every time the package 
 sqlx database setup --source db/migrations --database-url database_url
 ```
 
-To import Fixtures instead, you should run the executable with the arguments `tables old` for Fixtures created by the old Django Database
+To import Fixtures instead, you should run the executable with the arguments `import old` for Fixtures created by the old Django Database
 
 ```bash
 ./mkwpp-api-rust import old
@@ -47,14 +47,13 @@ This will be actually faster, by the nature of not being an interpreted language
 | SRV_CLIENT_REQUEST_TIMEOUT | u64 | Max time a request should take before being dropped | 120000 |
 
 ## TODO
-- ~[Normalizing of data](https://github.com/FallBackITA27/mkwpp-api-rust/tree/start-frontend-integration)~
-- ~[Matchup Page API](https://github.com/FallBackITA27/mkwpp-api-rust/tree/start-frontend-integration)~
 - Submission Pages API
-- SMTP Handling
-    - Password reset
 - Account Actions
+    - Update User Password
     - Creating Profiles
     - Claiming Profiles
-    - Submitters/Submittees
 - Admin API / Admin UI
+- SMTP Handling
+    - Password reset
+- Rewrite of /api/raw/ to account for HIDING DATA THAT SHOULD NOT BE VISIBLE WITHOUT AUTH
 - Rewrite of Standard Levels / Standards handling to avoid hardcoded values

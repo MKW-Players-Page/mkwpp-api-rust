@@ -4,12 +4,15 @@ use crate::{
     api::FinalErrorResponse, app_state::AppState, auth::validated_strings::ValidatedString,
 };
 
+mod player;
+
 pub fn auth() -> impl HttpServiceFactory {
     web::scope("/auth")
         .route("/register", web::put().to(register))
         .route("/login", web::put().to(login))
         .route("/logout", web::put().to(logout))
         .route("/user_data", web::post().to(user_data))
+        .service(player::player())
         .default_service(web::get().to(default))
 }
 default_paths_fn!("/register", "/logout", "/login", "/user_data");
@@ -197,8 +200,8 @@ async fn login(req: HttpRequest, body: web::Json<LoginBody>) -> HttpResponse {
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct UserDataBody {
-    session_token: String,
+pub struct UserDataBody {
+    pub session_token: String,
 }
 
 async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {

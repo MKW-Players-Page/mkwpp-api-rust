@@ -711,9 +711,10 @@ impl<K: ValidTimesetItem> Timeset<K> {
             return Ok(());
         }
 
-        let app_state = access_app_state().await.read().await;
-        let mut executor = app_state.acquire_pg_connection().await?;
-        std::mem::drop(app_state);
+        let mut executor = {
+            let app_state = access_app_state().await.read().await;
+            app_state.acquire_pg_connection().await?
+        };
 
         self.filters.player_ids = crate::sql::tables::players::Players::get_ids_but_list(
             &mut executor,

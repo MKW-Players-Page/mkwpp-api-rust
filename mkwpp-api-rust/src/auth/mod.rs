@@ -135,6 +135,13 @@ pub async fn register(
     Ok(())
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BareMinimumValidationData {
+    pub user_id: i32,
+    pub session_token: String,
+}
+
 pub async fn is_valid_token(
     session_token: &str,
     user_id: i32,
@@ -160,9 +167,9 @@ pub async fn is_valid_token(
 #[derive(sqlx::FromRow, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClientSideUserData {
-    player_id: i32,
-    user_id: i32,
-    username: String,
+    pub player_id: i32,
+    pub user_id: i32,
+    pub username: String,
 }
 
 pub async fn get_user_data(
@@ -187,6 +194,24 @@ pub async fn get_user_data(
     .fetch_optional(executor)
     .await
     .map(|x| x.map(|x| ClientSideUserData::from_row(&x)))
+}
+
+pub async fn get_user_id_from_player_id(
+    player_id: i32,
+    executor: &mut sqlx::PgConnection,
+) -> Result<Option<i32>, sqlx::Error> {
+    sqlx::query_scalar(const_format::formatc!(
+        r#"
+            SELECT
+                users.id AS user_id
+            FROM users
+            WHERE
+                player.id = $1
+        "#
+    ))
+    .bind(player_id)
+    .fetch_optional(executor)
+    .await
 }
 
 pub async fn logout(
