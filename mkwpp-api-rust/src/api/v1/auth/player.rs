@@ -6,7 +6,10 @@ use crate::{
         v1::{close_connection, send_serialized_data},
     },
     app_state::{AppState, access_app_state},
-    auth::{BareMinimumValidationData, get_user_data, get_user_id_from_player_id, is_valid_token},
+    auth::{
+        BareMinimumValidationData, get_user_data, get_user_id_from_player_id, is_user_admin,
+        is_valid_token,
+    },
     sql::tables::players::Players,
 };
 
@@ -223,22 +226,16 @@ async fn get_submittees(data: web::Json<BareMinimumValidationData>) -> HttpRespo
         .generate_response(HttpResponse::BadRequest);
     }
 
-    let data = match Players::get_submittees(&mut executor, data.user_id).await {
+    let data = match {
+        match is_user_admin(data.user_id, &mut executor).await {
+            Ok(true) => Players::get_ids_but_list(&mut executor, &[]).await,
+            _ => Players::get_submittees(&mut executor, data.user_id).await,
+        }
+    } {
         Ok(v) => v,
         Err(e) => {
             return FinalErrorResponse::new_no_fields(vec![
                 String::from("Error getting player ids from submittees list"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
-    };
-
-    let data = match Players::get_player_ids_from_user_ids(&mut executor, &data).await {
-        Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting player ids from user ids"),
                 e.to_string(),
             ])
             .generate_response(HttpResponse::InternalServerError);
@@ -349,23 +346,21 @@ async fn add_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
 
     submitters_list.push(associated_user_id);
 
-    let data =
-        match Players::update_player_submitters(&mut executor, player_id, submitters_list).await {
-            Ok(v) => v.rows_affected().to_string(),
-            Err(e) => {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error updating player submitters list"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
-            }
-        };
+    if let Err(e) =
+        Players::update_player_submitters(&mut executor, player_id, &submitters_list).await
+    {
+        return FinalErrorResponse::new_no_fields(vec![
+            String::from("Error updating player submitters list"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError);
+    };
 
     if let Err(e) = close_connection(executor).await {
         return e;
     }
 
-    send_serialized_data(data)
+    send_serialized_data(submitters_list)
 }
 
 async fn remove_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
@@ -454,23 +449,22 @@ async fn remove_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
     if !submitters_list.contains(&associated_user_id) {
         return HttpResponse::Ok().content_type("application/json").body("");
     }
+
     submitters_list.retain(|x| *x != associated_user_id);
 
-    let data =
-        match Players::update_player_submitters(&mut executor, player_id, submitters_list).await {
-            Ok(v) => v.rows_affected().to_string(),
-            Err(e) => {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error updating player submitters list"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
-            }
-        };
+    if let Err(e) =
+        Players::update_player_submitters(&mut executor, player_id, &submitters_list).await
+    {
+        return FinalErrorResponse::new_no_fields(vec![
+            String::from("Error updating player submitters list"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError);
+    };
 
     if let Err(e) = close_connection(executor).await {
         return e;
     }
 
-    send_serialized_data(data)
+    send_serialized_data(submitters_list)
 }

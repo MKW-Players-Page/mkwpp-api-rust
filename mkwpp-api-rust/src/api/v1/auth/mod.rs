@@ -7,6 +7,7 @@ use crate::{
 };
 
 mod player;
+mod submissions;
 
 pub fn auth() -> impl HttpServiceFactory {
     web::scope("/auth")
@@ -16,6 +17,7 @@ pub fn auth() -> impl HttpServiceFactory {
         .route("/user_data", web::post().to(user_data))
         .route("/update_password", web::post().to(update_password))
         .service(player::player())
+        .service(submissions::submissions())
         .default_service(web::get().to(default))
 }
 default_paths_fn!("/register", "/logout", "/login", "/user_data");

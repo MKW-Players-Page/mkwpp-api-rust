@@ -68,7 +68,7 @@ impl Players {
     pub async fn update_player_submitters(
         executor: &mut sqlx::PgConnection,
         player_id: i32,
-        new_list: Vec<i32>,
+        new_list: &[i32],
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         return sqlx::query(const_format::formatc!(
             "UPDATE {} SET submitters = $1 WHERE id = $2;",
@@ -85,7 +85,7 @@ impl Players {
         player_id: i32,
     ) -> Result<Vec<i32>, sqlx::Error> {
         return sqlx::query_scalar(const_format::formatc!(
-            "SELECT submitters FROM {} WHERE player_id = $1",
+            "SELECT submitters FROM {} WHERE id = $1",
             Players::TABLE_NAME
         ))
         .bind(player_id)
@@ -110,7 +110,7 @@ impl Players {
         executor: &mut sqlx::PgConnection,
         user_ids: &[i32],
     ) -> Result<Vec<i32>, sqlx::Error> {
-        return sqlx::query_scalar("SELECT player_id FROM users WHERE id != ANY($1);")
+        return sqlx::query_scalar("SELECT player_id FROM users WHERE id = ANY($1);")
             .bind(user_ids)
             .fetch_all(executor)
             .await;
@@ -124,7 +124,11 @@ impl Players {
             "SELECT id FROM {} WHERE id != ANY($1);",
             Players::TABLE_NAME
         ))
-        .bind(player_ids)
+        .bind(if player_ids.len() == 0 {
+            &[0]
+        } else {
+            player_ids
+        })
         .fetch_all(executor)
         .await;
     }

@@ -50,10 +50,10 @@ This will be actually faster, by the nature of not being an interpreted language
 - Submission Pages API
     - Endpoint for User's Submissions
     - Endpoint to Delete User's Submission
-    - Endpoint to Create Submission
+    - Endpoint to Create User's Submission
     - Endpoint for User's Edit Submissions
     - Endpoint to Delete User's Edit Submission
-    - Endpoint to Create Edit Submission
+    - Endpoint to Create User's Edit Submission
 - Account Actions
     - Creating Profiles
     - Claiming Profiles

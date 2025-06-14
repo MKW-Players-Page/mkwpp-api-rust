@@ -184,6 +184,8 @@ pub struct BareMinimumValidationData {
     pub session_token: String,
 }
 
+pub enum TokenValidity {}
+
 pub async fn is_valid_token(
     session_token: &str,
     user_id: i32,
@@ -204,6 +206,22 @@ pub async fn is_valid_token(
     .fetch_optional(executor)
     .await
     .map(|x| x.is_some());
+}
+
+pub async fn is_user_admin(
+    user_id: i32,
+    executor: &mut sqlx::PgConnection,
+) -> Result<bool, sqlx::Error> {
+    return sqlx::query_scalar(const_format::formatc!(
+        r#"
+            SELECT is_superuser
+            FROM users
+            WHERE id = $1
+        "#
+    ))
+    .bind(user_id)
+    .fetch_one(executor)
+    .await;
 }
 
 #[derive(sqlx::FromRow, Deserialize, Serialize)]
@@ -248,7 +266,7 @@ pub async fn get_user_id_from_player_id(
                 users.id AS user_id
             FROM users
             WHERE
-                player.id = $1
+                player_id = $1
         "#
     ))
     .bind(player_id)
