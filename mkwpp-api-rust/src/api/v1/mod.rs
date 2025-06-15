@@ -20,7 +20,7 @@ macro_rules! default_paths_fn {
         };
 }
 
-mod auth;
+pub mod auth;
 mod custom;
 mod raw;
 

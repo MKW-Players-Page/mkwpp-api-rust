@@ -1,4 +1,8 @@
-#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+use sqlx::postgres::PgQueryResult;
+
+use crate::sql::tables::BasicTableQueries;
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
 pub struct EditSubmissions {
     pub id: i32,
     pub video_link: Option<String>,
@@ -18,7 +22,7 @@ pub struct EditSubmissions {
     pub score_id: Option<i32>,
 }
 
-impl super::BasicTableQueries for EditSubmissions {
+impl BasicTableQueries for EditSubmissions {
     const TABLE_NAME: &'static str = "edit_submissions";
 }
 
@@ -35,5 +39,33 @@ impl EditSubmissions {
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         return sqlx::query("INSERT INTO edit_submissions (id, video_link_edited, ghost_link_edited, comment_edited, video_link, ghost_link, comment, admin_note, status, submitter_id, submitter_note, submitted_at, reviewer_id, reviewer_note, reviewed_at, score_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) ON CONFLICT (id) DO UPDATE SET video_link_edited = $2, ghost_link_edited = $3, comment_edited = $4, video_link = $5, ghost_link = $6, comment = $7, admin_note = $8, status = $9, submitter_id = $10, submitter_note = $11, submitted_at = $12, reviewer_id = $13, reviewer_note = $14, reviewed_at = $15, score_id = $16 WHERE edit_submissions.id = $1;").bind(self.id).bind(self.video_link_edited).bind(self.ghost_link_edited).bind(self.comment_edited).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(&self.status).bind(self.submitter_id).bind(&self.submitter_note).bind(self.submitted_at).bind(self.reviewer_id).bind(&self.reviewer_note).bind(self.reviewed_at).bind(self.score_id).execute(executor).await;
+    }
+
+    pub async fn get_user_edit_submissions(
+        user_id: i32,
+        player_id: i32, // Associated Player ID
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+        return sqlx::query(const_format::formatc!(
+            "SELECT * FROM {} WHERE submitter_id = $1 OR player_id = $2",
+            EditSubmissions::TABLE_NAME
+        ))
+        .bind(user_id)
+        .bind(player_id)
+        .fetch_all(executor)
+        .await;
+    }
+
+    pub async fn delete_edit_submission_by_id(
+        submission_id: i32,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<PgQueryResult, sqlx::Error> {
+        sqlx::query(const_format::formatc!(
+            "DELETE FROM {} WHERE id = $1;",
+            EditSubmissions::TABLE_NAME
+        ))
+        .bind(submission_id)
+        .execute(executor)
+        .await
     }
 }

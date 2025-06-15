@@ -1,7 +1,6 @@
 pub mod awards;
 pub mod champs;
 pub mod cups;
-pub mod edit_submissions;
 pub mod players;
 pub mod regions;
 pub mod scores;
@@ -77,28 +76,6 @@ impl serde::Serialize for Category {
         S: serde::Serializer,
     {
         serializer.serialize_u8(self.into())
-    }
-}
-
-#[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
-#[sqlx(type_name = "submission_status", rename_all = "lowercase")]
-pub enum SubmissionStatus {
-    Pending,
-    Accepted,
-    Rejected,
-    OnHold,
-}
-
-impl TryFrom<u8> for SubmissionStatus {
-    type Error = ();
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Self::Pending),
-            1 => Ok(Self::Accepted),
-            2 => Ok(Self::Rejected),
-            3 => Ok(Self::OnHold),
-            _ => Err(()),
-        }
     }
 }
 

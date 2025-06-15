@@ -23,7 +23,7 @@ impl super::OldFixtureJson for EditSubmissions {
         key: i32,
         transaction: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
-        return crate::sql::tables::edit_submissions::EditSubmissions {
+        return crate::sql::tables::submissions::edit_submissions::EditSubmissions {
             id: key,
             video_link_edited: self.video_link_edited,
             ghost_link_edited: self.ghost_link_edited,
@@ -32,7 +32,8 @@ impl super::OldFixtureJson for EditSubmissions {
             ghost_link: self.ghost_link,
             comment: self.comment,
             admin_note: self.admin_note,
-            status: crate::sql::tables::SubmissionStatus::try_from(self.status).unwrap(),
+            status: crate::sql::tables::submissions::SubmissionStatus::try_from(self.status)
+                .unwrap(),
             submitter_id: self.submitted_by,
             submitter_note: self.submitter_note,
             submitted_at: chrono::DateTime::from_naive_utc_and_offset(

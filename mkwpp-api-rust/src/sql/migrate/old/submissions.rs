@@ -40,7 +40,8 @@ impl super::OldFixtureJson for Submissions {
             ghost_link: self.ghost_link,
             comment: self.comment,
             admin_note: self.admin_note,
-            status: crate::sql::tables::SubmissionStatus::try_from(self.status).unwrap(),
+            status: crate::sql::tables::submissions::SubmissionStatus::try_from(self.status)
+                .unwrap(),
             submitter_id: self.submitted_by,
             submitter_note: self.submitter_note,
             submitted_at: chrono::DateTime::from_naive_utc_and_offset(

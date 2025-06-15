@@ -7,7 +7,7 @@ use crate::{
 };
 
 mod player;
-mod submissions;
+pub mod submissions;
 
 pub fn auth() -> impl HttpServiceFactory {
     web::scope("/auth")
@@ -20,7 +20,15 @@ pub fn auth() -> impl HttpServiceFactory {
         .service(submissions::submissions())
         .default_service(web::get().to(default))
 }
-default_paths_fn!("/register", "/logout", "/login", "/user_data");
+default_paths_fn!(
+    "/register",
+    "/logout",
+    "/login",
+    "/user_data",
+    "/update_password",
+    "/player",
+    "/submissions"
+);
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]

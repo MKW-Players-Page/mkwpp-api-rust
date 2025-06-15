@@ -30,7 +30,7 @@ pub fn raw() -> impl HttpServiceFactory {
         .route(
             EDIT_SUBMISSIONS_PATH,
             web::get().to(crate::api::v1::get_star_query::<
-                crate::sql::tables::edit_submissions::EditSubmissions,
+                crate::sql::tables::submissions::edit_submissions::EditSubmissions,
             >),
         )
         .route(
