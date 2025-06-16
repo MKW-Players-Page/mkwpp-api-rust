@@ -9,9 +9,7 @@ pub mod standards;
 pub mod submissions;
 pub mod tracks;
 
-#[derive(
-    sqlx::Type, serde::Deserialize, Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord,
-)]
+#[derive(sqlx::Type, Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[sqlx(type_name = "category", rename_all = "lowercase")]
 pub enum Category {
     NonSc,
@@ -76,6 +74,37 @@ impl serde::Serialize for Category {
         S: serde::Serializer,
     {
         serializer.serialize_u8(self.into())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for Category {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        serde_json::Number::deserialize(deserializer).and_then(|x| {
+            x.as_u64()
+                .ok_or_else(|| {
+                    serde::de::Error::invalid_type(
+                        if x.is_f64() {
+                            serde::de::Unexpected::Float(x.as_f64().unwrap())
+                        } else if x.is_i64() {
+                            serde::de::Unexpected::Signed(x.as_i64().unwrap())
+                        } else {
+                            serde::de::Unexpected::Other("integer")
+                        },
+                        &"u8 < 3",
+                    )
+                })
+                .and_then(|x| {
+                    Category::try_from(x as u8).map_err(|_| {
+                        serde::de::Error::invalid_value(
+                            serde::de::Unexpected::Unsigned(x),
+                            &"u8 < 3",
+                        )
+                    })
+                })
+        })
     }
 }
 

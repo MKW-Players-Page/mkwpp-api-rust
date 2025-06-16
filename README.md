@@ -47,9 +47,7 @@ This will be actually faster, by the nature of not being an interpreted language
 | SRV_CLIENT_REQUEST_TIMEOUT | u64 | Max time a request should take before being dropped | 120000 |
 
 ## TODO
-- Submission Pages API
-    - Endpoint to Delete User's Edit Submission
-    - Endpoint to Create User's Edit Submission
+- Country AF
 - Account Actions
     - Creating Profiles
     - Claiming Profiles

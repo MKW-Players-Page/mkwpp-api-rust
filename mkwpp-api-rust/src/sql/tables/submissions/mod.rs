@@ -5,7 +5,7 @@ use sqlx::postgres::PgQueryResult;
 use crate::api::v1::auth::submissions::SubmissionCreation;
 use crate::sql::tables::BasicTableQueries;
 
-#[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
+#[derive(sqlx::Type, Debug)]
 #[sqlx(type_name = "submission_status", rename_all = "lowercase")]
 pub enum SubmissionStatus {
     Pending,
@@ -27,7 +27,77 @@ impl TryFrom<u8> for SubmissionStatus {
     }
 }
 
+impl From<SubmissionStatus> for u8 {
+    fn from(value: SubmissionStatus) -> Self {
+        match value {
+            SubmissionStatus::Pending => 0,
+            SubmissionStatus::Accepted => 1,
+            SubmissionStatus::Rejected => 2,
+            SubmissionStatus::OnHold => 3,
+        }
+    }
+}
+
+impl From<&SubmissionStatus> for u8 {
+    fn from(value: &SubmissionStatus) -> Self {
+        match value {
+            SubmissionStatus::Pending => 0,
+            SubmissionStatus::Accepted => 1,
+            SubmissionStatus::Rejected => 2,
+            SubmissionStatus::OnHold => 3,
+        }
+    }
+}
+
+impl Default for SubmissionStatus {
+    fn default() -> Self {
+        Self::Pending
+    }
+}
+
+impl serde::Serialize for SubmissionStatus {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_u8(self.into())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for SubmissionStatus {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        serde_json::Number::deserialize(deserializer).and_then(|x| {
+            x.as_u64()
+                .ok_or_else(|| {
+                    serde::de::Error::invalid_type(
+                        if x.is_f64() {
+                            serde::de::Unexpected::Float(x.as_f64().unwrap())
+                        } else if x.is_i64() {
+                            serde::de::Unexpected::Signed(x.as_i64().unwrap())
+                        } else {
+                            serde::de::Unexpected::Other("integer")
+                        },
+                        &"u8 < 3",
+                    )
+                })
+                .and_then(|x| {
+                    SubmissionStatus::try_from(x as u8).map_err(|_| {
+                        serde::de::Error::invalid_value(
+                            serde::de::Unexpected::Unsigned(x),
+                            &"u8 < 3",
+                        )
+                    })
+                })
+        })
+    }
+}
+
+#[serde_with::skip_serializing_none]
 #[derive(Debug, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Submissions {
     pub id: i32,
     pub value: i32,
@@ -44,9 +114,9 @@ pub struct Submissions {
     pub submitter_id: i32,
     pub submitter_note: Option<String>,
     pub submitted_at: chrono::DateTime<chrono::Utc>,
-    pub reviewer_id: i32,
+    pub reviewer_id: Option<i32>,
     pub reviewer_note: Option<String>,
-    pub reviewed_at: chrono::DateTime<chrono::Utc>,
+    pub reviewed_at: Option<chrono::DateTime<chrono::Utc>>,
     pub score_id: Option<i32>,
 }
 
@@ -88,15 +158,14 @@ impl Submissions {
             ),
             Some(id) => sqlx::query(
                 r#"
-                UPDATE TABLE
+                UPDATE
                     submissions 
                 SET
                     value = $2, category = $3,
                     is_lap = $4, player_id = $5,
                     track_id = $6, date = $7,
                     video_link = $8, ghost_link = $9,
-                    comment = $10, submitter_id = $11,
-                    submitter_note = $12
+                    comment = $10, submitter_note = $12
                 WHERE id = $1
                 "#,
             )

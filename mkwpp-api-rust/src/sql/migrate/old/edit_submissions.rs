@@ -11,10 +11,10 @@ pub struct EditSubmissions {
     submitted_by: i32,
     submitted_at: String,
     submitter_note: Option<String>,
-    reviewed_by: i32,
-    reviewed_at: String,
+    reviewed_by: Option<i32>,
+    reviewed_at: Option<String>,
     reviewer_note: Option<String>,
-    score: Option<i32>,
+    score: i32,
 }
 
 impl super::OldFixtureJson for EditSubmissions {
@@ -25,6 +25,8 @@ impl super::OldFixtureJson for EditSubmissions {
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         return crate::sql::tables::submissions::edit_submissions::EditSubmissions {
             id: key,
+            date: None,
+            date_edited: false,
             video_link_edited: self.video_link_edited,
             ghost_link_edited: self.ghost_link_edited,
             comment_edited: self.comment_edited,
@@ -42,10 +44,12 @@ impl super::OldFixtureJson for EditSubmissions {
             ),
             reviewer_id: self.reviewed_by,
             reviewer_note: self.reviewer_note,
-            reviewed_at: chrono::DateTime::from_naive_utc_and_offset(
-                chrono::NaiveDateTime::parse_from_str(&self.reviewed_at, "%FT%T%.3fZ").unwrap(),
-                chrono::Utc,
-            ),
+            reviewed_at: self.reviewed_at.map(|v| {
+                chrono::DateTime::from_naive_utc_and_offset(
+                    chrono::NaiveDateTime::parse_from_str(&v, "%FT%T%.3fZ").unwrap(),
+                    chrono::Utc,
+                )
+            }),
             score_id: self.score,
         }
         .insert_or_replace_query(transaction)
