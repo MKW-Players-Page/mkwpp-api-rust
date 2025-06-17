@@ -1,4 +1,5 @@
 pub mod by_date;
+pub mod country_rankings;
 pub mod matchup;
 pub mod rankings;
 pub mod timesets;
@@ -45,6 +46,17 @@ use crate::sql::tables::players::players_basic::PlayersBasic;
         video_link: (),
         ghost_link: (),
         comment: ()
+    ],
+    pub CountryRankingsTimesetData: [
+        id: (),
+        category: (),
+        player_id: i32,
+        region_id: i32,
+        date: (),
+        initial_rank: (),
+        video_link: (),
+        ghost_link: (),
+        comment: ()
     ]
 )]
 #[serde_with::skip_serializing_none]
@@ -61,6 +73,7 @@ pub struct ScoresTemplate {
     #[sqlx(flatten)]
     pub player: either_field::either!(() | PlayersBasic),
     pub player_id: either_field::either!(() | i32),
+    pub region_id: either_field::either!(() | i32),
     pub track_id: either_field::either!(i32 | ()),
     pub date: either_field::either!(Option<chrono::NaiveDate> | ()),
     pub video_link: either_field::either!(Option<String> | ()),

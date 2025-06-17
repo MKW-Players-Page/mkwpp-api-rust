@@ -2,6 +2,7 @@ use crate::api::FinalErrorResponse;
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::api::v1::{close_connection, send_serialized_data};
 use crate::app_state::AppState;
+use crate::sql::tables::scores::country_rankings::CountryRankings;
 use crate::sql::tables::scores::rankings::{RankingType, Rankings};
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
@@ -20,6 +21,7 @@ pub fn rankings() -> impl HttpServiceFactory {
         .route("/tally", web::get().to(tally))
         .route("/af", web::get().to(af))
         .route("/arr", web::get().to(arr))
+        .route("/country", web::get().to(country))
         .default_service(web::get().to(default))
 }
 default_paths_fn!("/af", "/arr", "/tally", "/prwr", "/totaltime");
@@ -44,8 +46,6 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
         }
     };
 
-    std::mem::drop(data);
-
     let data = match Rankings::get(
         &mut connection,
         ranking_type,
@@ -53,6 +53,46 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
         params.lap_mode,
         params.date,
         params.region_id,
+    )
+    .await
+    {
+        Ok(v) => v,
+        Err(e) => {
+            return FinalErrorResponse::new_no_fields(vec![
+                String::from("Error getting data from database"),
+                e.to_string(),
+            ])
+            .generate_response(HttpResponse::InternalServerError);
+        }
+    };
+
+    if let Err(e) = close_connection(connection).await {
+        return e;
+    }
+    send_serialized_data(data)
+}
+
+async fn country(req: HttpRequest) -> HttpResponse {
+    let params = ParamsDestructured::from_query(
+        web::Query::<Params>::from_query(req.query_string()).unwrap(),
+    );
+
+    let data = crate::app_state::access_app_state().await;
+    let mut connection = {
+        let data = data.read().await;
+        match data.acquire_pg_connection().await {
+            Ok(conn) => conn,
+            Err(e) => return AppState::pg_conn_http_error(e),
+        }
+    };
+
+    let data = match CountryRankings::get_country_af(
+        &mut connection,
+        params.category,
+        params.lap_mode,
+        params.date,
+        params.region_type,
+        params.limit,
     )
     .await
     {

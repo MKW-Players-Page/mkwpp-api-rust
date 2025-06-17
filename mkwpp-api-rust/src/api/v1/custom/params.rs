@@ -1,4 +1,4 @@
-use crate::sql::tables::Category;
+use crate::sql::tables::{Category, regions::RegionType};
 
 #[derive(serde::Deserialize, Debug)]
 pub struct Params {
@@ -7,6 +7,7 @@ pub struct Params {
     dat: Option<String>,
     reg: Option<i32>,
     lim: Option<i32>,
+    rty: Option<u8>,
 }
 
 pub struct ParamsDestructured {
@@ -15,6 +16,7 @@ pub struct ParamsDestructured {
     pub date: chrono::NaiveDate,
     pub region_id: i32,
     pub limit: i32,
+    pub region_type: RegionType,
 }
 
 impl ParamsDestructured {
@@ -32,6 +34,10 @@ impl ParamsDestructured {
             region_id: params.reg.unwrap_or(1),
             lap_mode: params.lap.map(|x| x == 1),
             limit: params.lim.unwrap_or(i32::MAX),
+            region_type: params
+                .rty
+                .and_then(|x| RegionType::try_from(x).ok())
+                .unwrap_or(RegionType::World),
         }
     }
 }

@@ -54,6 +54,9 @@ impl ValidTimesetItem for TimesheetTimesetData {
     fn get_initial_rank(&self) -> Option<i32> {
         self.initial_rank
     }
+    fn get_player_region_id(&self) -> i32 {
+        0
+    }
 }
 
 impl BasicTableQueries for Timesheet {

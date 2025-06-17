@@ -54,6 +54,9 @@ impl ValidTimesetItem for RankingsTimesetData {
     fn get_initial_rank(&self) -> Option<i32> {
         None
     }
+    fn get_player_region_id(&self) -> i32 {
+        0
+    }
 }
 
 impl Rankings {

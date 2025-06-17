@@ -2,12 +2,17 @@ use std::collections::HashMap;
 
 use anyhow::anyhow;
 use chrono::NaiveDate;
+use sqlx::FromRow;
 
 use crate::{
     app_state::access_app_state,
     sql::tables::{
-        Category,
-        scores::{Times, matchup::MatchupData, rankings::RankingType, timesheet::Timesheet},
+        BasicTableQueries, Category,
+        regions::{RegionType, Regions, RegionsWithPlayerCount},
+        scores::{
+            Times, country_rankings::CountryRankings, matchup::MatchupData, rankings::RankingType,
+            timesheet::Timesheet,
+        },
         standard_levels::StandardLevels,
     },
 };
@@ -82,6 +87,13 @@ enum TimesetOutput {
         players_found_counter: i32,
         player_ids_to_index: HashMap<i32, usize>,
     },
+    CountryRankings {
+        region_rank_sums: Vec<f64>,
+        per_region_players: i32,
+        players_in_region: Vec<i32>,
+        region_found_players: Vec<i32>,
+        region_id_to_index: HashMap<i32, usize>,
+    },
 }
 
 pub trait ValidTimesetItem {
@@ -90,6 +102,7 @@ pub trait ValidTimesetItem {
     fn get_track_id(&self) -> i32;
     fn get_is_lap(&self) -> bool;
     fn get_player_id(&self) -> i32;
+    fn get_player_region_id(&self) -> i32;
     fn get_date(&self) -> Option<chrono::NaiveDate>;
     fn get_initial_rank(&self) -> Option<i32>;
     fn get_category(&self) -> Category;
@@ -115,6 +128,124 @@ impl<K: ValidTimesetItem> Default for Timeset<K> {
 }
 
 impl<K: ValidTimesetItem> Timeset<K> {
+    // TODO optimize
+    pub async fn calculate_country_rankings(
+        &mut self,
+        region_type: RegionType,
+        players_numbers: i32,
+    ) -> Result<Vec<CountryRankings>, anyhow::Error> {
+        let region_type = match region_type {
+            RegionType::World => return Err(anyhow!("There are no Martian players yet!")),
+            RegionType::CountryGroup | RegionType::SubnationalGroup => {
+                return Err(anyhow!(
+                    "Come back when we'll have figured out how to implement this."
+                ));
+            }
+            x => x,
+        };
+
+        let app_state = crate::app_state::access_app_state().await;
+        let mut executor = {
+            let app_state = app_state.read().await;
+            app_state.acquire_pg_connection().await?
+        };
+
+        let all_regions_rows = RegionsWithPlayerCount::select_star_query(&mut executor).await?;
+        let all_regions = all_regions_rows
+            .into_iter()
+            .map(|r| RegionsWithPlayerCount::from_row(&r))
+            .collect::<Result<Vec<RegionsWithPlayerCount>, sqlx::Error>>()?;
+        
+        let all_regions = RegionsWithPlayerCount::collapse_counts_of_regions(&all_regions)
+            .await
+            .into_iter()
+            .filter(|x| x.player_count != 0)
+            .collect::<Vec<RegionsWithPlayerCount>>();
+
+        let mut valid_regions: Vec<(i32, i32)> = all_regions
+            .clone()
+            .into_iter()
+            .filter_map(|x| match x.region_type == region_type {
+                true => Some((x.id, x.player_count)),
+                false => None,
+            })
+            .collect();
+        valid_regions.sort_by(|(id1, _), (id2, _)| id1.cmp(&id2));
+        let (valid_regions, valid_regions_player_counts): (Vec<i32>, Vec<i32>) =
+            valid_regions.into_iter().unzip();
+
+        let mut hashmap = HashMap::new();
+        for region in all_regions {
+            let ancestors = Regions::get_ancestors(&mut executor, region.id).await?;
+            for ancestor in ancestors {
+                if let Some(v) = valid_regions.iter().position(|x| *x == ancestor) {
+                    if let Some(v) = hashmap.insert(region.id, v) {
+                        panic!("The value being here should be impossible! {v}");
+                    }
+                }
+            }
+        }
+
+        self.output = TimesetOutput::CountryRankings {
+            region_rank_sums: vec![0.0; valid_regions.len()],
+            per_region_players: match players_numbers {
+                x if x <= 0 => 0,
+                x => x,
+            },
+            region_found_players: vec![0; valid_regions.len()],
+            region_id_to_index: hashmap,
+            players_in_region: valid_regions_player_counts,
+        };
+
+        self.core_loop().await?;
+
+        match &self.output {
+            TimesetOutput::CountryRankings {
+                region_rank_sums,
+                per_region_players: _,
+                region_found_players: _,
+                region_id_to_index: _,
+                players_in_region,
+            } => {
+                let mut x: Vec<(i32, f64)> = valid_regions
+                    .into_iter()
+                    .zip(region_rank_sums.into_iter())
+                    .zip(players_in_region.into_iter())
+                    .map(|((region_id, rank_sum), player_count)| {
+                        (
+                            region_id,
+                            rank_sum
+                                / (self.divvie_value
+                                    * (match players_numbers == 0 {
+                                        false => players_numbers as f64,
+                                        true => *player_count as f64,
+                                    })),
+                        )
+                    })
+                    .collect();
+                x.sort_by(|(_, af1), (_, af2)| af1.total_cmp(&af2));
+                Ok(x.into_iter()
+                    .enumerate()
+                    .map(|(rank, (region_id, af))| CountryRankings {
+                        rank: (rank as i32) + 1,
+                        region_id,
+                        value: af,
+                    })
+                    .collect::<Vec<CountryRankings>>())
+            }
+            TimesetOutput::None
+            | TimesetOutput::PlayerMatchup { .. }
+            | TimesetOutput::AverageFinishCharts { .. }
+            | TimesetOutput::AverageRankRatingCharts { .. }
+            | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
+            | TimesetOutput::PlayerTimesheet { .. }
+            | TimesetOutput::TallyPointsCharts { .. }
+            | TimesetOutput::TotalTimeCharts { .. } => Err(anyhow!(
+                "Something went very wrong, the output type changed unexpectedly"
+            )),
+        }
+    }
+
     pub async fn calculate_average_finish_charts(
         &mut self,
     ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
@@ -229,6 +360,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             }
             TimesetOutput::None
             | TimesetOutput::PlayerTimesheet { .. }
+            | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::PlayerMatchup { .. } => {
                 panic!("This code should never be encountered")
             }
@@ -331,6 +463,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             }
             TimesetOutput::None
             | TimesetOutput::PlayerTimesheet { .. }
+            | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::PlayerMatchup { .. } => Err(anyhow!(
                 "Something went very wrong, the output type changed unexpectedly"
             )),
@@ -375,6 +508,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::TotalTimeCharts { .. }
             | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
             | TimesetOutput::TallyPointsCharts { .. }
+            | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::AverageRankRatingCharts { .. }
             | TimesetOutput::PlayerMatchup { .. } => Err(anyhow!(
                 "Something went very wrong, the output type changed unexpectedly"
@@ -700,6 +834,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::TotalTimeCharts { .. }
             | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
             | TimesetOutput::TallyPointsCharts { .. }
+            | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::AverageRankRatingCharts { .. } => Err(anyhow!(
                 "Something went very wrong, the output type changed unexpectedly"
             )),
@@ -765,6 +900,32 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 // Fill in values for players which have not been found
                 if !has_found_all_times {
                     match &mut self.output {
+                        TimesetOutput::CountryRankings {
+                            region_rank_sums,
+                            per_region_players,
+                            region_found_players,
+                            region_id_to_index: _,
+                            players_in_region,
+                        } => {
+                            let rank = (last_rank + 1) as f64;
+                            for ((rank_sum, found_players), alternative_found_players) in
+                                region_rank_sums
+                                    .iter_mut()
+                                    .zip(region_found_players.iter())
+                                    .zip(players_in_region.iter())
+                            {
+                                *rank_sum += match *per_region_players == 0 {
+                                    true => {
+                                        rank * (((*alternative_found_players) - (*found_players))
+                                            as f64)
+                                    }
+                                    false => {
+                                        rank * (((*per_region_players) - (*found_players)) as f64)
+                                    }
+                                }
+                            }
+                        }
+
                         TimesetOutput::AverageFinishCharts {
                             rank_sums,
                             players_found,
@@ -1037,6 +1198,15 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         *first_time = 0;
                         *last_time = 0;
                     }
+                    TimesetOutput::CountryRankings {
+                        region_rank_sums: _,
+                        per_region_players: _,
+                        region_found_players,
+                        region_id_to_index: _,
+                        players_in_region: _,
+                    } => {
+                        *region_found_players = vec![0; region_found_players.len()];
+                    }
                     TimesetOutput::PlayerTimesheet { .. } | TimesetOutput::None => (),
                 }
                 has_found_all_times = false;
@@ -1095,6 +1265,57 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
             // Set relevant values
             match &mut self.output {
+                TimesetOutput::CountryRankings {
+                    region_rank_sums,
+                    per_region_players,
+                    region_found_players,
+                    region_id_to_index,
+                    players_in_region,
+                } => {
+                    let region_id = time_data.get_player_region_id();
+
+                    if region_id == 0 || region_id == 1 {
+                        continue;
+                    }
+
+                    let region_index = match region_id_to_index.get(&region_id) {
+                        None => continue,
+                        Some(v) => v.to_owned() as usize,
+                    };
+
+                    match *per_region_players == 0 {
+                        true => {
+                            if region_found_players[region_index] == players_in_region[region_index]
+                            {
+                                continue;
+                            }
+
+                            region_found_players[region_index] += 1;
+                            if region_found_players[region_index] == players_in_region[region_index]
+                            {
+                                has_found_all_times = region_found_players
+                                    .iter()
+                                    .zip(players_in_region.iter())
+                                    .all(|(x, y)| *x == *y);
+                            }
+                        }
+                        false => {
+                            if region_found_players[region_index] == *per_region_players {
+                                continue;
+                            }
+
+                            region_found_players[region_index] += 1;
+                            if region_found_players[region_index] == *per_region_players {
+                                has_found_all_times = region_found_players
+                                    .iter()
+                                    .all(|x| *x == *per_region_players);
+                            }
+                        }
+                    }
+
+                    region_rank_sums[region_index as usize] += last_rank as f64;
+                }
+
                 TimesetOutput::AverageFinishCharts {
                     rank_sums,
                     players_found,
