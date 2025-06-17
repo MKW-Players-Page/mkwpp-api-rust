@@ -47,10 +47,7 @@ This will be actually faster, by the nature of not being an interpreted language
 | SRV_CLIENT_REQUEST_TIMEOUT | u64 | Max time a request should take before being dropped | 120000 |
 
 ## TODO
-- Country AF
-- Account Actions
-    - Creating Profiles
-    - Claiming Profiles
+- Blog Posts
 - Admin API / Admin UI
     - Users UI
     - Players UI
@@ -62,8 +59,13 @@ This will be actually faster, by the nature of not being an interpreted language
     - Awards UI
     - News Updates UI
     - Logs UI
+- Account Actions
+    - Creating Profiles
+    - Claiming Profiles
 - SMTP Handling
     - Password reset
+- Hide Country Rankings if Players Found always == 0
 - Rewrite of /api/raw/ to account for HIDING DATA THAT SHOULD NOT BE VISIBLE WITHOUT AUTH
 - Rewrite of Standard Levels / Standards handling to avoid hardcoded values
 - Various optimizations and removing duplicate code
+- Documentation
