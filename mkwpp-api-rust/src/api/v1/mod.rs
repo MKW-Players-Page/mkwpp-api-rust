@@ -165,7 +165,7 @@ pub async fn basic_get_with_data_mod<
     rows_function: impl AsyncFnOnce(
         &mut sqlx::PgConnection,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
-    modifier_function: impl AsyncFnOnce(Vec<Table>) -> T,
+    modifier_function: impl AsyncFnOnce(&[Table]) -> T,
 ) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
     let mut connection = {
@@ -188,7 +188,7 @@ pub async fn basic_get_with_data_mod<
     };
 
     let data = match decode_rows_to_table::<Table>(rows) {
-        Ok(data) => modifier_function(data).await,
+        Ok(data) => modifier_function(&data).await,
         Err(e) => return e,
     };
 

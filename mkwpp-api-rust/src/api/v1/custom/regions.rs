@@ -3,13 +3,15 @@ use crate::{
     app_state::AppState,
     sql::tables::{
         BasicTableQueries,
-        regions::{RegionType, Regions, with_player_count::RegionsWithPlayerCount},
+        regions::{
+            RegionType, Regions,
+            tree::{ChildrenTree, generate_region_tree},
+            with_player_count::RegionsWithPlayerCount,
+        },
     },
 };
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 use std::collections::HashMap;
-
-mod child_tree;
 
 macro_rules! region_fn {
     ($fn_name:ident, $handle:expr) => {
@@ -26,10 +28,7 @@ pub fn regions() -> impl HttpServiceFactory {
             web::scope("/descendants/{region_id}").default_service(web::get().to(get_descendants)),
         )
         .route("/type_hashmap", web::get().to(get_region_type_hashmap))
-        .route(
-            "/descendence_tree",
-            web::get().to(child_tree::get_region_child_tree),
-        )
+        .route("/descendence_tree", web::get().to(get_region_child_tree))
         .route("/with_player_count", web::get().to(get_with_player_count))
         .default_service(web::get().to(default))
 }
@@ -48,7 +47,7 @@ region_fn!(get_descendants, Regions::get_descendants);
 async fn get_region_type_hashmap() -> HttpResponse {
     crate::api::v1::basic_get_with_data_mod::<Regions, HashMap<RegionType, Vec<i32>>>(
         Regions::select_star_query,
-        async |data: Vec<Regions>| {
+        async |data: &[Regions]| {
             let mut hashmap: HashMap<RegionType, Vec<i32>> = HashMap::new();
             hashmap.insert(RegionType::World, vec![]);
             hashmap.insert(RegionType::Continent, vec![]);
@@ -71,47 +70,10 @@ async fn get_region_type_hashmap() -> HttpResponse {
 }
 
 // TODO: rewrite more optimally
-fn collapse_counts(
-    data: &Vec<RegionsWithPlayerCount>,
-    region_tree: &child_tree::ChildrenTree,
-    lookup_id: i32,
-    found: bool,
-) -> i64 {
-    let found = region_tree.id == lookup_id || found;
-
-    match &region_tree.children {
-        None => {
-            if found {
-                data.iter()
-                    .find(|x| x.id == region_tree.id)
-                    .map_or(0, |x| x.player_count)
-            } else {
-                0
-            }
-        }
-        Some(children) => children
-            .iter()
-            .map(|x| collapse_counts(data, x, lookup_id, found))
-            .sum(),
-    }
-}
-
-// TODO: rewrite more optimally
 async fn get_with_player_count() -> HttpResponse {
     crate::api::v1::basic_get_with_data_mod::<RegionsWithPlayerCount, Vec<RegionsWithPlayerCount>>(
         RegionsWithPlayerCount::select_star_query,
-        async |mut data: Vec<RegionsWithPlayerCount>| {
-            let region_tree = child_tree::generate_region_tree_player_count(data.clone()).await;
-
-            let counts = data
-                .iter()
-                .map(|x| collapse_counts(&data, &region_tree, x.id, false))
-                .collect::<Vec<i64>>();
-            data.iter_mut()
-                .zip(counts)
-                .for_each(|(x, new_count)| x.player_count = new_count);
-            data
-        },
+        RegionsWithPlayerCount::collapse_counts_of_regions,
     )
     .await
 }
@@ -147,4 +109,12 @@ pub async fn basic_get_i32(
     };
 
     crate::api::v1::send_serialized_data(rows)
+}
+
+async fn get_region_child_tree() -> HttpResponse {
+    crate::api::v1::basic_get_with_data_mod::<Regions, ChildrenTree>(
+        Regions::select_star_query,
+        generate_region_tree,
+    )
+    .await
 }

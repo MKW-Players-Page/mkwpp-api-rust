@@ -1,8 +1,9 @@
 use super::BasicTableQueries;
 
+pub mod tree;
 pub mod with_player_count;
 
-#[derive(sqlx::Type, Debug, serde::Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(sqlx::Type, Debug, Hash, PartialEq, Eq, Clone)]
 #[sqlx(type_name = "region_type", rename_all = "snake_case")]
 pub enum RegionType {
     World,
@@ -25,6 +26,21 @@ impl TryFrom<&str> for RegionType {
             "subnational_group" | "SUBNATIONALGROUP" | "SUBNATIONAL_GROUP" | "SubnationalGroup"
             | "subnationalGroup" => Ok(Self::SubnationalGroup),
             "subnational" | "Subnational" | "SUBNATIONAL" => Ok(Self::Subnational),
+            _ => Err(()),
+        }
+    }
+}
+
+impl TryFrom<u8> for RegionType {
+    type Error = ();
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(RegionType::World),
+            1 => Ok(RegionType::Continent),
+            2 => Ok(RegionType::CountryGroup),
+            3 => Ok(RegionType::Country),
+            4 => Ok(RegionType::SubnationalGroup),
+            5 => Ok(RegionType::Subnational),
             _ => Err(()),
         }
     }
@@ -65,12 +81,43 @@ impl serde::Serialize for RegionType {
     }
 }
 
+impl<'de> serde::Deserialize<'de> for RegionType {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        serde_json::Number::deserialize(deserializer).and_then(|x| {
+            x.as_u64()
+                .ok_or_else(|| {
+                    serde::de::Error::invalid_type(
+                        if x.is_f64() {
+                            serde::de::Unexpected::Float(x.as_f64().unwrap())
+                        } else if x.is_i64() {
+                            serde::de::Unexpected::Signed(x.as_i64().unwrap())
+                        } else {
+                            serde::de::Unexpected::Other("integer")
+                        },
+                        &"u8 < 6",
+                    )
+                })
+                .and_then(|x| {
+                    RegionType::try_from(x as u8).map_err(|_| {
+                        serde::de::Error::invalid_value(
+                            serde::de::Unexpected::Unsigned(x),
+                            &"u8 < 6",
+                        )
+                    })
+                })
+        })
+    }
+}
+
 #[either_field::make_template(
     GenStructs: true,
     DeleteTemplate: true,
     OmitEmptyTupleFields: true;
     pub Regions: [ player_count: _ ],
-    pub RegionsWithPlayerCount: [ player_count: i64 ],
+    pub RegionsWithPlayerCount: [ player_count: i32 ],
 )]
 #[derive(Debug, serde::Serialize, sqlx::FromRow, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -80,7 +127,7 @@ pub struct RegionsTemplate {
     pub region_type: RegionType,
     pub parent_id: Option<i32>,
     pub is_ranked: bool,
-    pub player_count: either_field::either!(() | i64),
+    pub player_count: either_field::either!(() | i32),
 }
 
 impl super::BasicTableQueries for Regions {
