@@ -47,7 +47,7 @@ This will be actually faster, by the nature of not being an interpreted language
 | SRV_CLIENT_REQUEST_TIMEOUT | u64 | Max time a request should take before being dropped | 120000 |
 
 ## TODO
-- Blog Posts
+- Figure out how to import data from old database with just a command :)
 - Admin API / Admin UI
     - Users UI
     - Players UI

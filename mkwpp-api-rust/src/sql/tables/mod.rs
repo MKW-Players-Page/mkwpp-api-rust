@@ -1,4 +1,5 @@
 pub mod awards;
+pub mod blog_posts;
 pub mod champs;
 pub mod cups;
 pub mod players;

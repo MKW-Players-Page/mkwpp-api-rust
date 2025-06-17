@@ -1,5 +1,6 @@
 use actix_web::{dev::HttpServiceFactory, web};
 
+mod blog;
 pub mod params;
 mod players;
 mod rankings;
@@ -13,6 +14,7 @@ pub fn custom() -> impl HttpServiceFactory {
         .service(rankings::rankings())
         .service(regions::regions())
         .service(players::players())
+        .service(blog::blog())
         .service(site_champs::site_champs())
         .default_service(web::get().to(default))
 }
