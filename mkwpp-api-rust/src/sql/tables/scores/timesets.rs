@@ -155,7 +155,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             .into_iter()
             .map(|r| RegionsWithPlayerCount::from_row(&r))
             .collect::<Result<Vec<RegionsWithPlayerCount>, sqlx::Error>>()?;
-        
+
         let all_regions = RegionsWithPlayerCount::collapse_counts_of_regions(&all_regions)
             .await
             .into_iter()
@@ -893,259 +893,25 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
         let mut has_found_all_times = true;
 
-        for time_data in &mut self.timeset {
+        let mut timeset = self.timeset.iter_mut().peekable();
+        let mut is_first_time = true;
+        let mut is_last_time = false;
+
+        while let (Some(time_data), next_time_data) = (timeset.next(), timeset.peek()) {
+            if is_last_time {
+                is_first_time = true;
+            }
+
             // "Category" check to reset last values
-            // This is true whenever you're in the first time for the (track + lap type)
-            if last_track != time_data.get_track_id() || last_lap_type != time_data.get_is_lap() {
-                // Fill in values for players which have not been found
-                if !has_found_all_times {
-                    match &mut self.output {
-                        TimesetOutput::CountryRankings {
-                            region_rank_sums,
-                            per_region_players,
-                            region_found_players,
-                            region_id_to_index: _,
-                            players_in_region,
-                        } => {
-                            let rank = (last_rank + 1) as f64;
-                            for ((rank_sum, found_players), alternative_found_players) in
-                                region_rank_sums
-                                    .iter_mut()
-                                    .zip(region_found_players.iter())
-                                    .zip(players_in_region.iter())
-                            {
-                                *rank_sum += match *per_region_players == 0 {
-                                    true => {
-                                        rank * (((*alternative_found_players) - (*found_players))
-                                            as f64)
-                                    }
-                                    false => {
-                                        rank * (((*per_region_players) - (*found_players)) as f64)
-                                    }
-                                }
-                            }
-                        }
-
-                        TimesetOutput::AverageFinishCharts {
-                            rank_sums,
-                            players_found,
-                            players_found_counter: _,
-                        } => {
-                            let rank = (last_rank + 1) as f64;
-                            for player_id in &self.filters.player_ids {
-                                if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = rank_sums[*player_id as usize] {
-                                        *x += rank;
-                                    }
-                                }
-                            }
-                        }
-                        TimesetOutput::TotalTimeCharts {
-                            total_times,
-                            players_found,
-                            players_found_counter: _,
-                        } => {
-                            let time = last_time + 1;
-                            for player_id in &self.filters.player_ids {
-                                if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = total_times[*player_id as usize] {
-                                        *x += time;
-                                    }
-                                }
-                            }
-                        }
-                        TimesetOutput::PersonalRecordWorldRecordCharts {
-                            prwr_sums,
-                            players_found,
-                            players_found_counter: _,
-                        } => {
-                            let prwr = (wr_time as f64) / ((last_time + 1) as f64);
-                            for player_id in &self.filters.player_ids {
-                                if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = prwr_sums[*player_id as usize] {
-                                        *x += prwr;
-                                    }
-                                }
-                            }
-                        }
-                        TimesetOutput::TallyPointsCharts {
-                            tally_points,
-                            players_found,
-                        } if last_rank < 11 => {
-                            let pts = 11 - (last_rank as i16);
-                            for player_id in &self.filters.player_ids {
-                                if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = tally_points[*player_id as usize] {
-                                        *x += pts;
-                                    }
-                                }
-                            }
-                        }
-                        TimesetOutput::TallyPointsCharts { .. } => (),
-
-                        TimesetOutput::AverageRankRatingCharts {
-                            arr_value_sums,
-                            players_found,
-                            players_found_counter: _,
-                        } => {
-                            // TODO: Hardcoded Newbie Value
-                            let arr_value = if last_standard_level.id == 34 {
-                                last_standard_level.value
-                            } else {
-                                standard_levels
-                                    .iter()
-                                    .find(|standard_level| {
-                                        standard_level.id
-                                            == standards
-                                                .iter()
-                                                .find(|standard| match standard.value {
-                                                    None => false,
-                                                    Some(value) => {
-                                                        standard.is_lap == last_lap_type
-                                                            && standard.track_id == last_track
-                                                            && standard.category
-                                                                <= self.filters.category
-                                                            && value >= last_time + 1
-                                                    }
-                                                })
-                                                .map(|standard| standard.standard_level_id)
-                                                .unwrap_or(34)
-                                    })
-                                    .expect("It should always find a standard level")
-                                    .value
-                            } as f64;
-                            for player_id in &self.filters.player_ids {
-                                if !players_found[*player_id as usize] {
-                                    if let Some(ref mut x) = arr_value_sums[*player_id as usize] {
-                                        *x += arr_value;
-                                    }
-                                }
-                            }
-                        }
-                        TimesetOutput::PlayerTimesheet {
-                            times: _,
-                            rank_sum,
-                            total_time,
-                            prwr_sum,
-                            tally_points,
-                            arr_value_sum,
-                        } => {
-                            let time = last_time + 1;
-                            let rank = last_rank + 1;
-                            *rank_sum += rank as f64;
-                            *total_time += time;
-                            *prwr_sum += (wr_time as f64) / (time as f64);
-                            *tally_points += std::cmp::max(11 - (rank as i16), 0);
-                            // TODO: Hardcoded Newbie Value
-                            *arr_value_sum += if last_standard_level.id == 34 {
-                                last_standard_level.value
-                            } else {
-                                standard_levels
-                                    .iter()
-                                    .find(|standard_level| {
-                                        standard_level.id
-                                            == standards
-                                                .iter()
-                                                .find(|standard| match standard.value {
-                                                    None => false,
-                                                    Some(value) => {
-                                                        standard.is_lap == last_lap_type
-                                                            && standard.track_id == last_track
-                                                            && standard.category
-                                                                <= self.filters.category
-                                                            && value >= time
-                                                    }
-                                                })
-                                                .map(|standard| standard.standard_level_id)
-                                                .unwrap_or(34)
-                                    })
-                                    .expect("It should always find a standard level")
-                                    .value
-                            } as f64
-                        }
-
-                        TimesetOutput::PlayerMatchup {
-                            times: _,
-                            difference_to_first_times,
-                            difference_to_next_times,
-                            rank_sums,
-                            total_times,
-                            prwr_sums,
-                            tally_points,
-                            arr_value_sums,
-                            wins: _,
-                            first_time,
-                            last_time: last_time_selected,
-                            players_found,
-                            players_found_counter: _,
-                            player_ids_to_index,
-                        } => {
-                            let time = last_time + 1;
-                            let rank = last_rank + 1;
-                            let prwr = (wr_time as f64) / (time as f64);
-                            let tally_points_default = std::cmp::max(11 - (rank as i16), 0);
-                            // TODO: Hardcoded Newbie Value
-                            let arr_value = if last_standard_level.id == 34 {
-                                last_standard_level.value
-                            } else {
-                                standard_levels
-                                    .iter()
-                                    .find(|standard_level| {
-                                        standard_level.id
-                                            == standards
-                                                .iter()
-                                                .find(|standard| match standard.value {
-                                                    None => false,
-                                                    Some(value) => {
-                                                        standard.is_lap == last_lap_type
-                                                            && standard.track_id == last_track
-                                                            && standard.category
-                                                                <= self.filters.category
-                                                            && value >= time
-                                                    }
-                                                })
-                                                .map(|standard| standard.standard_level_id)
-                                                .unwrap_or(34)
-                                    })
-                                    .expect("It should always find a standard level")
-                                    .value
-                            } as f64;
-                            for player_id in &self.filters.player_ids {
-                                let player_index = *player_ids_to_index.get(&player_id).expect(
-                                    "Somehow there is no player id in relevant player_ids_to_index hashmap",
-                                );
-                                if !players_found[player_index] {
-                                    let track_index = match self.filters.is_lap {
-                                        Some(_) => (last_track as usize) - 1,
-                                        None => {
-                                            (((last_track as usize) - 1) * 2)
-                                                + (last_lap_type as usize)
-                                        }
-                                    };
-
-                                    difference_to_first_times[player_index][track_index] =
-                                        time - *first_time;
-                                    difference_to_next_times[player_index][track_index] =
-                                        time - *last_time_selected;
-
-                                    rank_sums[player_index] += rank as f64;
-                                    total_times[player_index] += time;
-                                    prwr_sums[player_index] += prwr;
-                                    tally_points[player_index] += tally_points_default;
-                                    arr_value_sums[player_index] += arr_value;
-                                }
-                            }
-                        }
-                        TimesetOutput::None => (),
-                    }
-                }
-
+            if is_first_time {
                 // Reset values
+                is_first_time = false;
                 wr_time = time_data.get_time();
                 last_track = time_data.get_track_id();
                 last_lap_type = time_data.get_is_lap();
                 last_rank = 0;
                 last_time = 0;
+                has_found_all_times = false;
 
                 match &mut self.output {
                     TimesetOutput::AverageFinishCharts {
@@ -1209,8 +975,12 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     }
                     TimesetOutput::PlayerTimesheet { .. } | TimesetOutput::None => (),
                 }
-                has_found_all_times = false;
             }
+
+            is_last_time = match next_time_data {
+                None => true,
+                Some(v) => v.get_track_id() != last_track || v.get_is_lap() != last_lap_type,
+            };
 
             // Skip if has found all times
             if has_found_all_times {
@@ -1271,15 +1041,11 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     region_found_players,
                     region_id_to_index,
                     players_in_region,
-                } => {
+                } => 'value_assignment: {
                     let region_id = time_data.get_player_region_id();
 
-                    if region_id == 0 || region_id == 1 {
-                        continue;
-                    }
-
                     let region_index = match region_id_to_index.get(&region_id) {
-                        None => continue,
+                        None => break 'value_assignment,
                         Some(v) => v.to_owned() as usize,
                     };
 
@@ -1287,7 +1053,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         true => {
                             if region_found_players[region_index] == players_in_region[region_index]
                             {
-                                continue;
+                                break 'value_assignment;
                             }
 
                             region_found_players[region_index] += 1;
@@ -1301,7 +1067,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         }
                         false => {
                             if region_found_players[region_index] == *per_region_players {
-                                continue;
+                                break 'value_assignment;
                             }
 
                             region_found_players[region_index] += 1;
@@ -1320,9 +1086,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     rank_sums,
                     players_found,
                     players_found_counter,
-                } => {
+                } => 'value_assignment: {
                     if players_found[player_id as usize] {
-                        continue;
+                        break 'value_assignment;
                     }
 
                     players_found[player_id as usize] = true;
@@ -1342,9 +1108,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     total_times,
                     players_found,
                     players_found_counter,
-                } => {
+                } => 'value_assignment: {
                     if players_found[player_id as usize] {
-                        continue;
+                        break 'value_assignment;
                     }
 
                     players_found[player_id as usize] = true;
@@ -1364,9 +1130,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     prwr_sums,
                     players_found,
                     players_found_counter,
-                } => {
+                } => 'value_assignment: {
                     if players_found[player_id as usize] {
-                        continue;
+                        break 'value_assignment;
                     }
 
                     players_found[player_id as usize] = true;
@@ -1385,9 +1151,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 TimesetOutput::TallyPointsCharts {
                     tally_points: out,
                     players_found,
-                } => {
+                } => 'value_assignment: {
                     if players_found[player_id as usize] {
-                        continue;
+                        break 'value_assignment;
                     }
 
                     players_found[player_id as usize] = true;
@@ -1405,9 +1171,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     arr_value_sums,
                     players_found,
                     players_found_counter,
-                } => {
+                } => 'value_assignment: {
                     if players_found[player_id as usize] {
-                        continue;
+                        break 'value_assignment;
                     }
 
                     players_found[player_id as usize] = true;
@@ -1475,12 +1241,12 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     player_ids_to_index,
                     first_time,
                     last_time: last_time_selected,
-                } => {
+                } => 'value_assignment: {
                     let player_index = *player_ids_to_index.get(&player_id).expect(
                         "Somehow there is no player id in relevant player_ids_to_index hashmap",
                     );
                     if players_found[player_index] {
-                        continue;
+                        break 'value_assignment;
                     }
 
                     if *players_found_counter == 0 {
@@ -1532,6 +1298,249 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 }
 
                 TimesetOutput::None => (),
+            }
+
+            if is_last_time {
+                if has_found_all_times {
+                    continue;
+                }
+                // Fill in values for players which have not been found
+                match &mut self.output {
+                    TimesetOutput::CountryRankings {
+                        region_rank_sums,
+                        per_region_players,
+                        region_found_players,
+                        region_id_to_index: _,
+                        players_in_region,
+                    } => {
+                        let rank = (last_rank + 1) as f64;
+                        for ((rank_sum, found_players), alternative_found_players) in
+                            region_rank_sums
+                                .iter_mut()
+                                .zip(region_found_players.iter())
+                                .zip(players_in_region.iter())
+                        {
+                            *rank_sum += match *per_region_players == 0 {
+                                true => {
+                                    rank * (((*alternative_found_players) - (*found_players))
+                                        as f64)
+                                }
+                                false => rank * (((*per_region_players) - (*found_players)) as f64),
+                            }
+                        }
+                    }
+
+                    TimesetOutput::AverageFinishCharts {
+                        rank_sums,
+                        players_found,
+                        players_found_counter: _,
+                    } => {
+                        let rank = (last_rank + 1) as f64;
+                        for player_id in &self.filters.player_ids {
+                            if !players_found[*player_id as usize] {
+                                if let Some(ref mut x) = rank_sums[*player_id as usize] {
+                                    *x += rank;
+                                }
+                            }
+                        }
+                    }
+                    TimesetOutput::TotalTimeCharts {
+                        total_times,
+                        players_found,
+                        players_found_counter: _,
+                    } => {
+                        let time = last_time + 1;
+                        for player_id in &self.filters.player_ids {
+                            if !players_found[*player_id as usize] {
+                                if let Some(ref mut x) = total_times[*player_id as usize] {
+                                    *x += time;
+                                }
+                            }
+                        }
+                    }
+                    TimesetOutput::PersonalRecordWorldRecordCharts {
+                        prwr_sums,
+                        players_found,
+                        players_found_counter: _,
+                    } => {
+                        let prwr = (wr_time as f64) / ((last_time + 1) as f64);
+                        for player_id in &self.filters.player_ids {
+                            if !players_found[*player_id as usize] {
+                                if let Some(ref mut x) = prwr_sums[*player_id as usize] {
+                                    *x += prwr;
+                                }
+                            }
+                        }
+                    }
+                    TimesetOutput::TallyPointsCharts {
+                        tally_points,
+                        players_found,
+                    } if last_rank < 11 => {
+                        let pts = 11 - (last_rank as i16);
+                        for player_id in &self.filters.player_ids {
+                            if !players_found[*player_id as usize] {
+                                if let Some(ref mut x) = tally_points[*player_id as usize] {
+                                    *x += pts;
+                                }
+                            }
+                        }
+                    }
+                    TimesetOutput::TallyPointsCharts { .. } => (),
+
+                    TimesetOutput::AverageRankRatingCharts {
+                        arr_value_sums,
+                        players_found,
+                        players_found_counter: _,
+                    } => {
+                        // TODO: Hardcoded Newbie Value
+                        let arr_value = if last_standard_level.id == 34 {
+                            last_standard_level.value
+                        } else {
+                            standard_levels
+                                .iter()
+                                .find(|standard_level| {
+                                    standard_level.id
+                                        == standards
+                                            .iter()
+                                            .find(|standard| match standard.value {
+                                                None => false,
+                                                Some(value) => {
+                                                    standard.is_lap == last_lap_type
+                                                        && standard.track_id == last_track
+                                                        && standard.category
+                                                            <= self.filters.category
+                                                        && value >= last_time + 1
+                                                }
+                                            })
+                                            .map(|standard| standard.standard_level_id)
+                                            .unwrap_or(34)
+                                })
+                                .expect("It should always find a standard level")
+                                .value
+                        } as f64;
+                        for player_id in &self.filters.player_ids {
+                            if !players_found[*player_id as usize] {
+                                if let Some(ref mut x) = arr_value_sums[*player_id as usize] {
+                                    *x += arr_value;
+                                }
+                            }
+                        }
+                    }
+                    TimesetOutput::PlayerTimesheet {
+                        times: _,
+                        rank_sum,
+                        total_time,
+                        prwr_sum,
+                        tally_points,
+                        arr_value_sum,
+                    } => {
+                        let time = last_time + 1;
+                        let rank = last_rank + 1;
+                        *rank_sum += rank as f64;
+                        *total_time += time;
+                        *prwr_sum += (wr_time as f64) / (time as f64);
+                        *tally_points += std::cmp::max(11 - (rank as i16), 0);
+                        // TODO: Hardcoded Newbie Value
+                        *arr_value_sum += if last_standard_level.id == 34 {
+                            last_standard_level.value
+                        } else {
+                            standard_levels
+                                .iter()
+                                .find(|standard_level| {
+                                    standard_level.id
+                                        == standards
+                                            .iter()
+                                            .find(|standard| match standard.value {
+                                                None => false,
+                                                Some(value) => {
+                                                    standard.is_lap == last_lap_type
+                                                        && standard.track_id == last_track
+                                                        && standard.category
+                                                            <= self.filters.category
+                                                        && value >= time
+                                                }
+                                            })
+                                            .map(|standard| standard.standard_level_id)
+                                            .unwrap_or(34)
+                                })
+                                .expect("It should always find a standard level")
+                                .value
+                        } as f64
+                    }
+
+                    TimesetOutput::PlayerMatchup {
+                        times: _,
+                        difference_to_first_times,
+                        difference_to_next_times,
+                        rank_sums,
+                        total_times,
+                        prwr_sums,
+                        tally_points,
+                        arr_value_sums,
+                        wins: _,
+                        first_time,
+                        last_time: last_time_selected,
+                        players_found,
+                        players_found_counter: _,
+                        player_ids_to_index,
+                    } => {
+                        let time = last_time + 1;
+                        let rank = last_rank + 1;
+                        let prwr = (wr_time as f64) / (time as f64);
+                        let tally_points_default = std::cmp::max(11 - (rank as i16), 0);
+                        // TODO: Hardcoded Newbie Value
+                        let arr_value = if last_standard_level.id == 34 {
+                            last_standard_level.value
+                        } else {
+                            standard_levels
+                                .iter()
+                                .find(|standard_level| {
+                                    standard_level.id
+                                        == standards
+                                            .iter()
+                                            .find(|standard| match standard.value {
+                                                None => false,
+                                                Some(value) => {
+                                                    standard.is_lap == last_lap_type
+                                                        && standard.track_id == last_track
+                                                        && standard.category
+                                                            <= self.filters.category
+                                                        && value >= time
+                                                }
+                                            })
+                                            .map(|standard| standard.standard_level_id)
+                                            .unwrap_or(34)
+                                })
+                                .expect("It should always find a standard level")
+                                .value
+                        } as f64;
+                        for player_id in &self.filters.player_ids {
+                            let player_index = *player_ids_to_index.get(&player_id).expect(
+                                "Somehow there is no player id in relevant player_ids_to_index hashmap",
+                            );
+                            if !players_found[player_index] {
+                                let track_index = match self.filters.is_lap {
+                                    Some(_) => (last_track as usize) - 1,
+                                    None => {
+                                        (((last_track as usize) - 1) * 2) + (last_lap_type as usize)
+                                    }
+                                };
+
+                                difference_to_first_times[player_index][track_index] =
+                                    time - *first_time;
+                                difference_to_next_times[player_index][track_index] =
+                                    time - *last_time_selected;
+
+                                rank_sums[player_index] += rank as f64;
+                                total_times[player_index] += time;
+                                prwr_sums[player_index] += prwr;
+                                tally_points[player_index] += tally_points_default;
+                                arr_value_sums[player_index] += arr_value;
+                            }
+                        }
+                    }
+                    TimesetOutput::None => (),
+                }
             }
         }
 
