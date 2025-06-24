@@ -48,6 +48,8 @@ This will be actually faster, by the nature of not being an interpreted language
 | CACHE_TIMEOUT | u64 | Time it should take for each cache refresh loop | 1200 |
 | SMTP_HOST | String | The hostname for the SMTP server |  |
 | SMTP_PORT | u16 | The port for the SMTP server | 25 |
+| SMTP_CREDS_NAME | String | The credentials name for the SMTP client |  |
+| SMTP_CREDS_SECRET | String | The credentials secret for the SMTP client |  |
 | SMTP_TLS | bool | Whether the TLS certificate for the SMTP server is valid or not | false |
 
 ## TODO
@@ -66,8 +68,6 @@ This will be actually faster, by the nature of not being an interpreted language
 - Account Actions
     - Creating Profiles
     - Claiming Profiles
-- SMTP Handling
-    - Password reset
 - Hide Country Rankings if Players Found always == 0
 - Rewrite of /api/raw/ to account for HIDING DATA THAT SHOULD NOT BE VISIBLE WITHOUT AUTH
 - Rewrite of Standard Levels / Standards handling to avoid hardcoded values

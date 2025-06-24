@@ -52,6 +52,8 @@ pub async fn update_loop() {
             }
         };
 
+        let _ = sqlx::query("DELETE FROM tokens WHERE token_type = 'password_reset'::token_type AND time < NOW() - INTERVAL '15 minutes'").execute(&mut *executor).await;
+
         update_loop_if_let_ok!(Standards, standards, executor, app_state);
         update_loop_if_let_ok!(StandardLevels, legacy_standard_levels, executor, app_state);
     }

@@ -74,6 +74,18 @@ pub const DEFAULT_SCHEMA: EnvSettingsSchema = EnvSettingsSchema {
         value: String::new(),
         description: "The hostname for the SMTP server",
     },
+    smtp_creds_name: EnvSettingsSchemaField {
+        key: "SMTP_CREDS_NAME",
+        type_name: "String",
+        value: String::new(),
+        description: "The credentials name for the SMTP client",
+    },
+    smtp_creds_secret: EnvSettingsSchemaField {
+        key: "SMTP_CREDS_SECRET",
+        type_name: "String",
+        value: String::new(),
+        description: "The credentials secret for the SMTP client",
+    },
     smtp_tls_cert_valid: EnvSettingsSchemaField {
         key: "SMTP_TLS",
         type_name: "bool",
@@ -111,6 +123,8 @@ pub struct EnvSettingsSchema {
     cache_timeout: EnvSettingsSchemaField<u64>,
     smtp_hostname: EnvSettingsSchemaField<String>,
     smtp_port: EnvSettingsSchemaField<u16>,
+    smtp_creds_name: EnvSettingsSchemaField<String>,
+    smtp_creds_secret: EnvSettingsSchemaField<String>,
     smtp_tls_cert_valid: EnvSettingsSchemaField<bool>,
 }
 
@@ -129,6 +143,8 @@ impl EnvSettingsSchema {
         out += &self.cache_timeout.to_readme_line();
         out += &self.smtp_hostname.to_readme_line();
         out += &self.smtp_port.to_readme_line();
+        out += &self.smtp_creds_name.to_readme_line();
+        out += &self.smtp_creds_secret.to_readme_line();
         out += &self.smtp_tls_cert_valid.to_readme_line();
         out
     }
@@ -147,6 +163,8 @@ pub struct EnvSettings {
     pub cache_timeout: u64,
     pub smtp_hostname: String,
     pub smtp_port: u16,
+    pub smtp_creds_name: String,
+    pub smtp_creds_secret: String,
     pub smtp_tls_cert_valid: bool,
 }
 
@@ -199,6 +217,10 @@ impl EnvSettings {
                 .map_or(DEFAULT_SCHEMA.smtp_port.value, |x| {
                     x.parse().unwrap_or(DEFAULT_SCHEMA.smtp_port.value)
                 }),
+            smtp_creds_name: std::env::var(DEFAULT_SCHEMA.smtp_creds_name.key)
+                .map_or(DEFAULT_SCHEMA.smtp_creds_name.value, |x| x.to_string()),
+            smtp_creds_secret: std::env::var(DEFAULT_SCHEMA.smtp_creds_secret.key)
+                .map_or(DEFAULT_SCHEMA.smtp_creds_secret.value, |x| x.to_string()),
             smtp_tls_cert_valid: std::env::var(DEFAULT_SCHEMA.smtp_tls_cert_valid.key).map_or(
                 DEFAULT_SCHEMA.smtp_tls_cert_valid.value,
                 |x| {
@@ -239,6 +261,27 @@ impl EnvSettings {
             out,
             "{}={}",
             DEFAULT_SCHEMA.cache_timeout.key, self.cache_timeout
+        )?;
+        writeln!(out, "{}={}", DEFAULT_SCHEMA.smtp_port.key, self.smtp_port)?;
+        writeln!(
+            out,
+            "{}={}",
+            DEFAULT_SCHEMA.smtp_hostname.key, self.smtp_hostname
+        )?;
+        writeln!(
+            out,
+            "{}={}",
+            DEFAULT_SCHEMA.smtp_creds_name.key, self.smtp_creds_name
+        )?;
+        writeln!(
+            out,
+            "{}={}",
+            DEFAULT_SCHEMA.smtp_creds_secret.key, self.smtp_creds_secret
+        )?;
+        writeln!(
+            out,
+            "{}={}",
+            DEFAULT_SCHEMA.smtp_tls_cert_valid.key, self.smtp_tls_cert_valid
         )?;
 
         Ok(())

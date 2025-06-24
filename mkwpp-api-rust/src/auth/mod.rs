@@ -5,7 +5,7 @@ use base64::Engine;
 use mail_send::{Credentials, SmtpClientBuilder, mail_builder::MessageBuilder};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, postgres::PgQueryResult};
+use sqlx::{FromRow, Row, postgres::PgQueryResult};
 use validated_strings::ValidatedString;
 
 mod cooldown;
@@ -132,7 +132,7 @@ pub async fn register(
     token_engine.encode_string(hash_bytes, &mut out_string);
 
     let email_msg = MessageBuilder::new()
-        .from(("Mario Kart Wii Players' Page", "no-reply@mkwpp.com"))
+        .from(("Mario Kart Wii Players' Page", "no-reply@mariokart64.com"))
         .to((username.as_str(), email.as_str()))
         .subject("Account Verification")
         .text_body(format!(
@@ -165,8 +165,8 @@ pub async fn register(
 
     sqlx::query(const_format::formatc!(
         r#"
-            INSERT INTO activation_tokens (token, user_id)
-            VALUES($1, $2)
+            INSERT INTO tokens (token, user_id, token_type)
+            VALUES($1, $2, 'activation'::token_type)
         "#
     ))
     .bind(out_string)
@@ -179,7 +179,10 @@ pub async fn register(
         crate::ENV_VARS.smtp_port,
     )
     .implicit_tls(false)
-    .credentials(Credentials::new("username", "secret"))
+    .credentials(Credentials::new(
+        crate::ENV_VARS.smtp_creds_name.as_str(),
+        crate::ENV_VARS.smtp_creds_secret.as_str(),
+    ))
     .allow_invalid_certs()
     .connect()
     .await?
@@ -187,6 +190,144 @@ pub async fn register(
     .await?;
 
     Ok(())
+}
+
+pub async fn password_reset_token_gen(
+    email: validated_strings::email::Email,
+    // This should be a transaction!
+    executor: &mut sqlx::PgConnection,
+) -> Result<(), anyhow::Error> {
+    let email = email.get_inner();
+
+    let token_engine = base64::engine::GeneralPurpose::new(
+        &base64::alphabet::URL_SAFE,
+        base64::engine::GeneralPurposeConfig::new(),
+    );
+
+    let mut hash_bytes = [0u8; 45];
+    let mut out_string = String::new();
+    rand::rng().fill(&mut hash_bytes);
+    token_engine.encode_string(hash_bytes, &mut out_string);
+
+    let user = sqlx::query(
+        r#"
+            SELECT id, username FROM users WHERE email = $1
+        "#,
+    )
+    .bind(email.as_str())
+    .fetch_optional(&mut *executor)
+    .await?;
+
+    let user = match user {
+        Some(v) => v,
+        None => return Ok(()),
+    };
+
+    let id = user.get::<i32, &str>("id");
+    let username = user.get::<String, &str>("username");
+
+    let email_msg = MessageBuilder::new()
+        .from(("Mario Kart Wii Players' Page", "no-reply@mariokart64.com"))
+        .to((username.as_str(), email.as_str()))
+        .subject("Password Reset")
+        .text_body(format!(
+            r#"
+            Hi {username},
+            
+            Someone requested a password reset on your Mario Kart Wii Players' Page account.
+            If you did not perform this action, you may safely ignore this email.
+            
+            To reset your password, please visit the following link:
+            
+            https://mariokart64.com/mkw/password/reset?tkn={out_string}
+            
+            Please note this link will expire in 15 minutes.
+            
+            Happy karting!
+            "#
+        ));
+
+    sqlx::query(const_format::formatc!(
+        r#"
+            INSERT INTO tokens (token, user_id, token_type)
+            VALUES($1, $2, 'password_reset'::token_type)
+        "#
+    ))
+    .bind(out_string)
+    .bind(id)
+    .execute(&mut *executor)
+    .await?;
+
+    SmtpClientBuilder::new(
+        crate::ENV_VARS.smtp_hostname.as_str(),
+        crate::ENV_VARS.smtp_port,
+    )
+    .implicit_tls(false)
+    .credentials(Credentials::new(
+        crate::ENV_VARS.smtp_creds_name.as_str(),
+        crate::ENV_VARS.smtp_creds_secret.as_str(),
+    ))
+    .allow_invalid_certs()
+    .connect()
+    .await?
+    .send(email_msg)
+    .await?;
+
+    Ok(())
+}
+
+pub async fn reset_password(
+    token: &str,
+    password: validated_strings::password::Password,
+    executor: &mut sqlx::PgConnection,
+) -> Result<(), sqlx::Error> {
+    let salt =
+        argon2::password_hash::SaltString::generate(&mut argon2::password_hash::rand_core::OsRng);
+    let hash_string = password.hash(salt.as_str().as_bytes());
+
+    sqlx::query(
+        r#"
+            UPDATE users AS u1
+            SET password = $2, salt = $3
+            FROM users AS u2
+            LEFT JOIN tokens AS t
+                ON t.user_id = u2.id
+            WHERE t.token = $1 AND token_type = 'password_reset'::token_type
+        "#,
+    )
+    .bind(token)
+    .bind(hash_string)
+    .bind(salt.to_string())
+    .execute(&mut *executor)
+    .await?;
+
+    sqlx::query(
+        "DELETE FROM tokens WHERE token = $1 AND token_type = 'password_reset'::token_type",
+    )
+    .bind(token)
+    .execute(&mut *executor)
+    .await?;
+
+    Ok(())
+}
+
+pub async fn is_reset_password_token_valid(
+    token: &str,
+    executor: &mut sqlx::PgConnection,
+) -> Result<bool, sqlx::Error> {
+    let out = sqlx::query(
+        r#"
+            SELECT user_id FROM tokens WHERE token = $1
+        "#,
+    )
+    .bind(token)
+    .fetch_optional(&mut *executor)
+    .await?;
+
+    match out {
+        Some(_) => Ok(true),
+        None => Ok(false),
+    }
 }
 
 pub async fn activate_account(
@@ -198,20 +339,20 @@ pub async fn activate_account(
             UPDATE users AS u1
             SET is_verified = true
             FROM users AS u2
-            LEFT JOIN activation_tokens AS a
-                ON a.user_id = u2.id
-            WHERE a.token = $1
+            LEFT JOIN tokens AS t
+                ON t.user_id = u2.id
+            WHERE t.token = $1 AND token_type = 'activation'::token_type
         "#,
     )
     .bind(activation_token)
     .execute(&mut *executor)
     .await?;
-    
-    sqlx::query("DELETE FROM activation_tokens WHERE token = $1")
+
+    sqlx::query("DELETE FROM tokens WHERE token = $1 AND token_type = 'activation'::token_type")
         .bind(activation_token)
         .execute(&mut *executor)
         .await?;
-    
+
     Ok(())
 }
 
