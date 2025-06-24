@@ -1,0 +1,1 @@
+ALTER TABLE players ADD COLUMN submitters INTEGER[] DEFAULT '{}' NOT NULL;

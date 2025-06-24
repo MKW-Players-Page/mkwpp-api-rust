@@ -1,0 +1,6 @@
+CREATE TABLE activation_tokens (
+    token VARCHAR(128) UNIQUE NOT NULL,
+    activated TEXT NOT NULL DEFAULT FALSE,
+    time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    user_id INTEGER NOT NULL
+)
