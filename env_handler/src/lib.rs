@@ -56,6 +56,30 @@ pub const DEFAULT_SCHEMA: EnvSettingsSchema = EnvSettingsSchema {
         value: 120000,
         description: "Max time a request should take before being dropped",
     },
+    cache_timeout: EnvSettingsSchemaField {
+        key: "CACHE_TIMEOUT",
+        type_name: "u64",
+        value: 1200,
+        description: "Time it should take for each cache refresh loop",
+    },
+    smtp_port: EnvSettingsSchemaField {
+        key: "SMTP_PORT",
+        type_name: "u16",
+        value: 25,
+        description: "The port for the SMTP server",
+    },
+    smtp_hostname: EnvSettingsSchemaField {
+        key: "SMTP_HOST",
+        type_name: "String",
+        value: String::new(),
+        description: "The hostname for the SMTP server",
+    },
+    smtp_tls_cert_valid: EnvSettingsSchemaField {
+        key: "SMTP_TLS",
+        type_name: "bool",
+        value: false,
+        description: "Whether the TLS certificate for the SMTP server is valid or not",
+    },
 };
 
 struct EnvSettingsSchemaField<T: Display> {
@@ -84,6 +108,10 @@ pub struct EnvSettingsSchema {
     max_conn: EnvSettingsSchemaField<u32>,
     keep_alive: EnvSettingsSchemaField<u64>,
     client_request_timeout: EnvSettingsSchemaField<u64>,
+    cache_timeout: EnvSettingsSchemaField<u64>,
+    smtp_hostname: EnvSettingsSchemaField<String>,
+    smtp_port: EnvSettingsSchemaField<u16>,
+    smtp_tls_cert_valid: EnvSettingsSchemaField<bool>,
 }
 
 impl EnvSettingsSchema {
@@ -98,6 +126,10 @@ impl EnvSettingsSchema {
         out += &self.max_conn.to_readme_line();
         out += &self.keep_alive.to_readme_line();
         out += &self.client_request_timeout.to_readme_line();
+        out += &self.cache_timeout.to_readme_line();
+        out += &self.smtp_hostname.to_readme_line();
+        out += &self.smtp_port.to_readme_line();
+        out += &self.smtp_tls_cert_valid.to_readme_line();
         out
     }
 }
@@ -112,6 +144,10 @@ pub struct EnvSettings {
     pub max_conn: u32,
     pub keep_alive: u64,
     pub client_request_timeout: u64,
+    pub cache_timeout: u64,
+    pub smtp_hostname: String,
+    pub smtp_port: u16,
+    pub smtp_tls_cert_valid: bool,
 }
 
 impl EnvSettings {
@@ -133,22 +169,43 @@ impl EnvSettings {
                 .unwrap_or(DEFAULT_SCHEMA.database_name.value.to_string()),
             host: std::env::var(DEFAULT_SCHEMA.host.key)
                 .unwrap_or(DEFAULT_SCHEMA.host.value.to_string()),
-            port: std::env::var(DEFAULT_SCHEMA.port.key)
-                .map(|x| x.parse::<u16>().unwrap_or(DEFAULT_SCHEMA.port.value))
-                .unwrap_or(DEFAULT_SCHEMA.port.value),
+            port: std::env::var(DEFAULT_SCHEMA.port.key).map_or(DEFAULT_SCHEMA.port.value, |x| {
+                x.parse::<u16>().unwrap_or(DEFAULT_SCHEMA.port.value)
+            }),
             database_url: DEFAULT_SCHEMA.database_url.value.to_string(),
             max_conn: std::env::var(DEFAULT_SCHEMA.max_conn.key)
-                .map(|v| v.parse::<u32>().unwrap_or(DEFAULT_SCHEMA.max_conn.value))
-                .unwrap_or(DEFAULT_SCHEMA.max_conn.value),
+                .map_or(DEFAULT_SCHEMA.max_conn.value, |v| {
+                    v.parse::<u32>().unwrap_or(DEFAULT_SCHEMA.max_conn.value)
+                }),
             keep_alive: std::env::var(DEFAULT_SCHEMA.keep_alive.key)
-                .map(|x| x.parse::<u64>().unwrap_or(DEFAULT_SCHEMA.keep_alive.value))
-                .unwrap_or(DEFAULT_SCHEMA.keep_alive.value),
+                .map_or(DEFAULT_SCHEMA.keep_alive.value, |x| {
+                    x.parse::<u64>().unwrap_or(DEFAULT_SCHEMA.keep_alive.value)
+                }),
             client_request_timeout: std::env::var(DEFAULT_SCHEMA.client_request_timeout.key)
-                .map(|x| {
+                .map_or(DEFAULT_SCHEMA.client_request_timeout.value, |x| {
                     x.parse::<u64>()
                         .unwrap_or(DEFAULT_SCHEMA.client_request_timeout.value)
-                })
-                .unwrap_or(DEFAULT_SCHEMA.client_request_timeout.value),
+                }),
+            cache_timeout: std::env::var(DEFAULT_SCHEMA.cache_timeout.key).map_or(
+                DEFAULT_SCHEMA.cache_timeout.value,
+                |x| {
+                    x.parse::<u64>()
+                        .unwrap_or(DEFAULT_SCHEMA.cache_timeout.value)
+                },
+            ),
+            smtp_hostname: std::env::var(DEFAULT_SCHEMA.smtp_hostname.key)
+                .map_or(DEFAULT_SCHEMA.smtp_hostname.value, |x| x.to_string()),
+            smtp_port: std::env::var(DEFAULT_SCHEMA.smtp_port.key)
+                .map_or(DEFAULT_SCHEMA.smtp_port.value, |x| {
+                    x.parse().unwrap_or(DEFAULT_SCHEMA.smtp_port.value)
+                }),
+            smtp_tls_cert_valid: std::env::var(DEFAULT_SCHEMA.smtp_tls_cert_valid.key).map_or(
+                DEFAULT_SCHEMA.smtp_tls_cert_valid.value,
+                |x| {
+                    x.parse()
+                        .unwrap_or(DEFAULT_SCHEMA.smtp_tls_cert_valid.value)
+                },
+            ),
         };
         out.generate_url();
 
@@ -177,6 +234,11 @@ impl EnvSettings {
             out,
             "{}={}",
             DEFAULT_SCHEMA.client_request_timeout.key, self.client_request_timeout
+        )?;
+        writeln!(
+            out,
+            "{}={}",
+            DEFAULT_SCHEMA.cache_timeout.key, self.cache_timeout
         )?;
 
         Ok(())

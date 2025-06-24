@@ -2,8 +2,6 @@ use std::{hash::Hash, sync::Arc};
 
 use crate::sql::tables::{standard_levels::StandardLevels, standards::Standards};
 
-const CACHE_REFRESH: u64 = 1200;
-
 #[derive(Default)]
 pub struct Cache {
     // Non Variable Inputs
@@ -41,7 +39,8 @@ macro_rules! update_loop_if_let_ok {
 }
 
 pub async fn update_loop() {
-    let mut interval = tokio::time::interval(core::time::Duration::new(CACHE_REFRESH, 0));
+    let mut interval =
+        tokio::time::interval(core::time::Duration::new(crate::ENV_VARS.cache_timeout, 0));
     loop {
         interval.tick().await;
         let app_state = super::access_app_state().await;

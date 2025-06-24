@@ -1,9 +1,14 @@
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
-    api::FinalErrorResponse,
-    app_state::AppState,
-    auth::{BareMinimumValidationData, is_valid_token, validated_strings::ValidatedString},
+    api::
+        FinalErrorResponse
+    ,
+    app_state::{AppState, access_app_state},
+    auth::{
+        BareMinimumValidationData, activate_account, is_valid_token,
+        validated_strings::ValidatedString,
+    },
 };
 
 mod player;
@@ -14,6 +19,7 @@ pub fn auth() -> impl HttpServiceFactory {
         .route("/register", web::put().to(register))
         .route("/login", web::put().to(login))
         .route("/logout", web::put().to(logout))
+        .route("/activate", web::put().to(activate))
         .route("/user_data", web::post().to(user_data))
         .route("/update_password", web::post().to(update_password))
         .service(player::player())
@@ -402,6 +408,48 @@ async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
         return FinalErrorResponse::new_no_fields(vec![
             String::from("Couldn't commit transaction"),
             x.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError);
+    }
+
+    return HttpResponse::Ok()
+        .content_type("application/json")
+        .body("{}");
+}
+
+#[derive(serde::Deserialize)]
+struct ActivateBody {
+    token: String
+}
+
+async fn activate(body: web::Json<ActivateBody>) -> HttpResponse {
+    let mut transaction = {
+        let data = access_app_state().await;
+        let data = data.read().await;
+        match data.pg_pool.begin().await {
+            Ok(v) => v,
+            Err(error) => {
+                return FinalErrorResponse::new_no_fields(vec![
+                    String::from("Error starting transaction"),
+                    error.to_string(),
+                ])
+                .generate_response(HttpResponse::InternalServerError);
+            }
+        }
+    };
+
+    if let Err(e) = activate_account(&body.0.token, &mut transaction).await {
+        return FinalErrorResponse::new_no_fields(vec![
+            String::from("Error in database while activating account"),
+            e.to_string(),
+        ])
+        .generate_response(HttpResponse::InternalServerError);
+    }
+
+    if let Err(e) = transaction.commit().await {
+        return FinalErrorResponse::new_no_fields(vec![
+            String::from("Error committing transaction"),
+            e.to_string(),
         ])
         .generate_response(HttpResponse::InternalServerError);
     }

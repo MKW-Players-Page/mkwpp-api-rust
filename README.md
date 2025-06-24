@@ -45,6 +45,10 @@ This will be actually faster, by the nature of not being an interpreted language
 | DB_MAX_CONN | u32 | Connections in the Connection Pool | 25 |
 | SRV_KEEP_ALIVE | u64 | Time for which a URL should hot reload, in milliseconds | 60000 |
 | SRV_CLIENT_REQUEST_TIMEOUT | u64 | Max time a request should take before being dropped | 120000 |
+| CACHE_TIMEOUT | u64 | Time it should take for each cache refresh loop | 1200 |
+| SMTP_HOST | String | The hostname for the SMTP server |  |
+| SMTP_PORT | u16 | The port for the SMTP server | 25 |
+| SMTP_TLS | bool | Whether the TLS certificate for the SMTP server is valid or not | false |
 
 ## TODO
 - Figure out how to import data from old database with just a command :)

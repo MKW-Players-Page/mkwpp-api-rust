@@ -2,6 +2,7 @@ use std::net::IpAddr;
 
 use anyhow::anyhow;
 use base64::Engine;
+use mail_send::{Credentials, SmtpClientBuilder, mail_builder::MessageBuilder};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, postgres::PgQueryResult};
@@ -117,22 +118,100 @@ pub async fn register(
         argon2::password_hash::SaltString::generate(&mut argon2::password_hash::rand_core::OsRng);
     let hash_string = password.hash(salt.as_str().as_bytes());
 
-    // Send email here
-    // TODO
+    let email = email.get_inner();
+    let username = username.get_inner();
+
+    let token_engine = base64::engine::GeneralPurpose::new(
+        &base64::alphabet::URL_SAFE,
+        base64::engine::GeneralPurposeConfig::new(),
+    );
+
+    let mut hash_bytes = [0u8; 45];
+    let mut out_string = String::new();
+    rand::rng().fill(&mut hash_bytes);
+    token_engine.encode_string(hash_bytes, &mut out_string);
+
+    let email_msg = MessageBuilder::new()
+        .from(("Mario Kart Wii Players' Page", "no-reply@mkwpp.com"))
+        .to((username.as_str(), email.as_str()))
+        .subject("Account Verification")
+        .text_body(format!(
+            r#"
+            Hi {username},
+            
+            Your Mario Kart Wii Players' Page account has been successfully created.
+            
+            To activate your account, please visit the following link:
+            
+            https://mariokart64.com/mkw/activate?tkn={out_string}
+            
+            Happy karting!
+            "#
+        ));
+
+    let user_id: i32 = sqlx::query_scalar(const_format::formatc!(
+        r#"
+            INSERT INTO users (username, password, email, salt, is_active)
+            VALUES($1, $2, $3, $4, true)
+            RETURNING id
+        "#
+    ))
+    .bind(username.as_str())
+    .bind(hash_string)
+    .bind(email.as_str())
+    .bind(salt.as_str())
+    .fetch_one(&mut *executor)
+    .await?;
 
     sqlx::query(const_format::formatc!(
         r#"
-            INSERT INTO users (username, password, email, salt)
-            VALUES($1, $2, $3, $4)
+            INSERT INTO activation_tokens (token, user_id)
+            VALUES($1, $2)
         "#
     ))
-    .bind(username.get_inner())
-    .bind(hash_string)
-    .bind(email.get_inner())
-    .bind(salt.as_str())
-    .execute(executor)
+    .bind(out_string)
+    .bind(user_id)
+    .execute(&mut *executor)
     .await?;
 
+    SmtpClientBuilder::new(
+        crate::ENV_VARS.smtp_hostname.as_str(),
+        crate::ENV_VARS.smtp_port,
+    )
+    .implicit_tls(false)
+    .credentials(Credentials::new("username", "secret"))
+    .allow_invalid_certs()
+    .connect()
+    .await?
+    .send(email_msg)
+    .await?;
+
+    Ok(())
+}
+
+pub async fn activate_account(
+    activation_token: &str,
+    executor: &mut sqlx::PgConnection,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+            UPDATE users AS u1
+            SET is_verified = true
+            FROM users AS u2
+            LEFT JOIN activation_tokens AS a
+                ON a.user_id = u2.id
+            WHERE a.token = $1
+        "#,
+    )
+    .bind(activation_token)
+    .execute(&mut *executor)
+    .await?;
+    
+    sqlx::query("DELETE FROM activation_tokens WHERE token = $1")
+        .bind(activation_token)
+        .execute(&mut *executor)
+        .await?;
+    
     Ok(())
 }
 

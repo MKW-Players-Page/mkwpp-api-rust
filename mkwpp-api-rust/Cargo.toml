@@ -34,6 +34,7 @@ rand = "0.9.0"
 cached = "0.55.1"
 env_handler = { path = "../env_handler" }
 either_field = "1.2.0"
+mail-send = "0.5.1"
 
 [build-dependencies]
 anyhow = "1.0.97"
