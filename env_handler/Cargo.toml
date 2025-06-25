@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.97"
 dotenvy = "0.15.7"
+env_handler_proc_macros = { path = "../env_handler_proc_macros/" }
 
 [lints]
 workspace = true
