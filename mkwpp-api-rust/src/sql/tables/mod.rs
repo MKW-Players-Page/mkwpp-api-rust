@@ -12,16 +12,12 @@ pub mod tracks;
 
 #[derive(sqlx::Type, Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[sqlx(type_name = "category", rename_all = "lowercase")]
+#[derive(Default)]
 pub enum Category {
+    #[default]
     NonSc,
     Sc,
     Unres,
-}
-
-impl Default for Category {
-    fn default() -> Self {
-        Category::NonSc
-    }
 }
 
 impl TryFrom<u8> for Category {

@@ -25,8 +25,8 @@ impl ValidTimesetItem for TimesheetTimesetData {
     fn get_time(&self) -> i32 {
         self.value
     }
-    fn set_prwr(&mut self, prwr: f64) {}
-    fn set_rank(&mut self, rank: i32) {}
+    fn set_prwr(&mut self, _prwr: f64) {}
+    fn set_rank(&mut self, _rank: i32) {}
     fn get_is_lap(&self) -> bool {
         self.is_lap
     }
@@ -108,7 +108,7 @@ impl Timesheet {
             this_table = super::Scores::TABLE_NAME,
             players_table = super::PlayersBasic::TABLE_NAME,
             is_lap = if is_lap.is_some() {
-                format!("AND is_lap = $2")
+                "AND is_lap = $2".to_string()
             } else {
                 String::new()
             }

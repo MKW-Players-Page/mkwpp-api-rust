@@ -124,7 +124,7 @@ impl Players {
             "SELECT id FROM {} WHERE id != ANY($1);",
             Players::TABLE_NAME
         ))
-        .bind(if player_ids.len() == 0 {
+        .bind(if player_ids.is_empty() {
             &[0]
         } else {
             player_ids
@@ -157,7 +157,7 @@ pub trait FilterPlayers: BasicTableQueries {
             .await;
     }
 
-    async fn get_players_by_region_id(
+    async fn _get_players_by_region_id(
         executor: &mut sqlx::PgConnection,
         region_id: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {

@@ -88,7 +88,7 @@ impl MatchupData {
             this_table = super::Scores::TABLE_NAME,
             players_table = super::PlayersBasic::TABLE_NAME,
             is_lap = if is_lap.is_some() {
-                format!("AND is_lap = $2")
+                "AND is_lap = $2".to_string()
             } else {
                 String::new()
             }

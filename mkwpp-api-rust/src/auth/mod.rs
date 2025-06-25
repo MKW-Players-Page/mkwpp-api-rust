@@ -10,7 +10,7 @@ use validated_strings::ValidatedString;
 mod cooldown;
 pub mod validated_strings;
 
-struct Users {
+struct _Users {
     id: i32,
     username: validated_strings::username::Username,
     password: validated_strings::password::Password,
@@ -337,8 +337,6 @@ pub struct BareMinimumValidationData {
     pub user_id: i32,
     pub session_token: String,
 }
-
-pub enum TokenValidity {}
 
 pub async fn is_valid_token(
     session_token: &str,
