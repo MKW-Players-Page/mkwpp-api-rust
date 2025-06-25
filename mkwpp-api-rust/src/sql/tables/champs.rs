@@ -1,3 +1,4 @@
+use crate::custom_serde::DateAsTimestampNumber;
 use sqlx::postgres::PgRow;
 
 use super::Category;
@@ -8,6 +9,7 @@ pub struct Champs {
     pub id: i32,
     pub player_id: i32,
     pub category: super::Category,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
     pub date_instated: chrono::NaiveDate,
 }
 

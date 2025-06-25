@@ -1,5 +1,6 @@
 use sqlx::postgres::PgQueryResult;
 
+use crate::custom_serde::DateAsTimestampNumber;
 use crate::{api::v1::auth::submissions::EditSubmissionCreation, sql::tables::BasicTableQueries};
 
 #[serde_with::skip_serializing_none]
@@ -7,6 +8,7 @@ use crate::{api::v1::auth::submissions::EditSubmissionCreation, sql::tables::Bas
 #[serde(rename_all = "camelCase")]
 pub struct EditSubmissions {
     pub id: i32,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
     pub date: Option<chrono::NaiveDate>,
     pub video_link: Option<String>,
     pub ghost_link: Option<String>,
@@ -19,9 +21,11 @@ pub struct EditSubmissions {
     pub status: super::SubmissionStatus,
     pub submitter_id: i32,
     pub submitter_note: Option<String>,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
     pub submitted_at: chrono::DateTime<chrono::Utc>,
     pub reviewer_id: Option<i32>,
     pub reviewer_note: Option<String>,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
     pub reviewed_at: Option<chrono::DateTime<chrono::Utc>>,
     pub score_id: i32,
 }

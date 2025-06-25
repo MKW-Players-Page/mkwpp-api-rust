@@ -1,6 +1,7 @@
 mod api;
 mod app_state;
 mod auth;
+mod custom_serde;
 mod mail;
 mod sql;
 
