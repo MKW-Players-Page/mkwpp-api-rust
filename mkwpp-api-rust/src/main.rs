@@ -12,7 +12,13 @@ use actix_web::{App, HttpServer, middleware};
 
 static ENV_VARS: LazyLock<env_handler::EnvSettings> = LazyLock::new(|| {
     println!("- Loading environment variables");
-    env_handler::EnvSettings::from_env_vars().expect("Couldn't load env vars")
+    let args: Vec<String> = std::env::args().collect();
+    let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
+    let mut x = env_handler::EnvSettings::from_env_vars().expect("Couldn't load env vars");
+    if args.contains(&"envline") {
+        x.from_cli();
+    }
+    x
 });
 
 #[actix_web::main]

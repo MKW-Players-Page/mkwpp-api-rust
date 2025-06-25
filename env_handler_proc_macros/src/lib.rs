@@ -33,6 +33,7 @@ pub fn expand_struct(
         String::from("| Key | Value Type | Description | Default |\n|-|-|-|-|");
     let mut to_file = String::new();
     let mut from_env_vars_code = proc_macro2::TokenStream::new();
+    let mut from_cli_code = proc_macro2::TokenStream::new();
 
     for field in &mut fields.named {
         let mut field_key = String::new();
@@ -127,6 +128,7 @@ pub fn expand_struct(
             "\n| {field_key} | {field_type_name} | {field_description} | {field_default} |"
         );
         to_file += &format!("{field_key}={field_default}\n");
+
         let method_for_parsing = match field_type_name.as_str() {
             "String" => quote! { .map_or(#field_default_literal.to_string(), |x| x.to_string()) },
             "&'static str" => quote! { .unwrap_or(#field_default_literal) },
@@ -138,10 +140,21 @@ pub fn expand_struct(
                 return out.into();
             }
         };
-
         from_env_vars_code.extend(quote! {
             #field_ident: std::env::var(#field_key)#method_for_parsing,
+        });
 
+        let method_for_parsing = match field_type_name.as_str() {
+            "String" => quote! { .to_string() },
+            "&'static str" => quote! {},
+            "u16" | "u32" | "u64" | "bool" => quote! { .parse::<#field_type>().unwrap() },
+            _ => {
+                custom_compiler_error_msg!(out, "No idea how to parse type {}.", field_type_name);
+                return out.into();
+            }
+        };
+        from_cli_code.extend(quote! {
+            #field_key => self.#field_ident = val #method_for_parsing,
         });
     }
 
@@ -162,6 +175,27 @@ pub fn expand_struct(
                 };
                 out.generate_url();
                 Ok(out)
+            }
+
+
+            pub fn from_cli(&mut self) {
+                let args: Vec<String> = std::env::args().collect();
+                let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
+                for arg in args {
+                    if !arg.chars().any(|x | x == '=') {
+                        continue
+                    }
+                    let mut arg_split = arg.split('=');
+                    let key = arg_split.next();
+                    let val = arg_split.next();
+                    if let (Some(key), Some(val)) = (key, val) {
+                        match key {
+                            #from_cli_code
+                            _ =>continue
+                        }
+                    }
+                }
+                self.generate_url();
             }
 
             pub fn to_env_file(&self, file: &mut std::fs::File) -> Result<(), anyhow::Error> {
