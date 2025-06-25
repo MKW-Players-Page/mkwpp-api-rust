@@ -2,7 +2,6 @@ use std::net::IpAddr;
 
 use anyhow::anyhow;
 use base64::Engine;
-use mail_send::{Credentials, SmtpClientBuilder, mail_builder::MessageBuilder};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, Row, postgres::PgQueryResult};
@@ -131,24 +130,6 @@ pub async fn register(
     rand::rng().fill(&mut hash_bytes);
     token_engine.encode_string(hash_bytes, &mut out_string);
 
-    let email_msg = MessageBuilder::new()
-        .from(("Mario Kart Wii Players' Page", "no-reply@mariokart64.com"))
-        .to((username.as_str(), email.as_str()))
-        .subject("Account Verification")
-        .text_body(format!(
-            r#"
-            Hi {username},
-            
-            Your Mario Kart Wii Players' Page account has been successfully created.
-            
-            To activate your account, please visit the following link:
-            
-            https://mariokart64.com/mkw/activate?tkn={out_string}
-            
-            Happy karting!
-            "#
-        ));
-
     let user_id: i32 = sqlx::query_scalar(const_format::formatc!(
         r#"
             INSERT INTO users (username, password, email, salt, is_active)
@@ -169,26 +150,13 @@ pub async fn register(
             VALUES($1, $2, 'activation'::token_type)
         "#
     ))
-    .bind(out_string)
+    .bind(&out_string)
     .bind(user_id)
     .execute(&mut *executor)
     .await?;
 
-    SmtpClientBuilder::new(
-        crate::ENV_VARS.smtp_hostname.as_str(),
-        crate::ENV_VARS.smtp_port,
-    )
-    .implicit_tls(false)
-    .credentials(Credentials::new(
-        crate::ENV_VARS.smtp_creds_name.as_str(),
-        crate::ENV_VARS.smtp_creds_secret.as_str(),
-    ))
-    .allow_invalid_certs()
-    .connect()
-    .await?
-    .send(email_msg)
-    .await?;
-
+    crate::mail::MailService::account_verification(&username, &email, &out_string).await?;
+    
     Ok(())
 }
 
@@ -226,52 +194,18 @@ pub async fn password_reset_token_gen(
     let id = user.get::<i32, &str>("id");
     let username = user.get::<String, &str>("username");
 
-    let email_msg = MessageBuilder::new()
-        .from(("Mario Kart Wii Players' Page", "no-reply@mariokart64.com"))
-        .to((username.as_str(), email.as_str()))
-        .subject("Password Reset")
-        .text_body(format!(
-            r#"
-            Hi {username},
-            
-            Someone requested a password reset on your Mario Kart Wii Players' Page account.
-            If you did not perform this action, you may safely ignore this email.
-            
-            To reset your password, please visit the following link:
-            
-            https://mariokart64.com/mkw/password/reset?tkn={out_string}
-            
-            Please note this link will expire in 15 minutes.
-            
-            Happy karting!
-            "#
-        ));
-
     sqlx::query(const_format::formatc!(
         r#"
             INSERT INTO tokens (token, user_id, token_type)
             VALUES($1, $2, 'password_reset'::token_type)
         "#
     ))
-    .bind(out_string)
+    .bind(&out_string)
     .bind(id)
     .execute(&mut *executor)
     .await?;
 
-    SmtpClientBuilder::new(
-        crate::ENV_VARS.smtp_hostname.as_str(),
-        crate::ENV_VARS.smtp_port,
-    )
-    .implicit_tls(false)
-    .credentials(Credentials::new(
-        crate::ENV_VARS.smtp_creds_name.as_str(),
-        crate::ENV_VARS.smtp_creds_secret.as_str(),
-    ))
-    .allow_invalid_certs()
-    .connect()
-    .await?
-    .send(email_msg)
-    .await?;
+    crate::mail::MailService::password_reset(&username, &email, &out_string).await?;
 
     Ok(())
 }
