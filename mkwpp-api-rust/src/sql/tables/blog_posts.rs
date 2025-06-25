@@ -1,6 +1,6 @@
-use sqlx::postgres::PgRow;
-
+use crate::custom_serde::DateAsTimestampNumber;
 use crate::sql::tables::BasicTableQueries;
+use sqlx::postgres::PgRow;
 
 #[derive(serde::Deserialize, Debug, serde::Serialize, sqlx::FromRow, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -9,6 +9,7 @@ pub struct BlogPosts {
     pub title: String,
     pub content: String,
     pub is_published: bool,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize")]
     pub published_at: chrono::DateTime<chrono::Utc>,
     pub author_id: i32,
 }

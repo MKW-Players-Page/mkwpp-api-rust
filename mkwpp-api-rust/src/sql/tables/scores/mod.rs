@@ -6,7 +6,9 @@ pub mod timesets;
 pub mod timesheet;
 pub mod with_player;
 
-use crate::sql::tables::players::players_basic::PlayersBasic;
+use crate::{
+    custom_serde::DateAsTimestampNumber, sql::tables::players::players_basic::PlayersBasic,
+};
 
 #[either_field::make_template(
     GenStructs: true,
@@ -75,6 +77,7 @@ pub struct ScoresTemplate {
     pub player_id: either_field::either!(() | i32),
     pub region_id: either_field::either!(() | i32),
     pub track_id: either_field::either!(i32 | ()),
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize")]
     pub date: either_field::either!(Option<chrono::NaiveDate> | ()),
     pub video_link: either_field::either!(Option<String> | ()),
     pub ghost_link: either_field::either!(Option<String> | ()),

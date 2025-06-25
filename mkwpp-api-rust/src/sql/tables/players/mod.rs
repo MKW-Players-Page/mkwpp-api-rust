@@ -1,3 +1,4 @@
+use crate::custom_serde::DateAsTimestampNumber;
 use crate::sql::tables::BasicTableQueries;
 
 pub mod players_basic;
@@ -11,7 +12,9 @@ pub struct Players {
     pub alias: Option<String>,
     pub bio: Option<String>,
     pub region_id: i32,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize")]
     pub joined_date: chrono::NaiveDate,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize")]
     pub last_activity: chrono::NaiveDate,
     pub submitters: Vec<i32>,
 }

@@ -1,3 +1,5 @@
+use crate::custom_serde::DateAsTimestampNumber;
+
 #[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
 #[sqlx(type_name = "player_award_type", rename_all = "snake_case")]
 pub enum AwardType {
@@ -24,6 +26,7 @@ impl TryFrom<&str> for AwardType {
 pub struct Awards {
     pub id: i32,
     pub player_id: i32,
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize")]
     pub date: chrono::NaiveDate,
     pub description: String,
     pub player_award_type: AwardType,
