@@ -1,22 +1,37 @@
-use serde::{Serialize, Serializer};
+use serde::Serializer;
 
 pub trait DateAsTimestampNumber {
-    fn serialize<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
+    fn serialize_as_timestamp<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer;
 }
 
 impl DateAsTimestampNumber for chrono::NaiveDate {
-    fn serialize<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
+    fn serialize_as_timestamp<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        x.and_hms_opt(0, 0, 0).unwrap().and_utc().serialize(s)
+        chrono::DateTime::<chrono::Utc>::serialize_as_timestamp(
+            &x.and_hms_opt(0, 0, 0).unwrap().and_utc(),
+            s,
+        )
+    }
+}
+
+impl DateAsTimestampNumber for Option<chrono::NaiveDate> {
+    fn serialize_as_timestamp<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match x {
+            Some(v) => chrono::NaiveDate::serialize_as_timestamp(v, s),
+            None => s.serialize_none(),
+        }
     }
 }
 
 impl DateAsTimestampNumber for chrono::DateTime<chrono::Utc> {
-    fn serialize<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
+    fn serialize_as_timestamp<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
@@ -24,13 +39,13 @@ impl DateAsTimestampNumber for chrono::DateTime<chrono::Utc> {
     }
 }
 
-impl<T: DateAsTimestampNumber> DateAsTimestampNumber for Option<T> {
-    fn serialize<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
+impl DateAsTimestampNumber for Option<chrono::DateTime<chrono::Utc>> {
+    fn serialize_as_timestamp<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
         match x {
-            Some(v) => T::serialize(v, s),
+            Some(v) => chrono::DateTime::<chrono::Utc>::serialize_as_timestamp(v, s),
             None => s.serialize_none(),
         }
     }

@@ -26,7 +26,7 @@ impl TryFrom<&str> for AwardType {
 pub struct Awards {
     pub id: i32,
     pub player_id: i32,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize")]
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
     pub date: chrono::NaiveDate,
     pub description: String,
     pub player_award_type: AwardType,

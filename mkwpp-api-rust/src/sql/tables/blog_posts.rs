@@ -9,7 +9,7 @@ pub struct BlogPosts {
     pub title: String,
     pub content: String,
     pub is_published: bool,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize")]
+    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
     pub published_at: chrono::DateTime<chrono::Utc>,
     pub author_id: i32,
 }
