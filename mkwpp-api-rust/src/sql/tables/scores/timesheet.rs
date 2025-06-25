@@ -25,8 +25,8 @@ impl ValidTimesetItem for TimesheetTimesetData {
     fn get_time(&self) -> i32 {
         self.value
     }
-    fn set_prwr(&mut self, prwr: f64) {}
-    fn set_rank(&mut self, rank: i32) {}
+    fn set_prwr(&mut self, _prwr: f64) {}
+    fn set_rank(&mut self, _rank: i32) {}
     fn get_is_lap(&self) -> bool {
         self.is_lap
     }

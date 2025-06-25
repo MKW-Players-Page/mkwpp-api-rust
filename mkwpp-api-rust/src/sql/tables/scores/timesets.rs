@@ -13,7 +13,6 @@ use crate::{
             Times, country_rankings::CountryRankings, matchup::MatchupData, rankings::RankingType,
             timesheet::Timesheet,
         },
-        standard_levels::StandardLevels,
     },
 };
 
@@ -29,11 +28,11 @@ pub struct Timeset<K: ValidTimesetItem> {
 #[derive(Default)]
 pub struct TimesetFilters {
     pub is_lap: Option<bool>,
-    pub track_ids: Vec<i32>,
+    pub _track_ids: Vec<i32>,
     pub player_ids: Vec<i32>,
     pub whitelist_player_ids: bool,
     pub category: Category,
-    pub region_id: i32,
+    pub _region_id: i32,
     pub max_date: NaiveDate,
 }
 
@@ -604,11 +603,9 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 let mut rgb_diff = vec![vec![0; self.divvie_value as usize]; player_numbers];
                 for track_index in 0..(self.divvie_value as usize) {
                     let mut delta = i32::MIN;
-                    for player_index in 0..player_numbers {
-                        delta = std::cmp::max(
-                            difference_to_first_times[player_index][track_index],
-                            delta,
-                        );
+                    for player_differences in difference_to_first_times.iter().take(player_numbers)
+                    {
+                        delta = std::cmp::max(player_differences[track_index], delta);
                     }
 
                     for player_index in 0..player_numbers {
@@ -642,7 +639,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     diff_next: std::mem::take(difference_to_next_times),
                     diff_af_next: {
                         let mut tmp = afs
-                            .iter().copied()
+                            .iter()
+                            .copied()
                             .enumerate()
                             .collect::<Vec<(usize, f64)>>();
                         tmp.sort_by(|(_, x), (_, y)| y.total_cmp(x));
@@ -662,7 +660,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_total_time_next: {
                         let mut tmp = total_times
-                            .iter().copied()
+                            .iter()
+                            .copied()
                             .enumerate()
                             .collect::<Vec<(usize, i32)>>();
                         tmp.sort_by(|(_, x), (_, y)| y.cmp(x));
@@ -682,7 +681,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_tally_next: {
                         let mut tmp = tally_points
-                            .iter().copied()
+                            .iter()
+                            .copied()
                             .enumerate()
                             .collect::<Vec<(usize, i16)>>();
                         tmp.sort_by(|(_, x), (_, y)| x.cmp(y));
@@ -702,7 +702,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_arr_next: {
                         let mut tmp = arr_values
-                            .iter().copied()
+                            .iter()
+                            .copied()
                             .enumerate()
                             .collect::<Vec<(usize, f64)>>();
                         tmp.sort_by(|(_, x), (_, y)| y.total_cmp(x));
@@ -722,7 +723,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_prwr_next: {
                         let mut tmp = prwrs
-                            .iter().copied()
+                            .iter()
+                            .copied()
                             .enumerate()
                             .collect::<Vec<(usize, f64)>>();
                         tmp.sort_by(|(_, x), (_, y)| x.total_cmp(y));
@@ -742,7 +744,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_wins_next: {
                         let mut tmp = wins
-                            .iter().copied()
+                            .iter()
+                            .copied()
                             .enumerate()
                             .collect::<Vec<(usize, i8)>>();
                         tmp.sort_by(|(_, x), (_, y)| x.cmp(y));
@@ -876,13 +879,6 @@ impl<K: ValidTimesetItem> Timeset<K> {
         let mut last_lap_type = false;
         let mut last_time = 0;
         let mut last_rank: i32 = 0;
-        // TODO: Hardcoded Newbie Value
-        let mut last_standard_level: StandardLevels = StandardLevels {
-            id: 34,
-            code: String::from("NW"),
-            value: 33,
-            is_legacy: true,
-        };
         let mut wr_time = 0;
 
         let mut has_found_all_times = true;
@@ -993,7 +989,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             last_time = time_data.get_time();
 
             // TODO: Hardcoded Newbie Value
-            last_standard_level = standard_levels
+            let last_standard_level = standard_levels
                 .iter()
                 .find(|standard_level| {
                     standard_level.id

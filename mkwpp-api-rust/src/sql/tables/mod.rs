@@ -20,7 +20,6 @@ pub enum Category {
     Unres,
 }
 
-
 impl TryFrom<u8> for Category {
     type Error = ();
     fn try_from(value: u8) -> Result<Self, Self::Error> {

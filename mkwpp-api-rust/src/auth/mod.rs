@@ -10,7 +10,7 @@ use validated_strings::ValidatedString;
 mod cooldown;
 pub mod validated_strings;
 
-struct Users {
+struct _Users {
     id: i32,
     username: validated_strings::username::Username,
     password: validated_strings::password::Password,
