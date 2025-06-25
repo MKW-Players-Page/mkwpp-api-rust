@@ -18,33 +18,33 @@ pub fn raw() -> impl HttpServiceFactory {
     web::scope("/raw")
         .guard(actix_web::guard::Get())
         .default_service(web::get().to(default))
-        .route(
-            PLAYER_AWARDS_PATH,
-            web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::awards::Awards>),
-        )
+        // .route(
+        //     PLAYER_AWARDS_PATH,
+        //     web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::awards::Awards>),
+        // )
         .route(
             SITE_CHAMPS_PATH,
             web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::champs::Champs>),
         )
         .route(CUPS_PATH, web::get().to(cups::get))
-        .route(
-            EDIT_SUBMISSIONS_PATH,
-            web::get().to(crate::api::v1::get_star_query::<
-                crate::sql::tables::submissions::edit_submissions::EditSubmissions,
-            >),
-        )
-        .route(
-            PLAYERS_PATH,
-            web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::players::Players>),
-        )
-        .route(
-            REGIONS_PATH,
-            web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::regions::Regions>),
-        )
-        .route(
-            SCORES_PATH,
-            web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::scores::Scores>),
-        )
+        // .route(
+        //     EDIT_SUBMISSIONS_PATH,
+        //     web::get().to(crate::api::v1::get_star_query::<
+        //         crate::sql::tables::submissions::edit_submissions::EditSubmissions,
+        //     >),
+        // )
+        // .route(
+        //     PLAYERS_PATH,
+        //     web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::players::Players>),
+        // )
+        // .route(
+        //     REGIONS_PATH,
+        //     web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::regions::Regions>),
+        // )
+        // .route(
+        //     SCORES_PATH,
+        //     web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::scores::Scores>),
+        // )
         .route(
             STANDARD_LEVELS_PATH,
             web::get().to(crate::api::v1::get_star_query::<
@@ -56,11 +56,11 @@ pub fn raw() -> impl HttpServiceFactory {
             web::get()
                 .to(crate::api::v1::get_star_query::<crate::sql::tables::standards::Standards>),
         )
-        .route(
-            SUBMISSIONS_PATH,
-            web::get()
-                .to(crate::api::v1::get_star_query::<crate::sql::tables::submissions::Submissions>),
-        )
+        // .route(
+        //     SUBMISSIONS_PATH,
+        //     web::get()
+        //         .to(crate::api::v1::get_star_query::<crate::sql::tables::submissions::Submissions>),
+        // )
         .route(
             TRACKS_PATH,
             web::get().to(crate::api::v1::get_star_query::<crate::sql::tables::tracks::Tracks>),
