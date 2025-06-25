@@ -1,8 +1,8 @@
 mod api;
 mod app_state;
 mod auth;
-mod sql;
 mod mail;
+mod sql;
 
 use std::sync::LazyLock;
 

@@ -1,4 +1,6 @@
-use mail_send::{mail_builder::MessageBuilder, smtp::message::IntoMessage, Credentials, SmtpClientBuilder};
+use mail_send::{
+    Credentials, SmtpClientBuilder, mail_builder::MessageBuilder, smtp::message::IntoMessage,
+};
 
 const MKWPP_NAME: &'static str = "Mario Kart Wii Players' Page";
 const MKWPP_EMAIL: &'static str = "no-reply@mariokart64.com";
@@ -20,17 +22,22 @@ impl MailService {
         .await?
         .send(message.into_message()?)
         .await?;
-        
+
         Ok(())
     }
-    
-    pub async fn account_verification(username: &str, email: &str, token: &str) -> Result<(), anyhow::Error>{
-        Self::send_message(MessageBuilder::new()
-            .from((MKWPP_NAME, MKWPP_EMAIL))
-            .to((username, email))
-            .subject("Account Verification")
-            .text_body(format!(
-                r#"
+
+    pub async fn account_verification(
+        username: &str,
+        email: &str,
+        token: &str,
+    ) -> Result<(), anyhow::Error> {
+        Self::send_message(
+            MessageBuilder::new()
+                .from((MKWPP_NAME, MKWPP_EMAIL))
+                .to((username, email))
+                .subject("Account Verification")
+                .text_body(format!(
+                    r#"
                 Hi {username},
                 
                 Your Mario Kart Wii Players' Page account has been successfully created.
@@ -41,16 +48,23 @@ impl MailService {
                 
                 Happy karting!
                 "#
-            ))).await
+                )),
+        )
+        .await
     }
-    
-    pub async fn password_reset(username: &str, email: &str, token: &str) -> Result<(), anyhow::Error>{
-        Self::send_message(MessageBuilder::new()
-            .from((MKWPP_NAME, MKWPP_EMAIL))
-            .to((username, email))
-            .subject("Account Verification")
-            .text_body(format!(
-                r#"
+
+    pub async fn password_reset(
+        username: &str,
+        email: &str,
+        token: &str,
+    ) -> Result<(), anyhow::Error> {
+        Self::send_message(
+            MessageBuilder::new()
+                .from((MKWPP_NAME, MKWPP_EMAIL))
+                .to((username, email))
+                .subject("Account Verification")
+                .text_body(format!(
+                    r#"
                 Hi {username},
                 
                 Someone requested a password reset on your Mario Kart Wii Players' Page account.
@@ -64,6 +78,8 @@ impl MailService {
                 
                 Happy karting!
                 "#
-            ))).await
+                )),
+        )
+        .await
     }
 }

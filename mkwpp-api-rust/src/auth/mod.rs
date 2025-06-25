@@ -156,7 +156,7 @@ pub async fn register(
     .await?;
 
     crate::mail::MailService::account_verification(&username, &email, &out_string).await?;
-    
+
     Ok(())
 }
 

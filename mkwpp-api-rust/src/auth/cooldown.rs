@@ -18,7 +18,7 @@ impl LogInAttempts {
             r#"
                 INSERT INTO ip_request_throttles (ip, user_id, timestamp)
                 VALUES($1, $2, NOW())
-            "#
+            "#,
         )
         .bind(ip)
         .bind(user_id)
