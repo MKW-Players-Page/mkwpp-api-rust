@@ -14,12 +14,12 @@ impl LogInAttempts {
         ip: IpAddr,
         user_id: i32,
     ) -> Result<PgQueryResult, sqlx::Error> {
-        sqlx::query(const_format::formatc!(
+        sqlx::query(
             r#"
                 INSERT INTO ip_request_throttles (ip, user_id, timestamp)
                 VALUES($1, $2, NOW())
-            "#
-        ))
+            "#,
+        )
         .bind(ip)
         .bind(user_id)
         .execute(executor)
