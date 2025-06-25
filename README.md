@@ -34,6 +34,8 @@ Not everything is actually stored in PSQL like the Python+Django backend, as tha
 This will be actually faster, by the nature of not being an interpreted language.
 
 ## Possible .env Parameters
+These parameters can also be passed via command line as Key=Value pairs if the command line has been passed the argument `envline`
+
 | Key | Value Type | Description | Default |
 |-|-|-|-|
 | DB_USERNAME | String | Database admin username | postgres |
