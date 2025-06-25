@@ -2,8 +2,8 @@ use mail_send::{
     Credentials, SmtpClientBuilder, mail_builder::MessageBuilder, smtp::message::IntoMessage,
 };
 
-const MKWPP_NAME: &'static str = "Mario Kart Wii Players' Page";
-const MKWPP_EMAIL: &'static str = "no-reply@mariokart64.com";
+const MKWPP_NAME: &str = "Mario Kart Wii Players' Page";
+const MKWPP_EMAIL: &str = "no-reply@mariokart64.com";
 
 pub struct MailService;
 impl MailService {
@@ -38,16 +38,16 @@ impl MailService {
                 .subject("Account Verification")
                 .text_body(format!(
                     r#"
-                Hi {username},
-                
-                Your Mario Kart Wii Players' Page account has been successfully created.
-                
-                To activate your account, please visit the following link:
-                
-                https://mariokart64.com/mkw/activate?tkn={token}
-                
-                Happy karting!
-                "#
+                    Hi {username},
+
+                    Your Mario Kart Wii Players' Page account has been successfully created.
+
+                    To activate your account, please visit the following link:
+
+                    https://mariokart64.com/mkw/activate?tkn={token}
+
+                    Happy karting!
+                    "#
                 )),
         )
         .await
@@ -65,19 +65,19 @@ impl MailService {
                 .subject("Account Verification")
                 .text_body(format!(
                     r#"
-                Hi {username},
-                
-                Someone requested a password reset on your Mario Kart Wii Players' Page account.
-                If you did not perform this action, you may safely ignore this email.
-                
-                To reset your password, please visit the following link:
-                
-                https://mariokart64.com/mkw/password/reset?tkn={token}
-                
-                Please note this link will expire in 15 minutes.
-                
-                Happy karting!
-                "#
+                    Hi {username},
+
+                    Someone requested a password reset on your Mario Kart Wii Players' Page account.
+                    If you did not perform this action, you may safely ignore this email.
+
+                    To reset your password, please visit the following link:
+
+                    https://mariokart64.com/mkw/password/reset?tkn={token}
+
+                    Please note this link will expire in 15 minutes.
+
+                    Happy karting!
+                    "#
                 )),
         )
         .await

@@ -226,11 +226,9 @@ async fn get_submittees(data: web::Json<BareMinimumValidationData>) -> HttpRespo
         .generate_response(HttpResponse::BadRequest);
     }
 
-    let data = match {
-        match is_user_admin(data.user_id, &mut executor).await {
-            Ok(true) => Players::get_ids_but_list(&mut executor, &[]).await,
-            _ => Players::get_submittees(&mut executor, data.user_id).await,
-        }
+    let data = match match is_user_admin(data.user_id, &mut executor).await {
+        Ok(true) => Players::get_ids_but_list(&mut executor, &[]).await,
+        _ => Players::get_submittees(&mut executor, data.user_id).await,
     } {
         Ok(v) => v,
         Err(e) => {

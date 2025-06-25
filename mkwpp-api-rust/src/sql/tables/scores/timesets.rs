@@ -170,7 +170,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 false => None,
             })
             .collect();
-        valid_regions.sort_by(|(id1, _), (id2, _)| id1.cmp(&id2));
+        valid_regions.sort_by(|(id1, _), (id2, _)| id1.cmp(id2));
         let (valid_regions, valid_regions_player_counts): (Vec<i32>, Vec<i32>) =
             valid_regions.into_iter().unzip();
 
@@ -209,8 +209,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
             } => {
                 let mut x: Vec<(i32, f64)> = valid_regions
                     .into_iter()
-                    .zip(region_rank_sums.into_iter())
-                    .zip(players_in_region.into_iter())
+                    .zip(region_rank_sums.iter())
+                    .zip(players_in_region.iter())
                     .map(|((region_id, rank_sum), player_count)| {
                         (
                             region_id,
@@ -223,7 +223,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         )
                     })
                     .collect();
-                x.sort_by(|(_, af1), (_, af2)| af1.total_cmp(&af2));
+                x.sort_by(|(_, af1), (_, af2)| af1.total_cmp(af2));
                 Ok(x.into_iter()
                     .enumerate()
                     .map(|(rank, (region_id, af))| CountryRankings {
@@ -304,7 +304,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         &mut self,
         mut output_type: TimesetOutput,
     ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
-        if self.filters.player_ids.len() == 0 && self.filters.whitelist_player_ids {
+        if self.filters.player_ids.is_empty() && self.filters.whitelist_player_ids {
             return Ok(vec![]);
         }
 
@@ -331,7 +331,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             } => {
                 *out = vec![None; reserve_space];
                 for player_id in &self.filters.player_ids {
-                    out[*player_id as usize] = Some(0.0)
+                    out[*player_id as usize] = Some(0.0);
                 }
                 *players_found_counter = 0;
                 *players_found = vec![false; reserve_space];
@@ -343,7 +343,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             } => {
                 *total_times = vec![None; reserve_space];
                 for player_id in &self.filters.player_ids {
-                    total_times[*player_id as usize] = Some(0)
+                    total_times[*player_id as usize] = Some(0);
                 }
                 *players_found_counter = 0;
                 *players_found = vec![false; reserve_space];
@@ -354,7 +354,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             } => {
                 *tally_points = vec![None; reserve_space];
                 for player_id in &self.filters.player_ids {
-                    tally_points[*player_id as usize] = Some(0)
+                    tally_points[*player_id as usize] = Some(0);
                 }
                 *players_found = vec![false; reserve_space];
             }
@@ -378,7 +378,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         rank_sum.map(|rank_sum| ((id as i32), rank_sum / self.divvie_value))
                     })
                     .collect::<Vec<(i32, f64)>>();
-                af_and_ids.sort_by(|(_id1, af1), (_id2, af2)| af1.total_cmp(&af2));
+                af_and_ids.sort_by(|(_id1, af1), (_id2, af2)| af1.total_cmp(af2));
                 Ok(af_and_ids
                     .into_iter()
                     .enumerate()
@@ -393,7 +393,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     .enumerate()
                     .filter_map(|(id, time_sum)| time_sum.map(|time_sum| ((id as i32), time_sum)))
                     .collect::<Vec<(i32, i32)>>();
-                tt_and_ids.sort_by(|(_id1, tt1), (_id2, tt2)| tt1.cmp(&tt2));
+                tt_and_ids.sort_by(|(_id1, tt1), (_id2, tt2)| tt1.cmp(tt2));
                 Ok(tt_and_ids
                     .into_iter()
                     .enumerate()
@@ -410,7 +410,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         points_sum.map(|points_sum| ((id as i32), points_sum))
                     })
                     .collect::<Vec<(i32, i16)>>();
-                tp_and_ids.sort_by(|(_id1, tp1), (_id2, tp2)| tp2.cmp(&tp1));
+                tp_and_ids.sort_by(|(_id1, tp1), (_id2, tp2)| tp2.cmp(tp1));
                 Ok(tp_and_ids
                     .into_iter()
                     .enumerate()
@@ -427,7 +427,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         prwr_sum.map(|prwr_sum| ((id as i32), prwr_sum / self.divvie_value))
                     })
                     .collect::<Vec<(i32, f64)>>();
-                prwr_and_ids.sort_by(|(_id1, prwr1), (_id2, prwr2)| prwr2.total_cmp(&prwr1));
+                prwr_and_ids.sort_by(|(_id1, prwr1), (_id2, prwr2)| prwr2.total_cmp(prwr1));
                 Ok(prwr_and_ids
                     .into_iter()
                     .enumerate()
@@ -448,7 +448,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         arr_sum.map(|arr_sum| ((id as i32), arr_sum / self.divvie_value))
                     })
                     .collect::<Vec<(i32, f64)>>();
-                arr_and_ids.sort_by(|(_id1, arr1), (_id2, arr2)| arr1.total_cmp(&arr2));
+                arr_and_ids.sort_by(|(_id1, arr1), (_id2, arr2)| arr1.total_cmp(arr2));
                 Ok(arr_and_ids
                     .into_iter()
                     .enumerate()
@@ -496,7 +496,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 arr_value_sum,
                 ..
             } => Ok(Timesheet {
-                times: times.iter_mut().filter_map(|x| std::mem::take(x)).collect(),
+                times: times.iter_mut().filter_map(std::mem::take).collect(),
                 af: *rank_sum / self.divvie_value,
                 total_time: *total_time,
                 tally: *tally_points,
@@ -563,15 +563,15 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 player_ids_to_index: _,
             } => {
                 let afs = rank_sums
-                    .into_iter()
+                    .iter_mut()
                     .map(|x| *x / self.divvie_value)
                     .collect::<Vec<f64>>();
                 let prwrs = prwr_sums
-                    .into_iter()
+                    .iter_mut()
                     .map(|x| *x / self.divvie_value)
                     .collect::<Vec<f64>>();
                 let arr_values = arr_value_sums
-                    .into_iter()
+                    .iter_mut()
                     .map(|x| *x / self.divvie_value)
                     .collect::<Vec<f64>>();
 
@@ -625,7 +625,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     timesheet_vec.push(Timesheet {
                         times: std::mem::take(&mut times[player_index])
                             .into_iter()
-                            .filter_map(|x| x)
+                            .flatten()
                             .collect(),
                         af: afs[player_index],
                         arr: arr_values[player_index],
@@ -642,8 +642,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     diff_next: std::mem::take(difference_to_next_times),
                     diff_af_next: {
                         let mut tmp = afs
-                            .iter()
-                            .map(|x| *x)
+                            .iter().copied()
                             .enumerate()
                             .collect::<Vec<(usize, f64)>>();
                         tmp.sort_by(|(_, x), (_, y)| y.total_cmp(x));
@@ -663,8 +662,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_total_time_next: {
                         let mut tmp = total_times
-                            .iter()
-                            .map(|x| *x)
+                            .iter().copied()
                             .enumerate()
                             .collect::<Vec<(usize, i32)>>();
                         tmp.sort_by(|(_, x), (_, y)| y.cmp(x));
@@ -684,8 +682,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_tally_next: {
                         let mut tmp = tally_points
-                            .iter()
-                            .map(|x| *x)
+                            .iter().copied()
                             .enumerate()
                             .collect::<Vec<(usize, i16)>>();
                         tmp.sort_by(|(_, x), (_, y)| x.cmp(y));
@@ -705,8 +702,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_arr_next: {
                         let mut tmp = arr_values
-                            .iter()
-                            .map(|x| *x)
+                            .iter().copied()
                             .enumerate()
                             .collect::<Vec<(usize, f64)>>();
                         tmp.sort_by(|(_, x), (_, y)| y.total_cmp(x));
@@ -726,8 +722,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_prwr_next: {
                         let mut tmp = prwrs
-                            .iter()
-                            .map(|x| *x)
+                            .iter().copied()
                             .enumerate()
                             .collect::<Vec<(usize, f64)>>();
                         tmp.sort_by(|(_, x), (_, y)| x.total_cmp(y));
@@ -747,8 +742,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     },
                     diff_wins_next: {
                         let mut tmp = wins
-                            .iter()
-                            .map(|x| *x)
+                            .iter().copied()
                             .enumerate()
                             .collect::<Vec<(usize, i8)>>();
                         tmp.sort_by(|(_, x), (_, y)| x.cmp(y));
@@ -1028,8 +1022,8 @@ impl<K: ValidTimesetItem> Timeset<K> {
             // Skip if whitelist / blacklist
             let player_id = time_data.get_player_id();
             match self.filters.whitelist_player_ids {
-                false if self.filters.player_ids.iter().any(|x| *x == player_id) => continue,
-                true if !self.filters.player_ids.iter().any(|x| *x == player_id) => continue,
+                false if self.filters.player_ids.contains(&player_id) => continue,
+                true if !self.filters.player_ids.contains(&player_id) => continue,
                 _ => (),
             }
 
@@ -1046,7 +1040,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
                     let region_index = match region_id_to_index.get(&region_id) {
                         None => break 'value_assignment,
-                        Some(v) => v.to_owned() as usize,
+                        Some(v) => v.to_owned(),
                     };
 
                     match *per_region_players == 0 {
@@ -1079,7 +1073,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         }
                     }
 
-                    region_rank_sums[region_index as usize] += last_rank as f64;
+                    region_rank_sums[region_index] += last_rank as f64;
                 }
 
                 TimesetOutput::AverageFinishCharts {
@@ -1207,7 +1201,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         value: last_time,
                         rank: last_rank,
                         id: time_data.get_time_id(),
-                        prwr: prwr,
+                        prwr,
                         std_lvl_code: last_standard_level.code,
                         category: time_data.get_category(),
                         is_lap: last_lap_type,
@@ -1278,7 +1272,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         value: last_time,
                         rank: last_rank,
                         id: time_data.get_time_id(),
-                        prwr: prwr,
+                        prwr,
                         std_lvl_code: last_standard_level.code,
                         category: time_data.get_category(),
                         is_lap: last_lap_type,
@@ -1409,7 +1403,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                                                         && standard.track_id == last_track
                                                         && standard.category
                                                             <= self.filters.category
-                                                        && value >= last_time + 1
+                                                        && value > last_time
                                                 }
                                             })
                                             .map(|standard| standard.standard_level_id)
@@ -1465,7 +1459,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                                 })
                                 .expect("It should always find a standard level")
                                 .value
-                        } as f64
+                        } as f64;
                     }
 
                     TimesetOutput::PlayerMatchup {
@@ -1515,7 +1509,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                                 .value
                         } as f64;
                         for player_id in &self.filters.player_ids {
-                            let player_index = *player_ids_to_index.get(&player_id).expect(
+                            let player_index = *player_ids_to_index.get(player_id).expect(
                                 "Somehow there is no player id in relevant player_ids_to_index hashmap",
                             );
                             if !players_found[player_index] {

@@ -124,7 +124,7 @@ impl Players {
             "SELECT id FROM {} WHERE id != ANY($1);",
             Players::TABLE_NAME
         ))
-        .bind(if player_ids.len() == 0 {
+        .bind(if player_ids.is_empty() {
             &[0]
         } else {
             player_ids

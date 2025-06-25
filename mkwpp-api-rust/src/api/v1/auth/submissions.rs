@@ -500,10 +500,10 @@ async fn create_or_edit_edit_submission(
     data.data.ghost_link_edited = data.data.ghost_link != score.ghost_link;
     data.data.date_edited = data.data.date != score.date;
 
-    if data.data.comment_edited == false
-        && data.data.video_link_edited == false
-        && data.data.ghost_link_edited == false
-        && data.data.date_edited == false
+    if !data.data.comment_edited
+        && !data.data.video_link_edited
+        && !data.data.ghost_link_edited
+        && !data.data.date_edited
         && data.data.edit_submission_id.is_none()
     {
         return FinalErrorResponse::new_no_fields(vec![String::from("No data to modify!")])

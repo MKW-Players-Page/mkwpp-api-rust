@@ -338,8 +338,6 @@ pub struct BareMinimumValidationData {
     pub session_token: String,
 }
 
-pub enum TokenValidity {}
-
 pub async fn is_valid_token(
     session_token: &str,
     user_id: i32,

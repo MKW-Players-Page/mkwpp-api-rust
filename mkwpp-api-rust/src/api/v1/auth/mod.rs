@@ -416,9 +416,9 @@ async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
         .generate_response(HttpResponse::InternalServerError);
     }
 
-    return HttpResponse::Ok()
+    HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}");
+        .body("{}")
 }
 
 #[derive(serde::Deserialize)]
@@ -458,9 +458,9 @@ async fn activate(body: web::Json<ActivateBody>) -> HttpResponse {
         .generate_response(HttpResponse::InternalServerError);
     }
 
-    return HttpResponse::Ok()
+    HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}");
+        .body("{}")
 }
 
 #[derive(serde::Deserialize)]

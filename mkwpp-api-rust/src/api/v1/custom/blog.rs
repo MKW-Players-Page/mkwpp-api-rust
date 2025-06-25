@@ -53,7 +53,7 @@ async fn get_list(req: HttpRequest) -> HttpResponse {
     for post in data.iter_mut() {
         post.author_id =
             match Players::get_player_ids_from_user_ids(&mut executor, &[post.author_id]).await {
-                Ok(v) => match v.get(0) {
+                Ok(v) => match v.first() {
                     Some(v) => *v,
                     None => {
                         return FinalErrorResponse::new_no_fields(vec![String::from(
@@ -105,7 +105,7 @@ async fn get_by_id(path: web::Path<i32>) -> HttpResponse {
 
     data.author_id =
         match Players::get_player_ids_from_user_ids(&mut executor, &[data.author_id]).await {
-            Ok(v) => match v.get(0) {
+            Ok(v) => match v.first() {
                 Some(v) => *v,
                 None => {
                     return FinalErrorResponse::new_no_fields(vec![String::from(
