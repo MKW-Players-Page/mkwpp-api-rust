@@ -1,6 +1,5 @@
 use crate::{
-    api::FinalErrorResponse,
-    app_state::AppState,
+    api::errors::EveryReturnedError,
     sql::tables::{
         BasicTableQueries,
         regions::{
@@ -87,7 +86,7 @@ pub async fn basic_get_i32(
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -100,11 +99,7 @@ pub async fn basic_get_i32(
     let rows = match rows_request {
         Ok(rows) => rows,
         Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Couldn't get rows from database"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
+            return EveryReturnedError::GettingFromDatabase.http_response(e);
         }
     };
 

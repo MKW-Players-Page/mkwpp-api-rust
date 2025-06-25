@@ -1,6 +1,5 @@
-use crate::api::FinalErrorResponse;
+use crate::api::errors::EveryReturnedError;
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
-use crate::app_state::AppState;
 use crate::sql::tables::scores::matchup::MatchupData;
 use crate::sql::tables::scores::timesheet::Timesheet;
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
@@ -19,7 +18,7 @@ pub async fn get(req: HttpRequest, path: web::Path<i32>) -> HttpResponse {
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -39,13 +38,7 @@ pub async fn get(req: HttpRequest, path: web::Path<i32>) -> HttpResponse {
     .await
     {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Could not generate timesheet"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GenerateTimesheet.http_response(e),
     };
 
     if let Err(e) = crate::api::v1::close_connection(connection).await {
@@ -61,7 +54,7 @@ pub async fn get_matchup(req: HttpRequest, body: web::Json<Vec<i32>>) -> HttpRes
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -80,13 +73,7 @@ pub async fn get_matchup(req: HttpRequest, body: web::Json<Vec<i32>>) -> HttpRes
     .await
     {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Could not generate timesheets"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GenerateMatchup.http_response(e),
     };
 
     if let Err(e) = crate::api::v1::close_connection(connection).await {

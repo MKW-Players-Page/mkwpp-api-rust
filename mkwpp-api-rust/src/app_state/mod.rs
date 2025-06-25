@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use actix_web::HttpResponse;
 use anyhow::anyhow;
 
 use crate::sql::tables::{standard_levels::StandardLevels, standards::Standards};
@@ -18,14 +17,6 @@ impl AppState {
         &self,
     ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, anyhow::Error> {
         self.pg_pool.acquire().await.map_err(|e| anyhow!("{e}"))
-    }
-
-    pub fn pg_conn_http_error(error: anyhow::Error) -> HttpResponse {
-        crate::api::FinalErrorResponse::new_no_fields(vec![
-            String::from("Couldn't get connection from data pool"),
-            error.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError)
     }
 
     pub async fn get_legacy_standard_levels(&self) -> Arc<[StandardLevels]> {

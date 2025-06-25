@@ -6,10 +6,10 @@ use sqlx::{
 
 use crate::{
     api::{
-        FinalErrorResponse,
+        errors::EveryReturnedError,
         v1::{close_connection, decode_row_to_table, decode_rows_to_table, send_serialized_data},
     },
-    app_state::{AppState, access_app_state},
+    app_state::access_app_state,
     auth::{BareMinimumValidationData, get_user_data, is_user_admin, is_valid_token},
     sql::tables::{
         Category,
@@ -101,56 +101,30 @@ async fn get<
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
     if let Ok(false) | Err(_) =
         is_valid_token(&data.session_token, data.user_id, &mut executor).await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let player_id = match get_user_data(&data.session_token, &mut executor).await {
         Ok(v) => match v {
             Some(v) => match v {
                 Ok(v) => v.player_id,
-                Err(e) => {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Error decoding Database Data"),
-                        e.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
             },
-            None => {
-                return FinalErrorResponse::new_no_fields(vec![String::from(
-                    "User has no associated Player",
-                )])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
         },
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Database Error"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let data = match callback(data.user_id, player_id, &mut executor).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting user submissions"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let mut data = match decode_rows_to_table::<T>(data) {
@@ -162,24 +136,12 @@ async fn get<
         match Players::get_player_ids_from_user_ids(&mut executor, &[item.get_submitter_id()]).await
         {
             Ok(v) => item.set_submitter_id(v[0]),
-            Err(e) => {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error converting Submitter IDs to Player IDs"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
         }
         if let Some(reviewer_id) = item.get_reviewer_id() {
             match Players::get_player_ids_from_user_ids(&mut executor, &[reviewer_id]).await {
                 Ok(v) => item.set_reviewer_id(v[0]),
-                Err(e) => {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Error converting Reviewer IDs to Player IDs"),
-                        e.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
             }
         }
     }
@@ -228,18 +190,12 @@ impl Deletable for EditSubmissions {
             app_state
                 .acquire_pg_connection()
                 .await
-                .map_err(AppState::pg_conn_http_error)?
+                .map_err(|e| EveryReturnedError::NoConnectionFromPGPool.http_response(e))?
         };
 
         let row = Scores::get_from_id(self.score_id, &mut executor)
             .await
-            .map_err(|e| {
-                FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error validating session token"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::BadRequest)
-            })?;
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.http_response(e))?;
 
         decode_row_to_table::<Scores>(row).map(|s| s.player_id)
     }
@@ -278,7 +234,7 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -289,21 +245,12 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let submission = match get_callback(data.data, &mut executor).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting data from database"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let submission = match decode_row_to_table::<X>(submission) {
@@ -333,16 +280,11 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
     };
 
     if !can_delete {
-        return FinalErrorResponse::new_no_fields(vec![String::from("Insufficient permissions")])
-            .generate_response(HttpResponse::Forbidden);
+        return EveryReturnedError::InsufficientPermissions.http_response("");
     }
 
     if let Err(e) = delete_callback(data.data, &mut executor).await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error deleting"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     }
 
     HttpResponse::Ok()
@@ -375,7 +317,7 @@ async fn create_or_edit_submission(data: web::Json<Data<SubmissionCreation>>) ->
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -386,17 +328,11 @@ async fn create_or_edit_submission(data: web::Json<Data<SubmissionCreation>>) ->
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     if data.data.submitter_id != data.validation_data.user_id {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "The data is invalid submitter_id != user_id!",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::MismatchedIds.http_response("");
     }
 
     let can_submit = match (
@@ -411,16 +347,11 @@ async fn create_or_edit_submission(data: web::Json<Data<SubmissionCreation>>) ->
     };
 
     if !can_submit {
-        return FinalErrorResponse::new_no_fields(vec![String::from("Player can't submit!")])
-            .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::InsufficientPermissions.http_response("");
     }
 
     if let Err(e) = Submissions::create_or_edit_submission(data.data, &mut executor).await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error creating submission"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     }
 
     HttpResponse::Ok()
@@ -455,7 +386,7 @@ async fn create_or_edit_edit_submission(
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -466,28 +397,16 @@ async fn create_or_edit_edit_submission(
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     if data.data.submitter_id != data.validation_data.user_id {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "The data is invalid submitter_id != user_id!",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::MismatchedIds.http_response("");
     }
 
     let score = match Scores::get_from_id(data.data.score_id, &mut executor).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Couldn't get score"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let score = match decode_row_to_table::<Scores>(score) {
@@ -506,8 +425,7 @@ async fn create_or_edit_edit_submission(
         && !data.data.date_edited
         && data.data.edit_submission_id.is_none()
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from("No data to modify!")])
-            .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::NothingChanged.http_response("");
     }
 
     let can_submit = match (
@@ -522,16 +440,11 @@ async fn create_or_edit_edit_submission(
     };
 
     if !can_submit {
-        return FinalErrorResponse::new_no_fields(vec![String::from("Player can't submit!")])
-            .generate_response(HttpResponse::Forbidden);
+        return EveryReturnedError::InsufficientPermissions.http_response("");
     }
 
     if let Err(e) = EditSubmissions::create_or_edit_submission(data.data, &mut executor).await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error creating submission"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     }
 
     HttpResponse::Ok()

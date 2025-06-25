@@ -1,7 +1,6 @@
-use crate::api::FinalErrorResponse;
+use crate::api::errors::EveryReturnedError;
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::api::v1::{close_connection, send_serialized_data};
-use crate::app_state::AppState;
 use crate::sql::tables::scores::country_rankings::CountryRankings;
 use crate::sql::tables::scores::rankings::{RankingType, Rankings};
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
@@ -42,7 +41,7 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -57,13 +56,7 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
     .await
     {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting data from database"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     if let Err(e) = close_connection(connection).await {
@@ -82,7 +75,7 @@ async fn country(req: HttpRequest) -> HttpResponse {
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -97,13 +90,7 @@ async fn country(req: HttpRequest) -> HttpResponse {
     .await
     {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting data from database"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     if let Err(e) = close_connection(connection).await {
