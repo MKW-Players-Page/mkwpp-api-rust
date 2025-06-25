@@ -1,22 +1,17 @@
-use super::ValidatedString;
+use crate::api::errors::EveryReturnedError;
 
-#[derive(Debug)]
-pub enum UsernameError {
-    TooLong,
-    TooShort,
-    // Invalid,
-}
+use super::ValidatedString;
 
 #[derive(sqlx::FromRow)]
 pub struct Username(String);
 
 impl ValidatedString for Username {
-    type Err = UsernameError;
+    type Err = EveryReturnedError;
 
     fn new_from_string(val: String) -> Result<Self, Self::Err> {
         match val.len() {
-            0..=4 => Err(UsernameError::TooShort),
-            151.. => Err(UsernameError::TooLong),
+            0..=4 => Err(EveryReturnedError::UsernameTooShort),
+            151.. => Err(EveryReturnedError::UsernameTooLong),
             _ => Ok(Self(val)),
         }
     }

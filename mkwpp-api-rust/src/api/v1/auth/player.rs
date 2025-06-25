@@ -2,10 +2,10 @@ use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
     api::{
-        FinalErrorResponse,
+        errors::EveryReturnedError,
         v1::{close_connection, send_serialized_data},
     },
-    app_state::{AppState, access_app_state},
+    app_state::access_app_state,
     auth::{
         BareMinimumValidationData, get_user_data, get_user_id_from_player_id, is_user_admin,
         is_valid_token,
@@ -55,7 +55,7 @@ async fn update_data(
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -66,49 +66,23 @@ async fn update_data(
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let player_id = match get_user_data(&data.validation_data.session_token, &mut executor).await {
         Ok(v) => match v {
             Some(v) => match v {
                 Ok(v) => v.player_id,
-                Err(e) => {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Error decoding Database Data"),
-                        e.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
             },
-            None => {
-                return FinalErrorResponse::new_no_fields(vec![String::from(
-                    "User has no associated Player",
-                )])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
         },
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Database Error"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let data = match callback(&mut executor, player_id, &data.data).await {
         Ok(v) => v.rows_affected().to_string(),
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error updating Player"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     if let Err(e) = close_connection(executor).await {
@@ -135,67 +109,35 @@ async fn get_submitters(data: web::Json<BareMinimumValidationData>) -> HttpRespo
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
     if let Ok(false) | Err(_) =
         is_valid_token(&data.session_token, data.user_id, &mut executor).await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let player_id = match get_user_data(&data.session_token, &mut executor).await {
         Ok(v) => match v {
             Some(v) => match v {
                 Ok(v) => v.player_id,
-                Err(e) => {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Error decoding Database Data"),
-                        e.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
             },
-            None => {
-                return FinalErrorResponse::new_no_fields(vec![String::from(
-                    "User has no associated Player",
-                )])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
         },
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Database Error"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let data = match Players::get_player_submitters(&mut executor, player_id).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting user ids from submitters list"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let data = match Players::get_player_ids_from_user_ids(&mut executor, &data).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting player ids from user ids"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
     };
 
     if let Err(e) = close_connection(executor).await {
@@ -213,17 +155,14 @@ async fn get_submittees(data: web::Json<BareMinimumValidationData>) -> HttpRespo
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
     if let Ok(false) | Err(_) =
         is_valid_token(&data.session_token, data.user_id, &mut executor).await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let data = match match is_user_admin(data.user_id, &mut executor).await {
@@ -231,13 +170,7 @@ async fn get_submittees(data: web::Json<BareMinimumValidationData>) -> HttpRespo
         _ => Players::get_submittees(&mut executor, data.user_id).await,
     } {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting player ids from submittees list"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     if let Err(e) = close_connection(executor).await {
@@ -263,7 +196,7 @@ async fn add_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -274,68 +207,31 @@ async fn add_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let player_id = match get_user_data(&data.validation_data.session_token, &mut executor).await {
         Ok(v) => match v {
             Some(v) => match v {
                 Ok(v) => v.player_id,
-                Err(e) => {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Error decoding Database Data"),
-                        e.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
             },
-            None => {
-                return FinalErrorResponse::new_no_fields(vec![String::from(
-                    "User has no associated Player",
-                )])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
         },
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Database Error"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let associated_user_id = match get_user_id_from_player_id(data.player_id, &mut executor).await {
         Ok(v) => match v {
             Some(v) => v,
-            None => {
-                return FinalErrorResponse::new_no_fields(vec![String::from(
-                    "Selected user has no associated Player",
-                )])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
         },
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error decoding Database Data"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
     };
 
     let mut submitters_list = match Players::get_player_submitters(&mut executor, player_id).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting player submitters list"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     if submitters_list.contains(&associated_user_id) {
@@ -347,11 +243,7 @@ async fn add_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
     if let Err(e) =
         Players::update_player_submitters(&mut executor, player_id, &submitters_list).await
     {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error updating player submitters list"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     };
 
     if let Err(e) = close_connection(executor).await {
@@ -369,7 +261,7 @@ async fn remove_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
         let app_state = app_state.read().await;
         match app_state.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -380,68 +272,31 @@ async fn remove_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let player_id = match get_user_data(&data.validation_data.session_token, &mut executor).await {
         Ok(v) => match v {
             Some(v) => match v {
                 Ok(v) => v.player_id,
-                Err(e) => {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Error decoding Database Data"),
-                        e.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
             },
-            None => {
-                return FinalErrorResponse::new_no_fields(vec![String::from(
-                    "User has no associated Player",
-                )])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
         },
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Database Error"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let associated_user_id = match get_user_id_from_player_id(data.player_id, &mut executor).await {
         Ok(v) => match v {
             Some(v) => v,
-            None => {
-                return FinalErrorResponse::new_no_fields(vec![String::from(
-                    "Selected user has no associated Player",
-                )])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
         },
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error decoding Database Data"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
     };
 
     let mut submitters_list = match Players::get_player_submitters(&mut executor, player_id).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting player submitters list"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     if !submitters_list.contains(&associated_user_id) {
@@ -453,11 +308,7 @@ async fn remove_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
     if let Err(e) =
         Players::update_player_submitters(&mut executor, player_id, &submitters_list).await
     {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error updating player submitters list"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     };
 
     if let Err(e) = close_connection(executor).await {

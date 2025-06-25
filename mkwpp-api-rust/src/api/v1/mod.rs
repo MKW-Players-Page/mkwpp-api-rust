@@ -1,7 +1,5 @@
-use crate::{app_state::AppState, sql::tables::BasicTableQueries};
+use crate::{api::errors::EveryReturnedError, sql::tables::BasicTableQueries};
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
-
-use super::FinalErrorResponse;
 
 macro_rules! default_paths_fn {
     ($($y:literal),+) => {
@@ -56,25 +54,16 @@ async fn doc_css() -> HttpResponse {
 pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
 ) -> Result<(), HttpResponse> {
-    connection.close().await.map_err(|e| {
-        FinalErrorResponse::new_no_fields(vec![
-            String::from("Error closing Database connection"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError)
-    })
+    connection
+        .close()
+        .await
+        .map_err(|e| EveryReturnedError::ClosingConnectionFromPGPool.http_response(e))
 }
 
 pub fn match_rows(
     rows_request: Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
 ) -> Result<Vec<sqlx::postgres::PgRow>, HttpResponse> {
-    rows_request.map_err(|e| {
-        FinalErrorResponse::new_no_fields(vec![
-            String::from("Couldn't get rows from database"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError)
-    })
+    rows_request.map_err(|e| EveryReturnedError::GettingFromDatabase.http_response(e))
 }
 
 pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
@@ -83,35 +72,19 @@ pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgR
     rows.into_iter()
         .map(|r| Table::from_row(&r))
         .collect::<Result<Vec<Table>, sqlx::Error>>()
-        .map_err(|e| {
-            FinalErrorResponse::new_no_fields(vec![
-                String::from("Error decoding rows from database"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError)
-        })
+        .map_err(|e| EveryReturnedError::DecodingDatabaseRows.http_response(e))
 }
 
 pub fn decode_row_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
     row: sqlx::postgres::PgRow,
 ) -> Result<Table, HttpResponse> {
-    Table::from_row(&row).map_err(|e| {
-        FinalErrorResponse::new_no_fields(vec![
-            String::from("Error decoding rows from database"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError)
-    })
+    Table::from_row(&row).map_err(|e| EveryReturnedError::DecodingDatabaseRows.http_response(e))
 }
 
 pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
     match serde_json::to_string(&data) {
         Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
-        Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error serializing database data"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError),
+        Err(e) => EveryReturnedError::SerializingDataToJSON.http_response(e),
     }
 }
 
@@ -150,7 +123,7 @@ pub async fn basic_get<
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
@@ -172,7 +145,7 @@ pub async fn basic_get_with_data_mod<
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 

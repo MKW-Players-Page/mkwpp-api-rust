@@ -2,13 +2,12 @@ use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
     api::{
-        FinalErrorResponse,
+        errors::EveryReturnedError,
         v1::{
             custom::params::{Params, ParamsDestructured},
             decode_row_to_table, decode_rows_to_table, send_serialized_data,
         },
     },
-    app_state::AppState,
     sql::tables::{blog_posts::BlogPosts, players::Players},
 };
 
@@ -30,19 +29,13 @@ async fn get_list(req: HttpRequest) -> HttpResponse {
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
     let data = match BlogPosts::get_limit(params.limit, &mut executor).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting data from database"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let mut data = match decode_rows_to_table::<BlogPosts>(data) {
@@ -55,20 +48,9 @@ async fn get_list(req: HttpRequest) -> HttpResponse {
             match Players::get_player_ids_from_user_ids(&mut executor, &[post.author_id]).await {
                 Ok(v) => match v.first() {
                     Some(v) => *v,
-                    None => {
-                        return FinalErrorResponse::new_no_fields(vec![String::from(
-                            "Error converting user ids, no user by such ID",
-                        )])
-                        .generate_response(HttpResponse::InternalServerError);
-                    }
+                    None => return EveryReturnedError::UserIDDoesntExist.http_response(""),
                 },
-                Err(e) => {
-                    return FinalErrorResponse::new_no_fields(vec![
-                        String::from("Error converting user ids"),
-                        e.to_string(),
-                    ])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
             };
     }
 
@@ -83,19 +65,13 @@ async fn get_by_id(path: web::Path<i32>) -> HttpResponse {
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
     let data = match BlogPosts::get_by_id(path.into_inner(), &mut executor).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting data from database"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let mut data = match decode_row_to_table::<BlogPosts>(data) {
@@ -107,20 +83,9 @@ async fn get_by_id(path: web::Path<i32>) -> HttpResponse {
         match Players::get_player_ids_from_user_ids(&mut executor, &[data.author_id]).await {
             Ok(v) => match v.first() {
                 Some(v) => *v,
-                None => {
-                    return FinalErrorResponse::new_no_fields(vec![String::from(
-                        "Error converting user ids, no user by such ID",
-                    )])
-                    .generate_response(HttpResponse::InternalServerError);
-                }
+                None => return EveryReturnedError::UserIDDoesntExist.http_response(""),
             },
-            Err(e) => {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error converting user ids"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
         };
 
     if let Err(e) = crate::api::v1::close_connection(executor).await {

@@ -1,27 +1,19 @@
 use base64::Engine;
 
-use super::ValidatedString;
+use crate::api::errors::EveryReturnedError;
 
-#[derive(Debug)]
-pub enum PasswordError {
-    TooLong,
-    TooShort,
-    MustHaveSpecial,
-    MustHaveLowercase,
-    MustHaveUppercase,
-    MustHaveNumber,
-}
+use super::ValidatedString;
 
 #[derive(sqlx::FromRow, Clone)]
 pub struct Password(String);
 
 impl ValidatedString for Password {
-    type Err = PasswordError;
+    type Err = EveryReturnedError;
 
     fn new_from_string(val: String) -> Result<Self, Self::Err> {
         let val = match val.len() {
-            0..=8 => return Err(PasswordError::TooShort),
-            129.. => return Err(PasswordError::TooLong),
+            0..=8 => return Err(EveryReturnedError::PasswordTooShort),
+            129.. => return Err(EveryReturnedError::PasswordTooLong),
             _ => val,
         };
 
@@ -52,16 +44,16 @@ impl ValidatedString for Password {
         }
 
         if !has_uppercase {
-            return Err(PasswordError::MustHaveUppercase);
+            return Err(EveryReturnedError::PasswordMustHaveUppercase);
         }
         if !has_lowercase {
-            return Err(PasswordError::MustHaveLowercase);
+            return Err(EveryReturnedError::PasswordMustHaveLowercase);
         }
         if !has_special_character {
-            return Err(PasswordError::MustHaveSpecial);
+            return Err(EveryReturnedError::PasswordMustHaveSpecial);
         }
         if !has_number {
-            return Err(PasswordError::MustHaveNumber);
+            return Err(EveryReturnedError::PasswordMustHaveNumber);
         }
 
         Ok(Self(val))

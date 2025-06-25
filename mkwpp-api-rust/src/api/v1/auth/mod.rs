@@ -1,8 +1,8 @@
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
-    api::FinalErrorResponse,
-    app_state::{AppState, access_app_state},
+    api::errors::EveryReturnedError,
+    app_state::access_app_state,
     auth::{
         BareMinimumValidationData, activate_account, is_valid_token,
         validated_strings::ValidatedString,
@@ -60,70 +60,30 @@ async fn register(body: web::Json<RegisterBody>) -> HttpResponse {
     let username =
         match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
             Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new(
-                    vec![String::from("Error validating the username")],
-                    std::collections::HashMap::from([(
-                        String::from("username"),
-                        vec![format!("{:?}", e)],
-                    )]),
-                )
-                .generate_response(HttpResponse::BadRequest);
-            }
+            Err(e) => return e.http_response(""),
         };
+
     let password =
         match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
             Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new(
-                    vec![String::from("Error validating the password")],
-                    std::collections::HashMap::from([(
-                        String::from("password"),
-                        vec![format!("{:?}", e)],
-                    )]),
-                )
-                .generate_response(HttpResponse::BadRequest);
-            }
+            Err(e) => return e.http_response(""),
         };
 
     let email = match crate::auth::validated_strings::email::Email::new_from_string(body.email) {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new(
-                vec![String::from("Error validating the email")],
-                std::collections::HashMap::from([(
-                    String::from("email"),
-                    vec![format!("{:?}", e)],
-                )]),
-            )
-            .generate_response(HttpResponse::BadRequest);
-        }
+        Err(e) => return e.http_response(""),
     };
 
     let mut transaction = match transaction {
         Ok(v) => v,
-        Err(error) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error starting transaction"),
-                error.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
     };
 
     return match crate::auth::register(username, password, email, &mut transaction).await {
-        Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error registering user"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError),
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
         Ok(_) => {
-            if let Err(x) = transaction.commit().await {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Couldn't commit transaction"),
-                    x.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
+            if let Err(e) = transaction.commit().await {
+                return EveryReturnedError::CommitPGTransaction.http_response(e);
             }
             HttpResponse::Ok()
                 .content_type("application/json")
@@ -153,70 +113,32 @@ async fn login(req: HttpRequest, body: web::Json<LoginBody>) -> HttpResponse {
     let username =
         match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
             Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new(
-                    vec![String::from("Error validating the username")],
-                    std::collections::HashMap::from([(
-                        String::from("username"),
-                        vec![format!("{:?}", e)],
-                    )]),
-                )
-                .generate_response(HttpResponse::BadRequest);
-            }
+            Err(e) => return e.http_response(""),
         };
     let password =
         match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
             Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new(
-                    vec![String::from("Error validating the password")],
-                    std::collections::HashMap::from([(
-                        String::from("password"),
-                        vec![format!("{:?}", e)],
-                    )]),
-                )
-                .generate_response(HttpResponse::BadRequest);
-            }
+            Err(e) => return e.http_response(""),
         };
 
     let mut transaction = match transaction {
         Ok(v) => v,
-        Err(error) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error starting transaction"),
-                error.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
     };
 
     let login_attempt = crate::auth::login(username, password, ip, &mut transaction).await;
 
-    if let Err(x) = transaction.commit().await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Couldn't commit transaction"),
-            x.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+    if let Err(e) = transaction.commit().await {
+        return EveryReturnedError::CommitPGTransaction.http_response(e);
     }
 
     let login_attempt = match login_attempt {
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error logging into user"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
         Ok(v) => v,
     };
 
     match serde_json::to_string(&login_attempt) {
-        Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error serializing data"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError),
+        Err(e) => EveryReturnedError::SerializingDataToJSON.http_response(e),
         Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
     }
 }
@@ -235,48 +157,29 @@ async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {
         let data = data.read().await;
         match data.acquire_pg_connection().await {
             Ok(conn) => conn,
-            Err(e) => return AppState::pg_conn_http_error(e),
+            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
         }
     };
 
     let user_data = match crate::auth::get_user_data(&body.session_token, &mut connection).await {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error getting user data"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
     };
 
     let user_data = match user_data {
         Some(v) => v,
-        None => {
-            return FinalErrorResponse::new_no_fields(vec![String::from("No user found")])
-                .generate_response(HttpResponse::BadRequest);
-        }
+        None => return EveryReturnedError::UserIDDoesntExist.http_response(""),
     };
 
     let user_data = match user_data {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error decoding user data rows"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
     };
 
     let user_data = match serde_json::to_string(&user_data) {
         Ok(v) => v,
         Err(e) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error serializing user data"),
-                e.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
+            return EveryReturnedError::SerializingDataToJSON.http_response(e);
         }
     };
 
@@ -291,35 +194,21 @@ async fn logout(body: web::Json<UserDataBody>) -> HttpResponse {
         let data = data.read().await;
         match data.pg_pool.begin().await {
             Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error creating transaction"),
-                    e.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
         }
     };
 
     let body = body.into_inner();
 
     if let Err(e) = crate::auth::logout(&body.session_token, &mut transaction).await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error removing session"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     }
 
     return match transaction.commit().await {
         Ok(_) => HttpResponse::Ok()
             .content_type("application/json")
             .body("{}"),
-        Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error committing transaction"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError),
+        Err(e) => return EveryReturnedError::CommitPGTransaction.http_response(e),
     };
 }
 
@@ -338,13 +227,7 @@ async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
         let data = data.read().await;
         match data.pg_pool.begin().await {
             Ok(v) => v,
-            Err(error) => {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error starting transaction"),
-                    error.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
         }
     };
 
@@ -356,44 +239,23 @@ async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![String::from(
-            "Error validating session token",
-        )])
-        .generate_response(HttpResponse::BadRequest);
+        return EveryReturnedError::InvalidSessionToken.http_response("");
     }
 
     let old_password = match crate::auth::validated_strings::password::Password::new_from_string(
         body.old_password,
     ) {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new(
-                vec![String::from("Error validating the password")],
-                std::collections::HashMap::from([(
-                    String::from("old_password"),
-                    vec![format!("{:?}", e)],
-                )]),
-            )
-            .generate_response(HttpResponse::BadRequest);
-        }
+        Err(e) => return e.http_response(""),
     };
     let new_password = match crate::auth::validated_strings::password::Password::new_from_string(
         body.new_password,
     ) {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new(
-                vec![String::from("Error validating the password")],
-                std::collections::HashMap::from([(
-                    String::from("new_password"),
-                    vec![format!("{:?}", e)],
-                )]),
-            )
-            .generate_response(HttpResponse::BadRequest);
-        }
+        Err(e) => return e.http_response(""),
     };
 
-    if let Err(x) = crate::auth::update_password(
+    if let Err(e) = crate::auth::update_password(
         body.validation_data.user_id,
         old_password,
         new_password,
@@ -401,19 +263,11 @@ async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
     )
     .await
     {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error updating password"),
-            x.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     };
 
-    if let Err(x) = transaction.commit().await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Couldn't commit transaction"),
-            x.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+    if let Err(e) = transaction.commit().await {
+        return EveryReturnedError::CommitPGTransaction.http_response(e);
     }
 
     HttpResponse::Ok()
@@ -432,30 +286,16 @@ async fn activate(body: web::Json<ActivateBody>) -> HttpResponse {
         let data = data.read().await;
         match data.pg_pool.begin().await {
             Ok(v) => v,
-            Err(error) => {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Error starting transaction"),
-                    error.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
-            }
+            Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
         }
     };
 
     if let Err(e) = activate_account(&body.0.token, &mut transaction).await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error in database while activating account"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::GettingFromDatabase.http_response(e);
     }
 
     if let Err(e) = transaction.commit().await {
-        return FinalErrorResponse::new_no_fields(vec![
-            String::from("Error committing transaction"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError);
+        return EveryReturnedError::CommitPGTransaction.http_response(e);
     }
 
     HttpResponse::Ok()
@@ -479,42 +319,19 @@ async fn password_forgot(body: web::Json<PasswordForgotBody>) -> HttpResponse {
 
     let email = match crate::auth::validated_strings::email::Email::new_from_string(body.email) {
         Ok(v) => v,
-        Err(e) => {
-            return FinalErrorResponse::new(
-                vec![String::from("Error validating the email")],
-                std::collections::HashMap::from([(
-                    String::from("email"),
-                    vec![format!("{:?}", e)],
-                )]),
-            )
-            .generate_response(HttpResponse::BadRequest);
-        }
+        Err(e) => return e.http_response(""),
     };
 
     let mut transaction = match transaction {
         Ok(v) => v,
-        Err(error) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error starting transaction"),
-                error.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
     };
 
     return match crate::auth::password_reset_token_gen(email, &mut transaction).await {
-        Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error generating reset token"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError),
+        Err(e) => return EveryReturnedError::GeneratingToken.http_response(e),
         Ok(_) => {
-            if let Err(x) = transaction.commit().await {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Couldn't commit transaction"),
-                    x.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
+            if let Err(e) = transaction.commit().await {
+                return EveryReturnedError::CommitPGTransaction.http_response(e);
             }
             HttpResponse::Ok()
                 .content_type("application/json")
@@ -540,42 +357,19 @@ async fn password_reset(body: web::Json<PasswordResetBody>) -> HttpResponse {
     let password =
         match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
             Ok(v) => v,
-            Err(e) => {
-                return FinalErrorResponse::new(
-                    vec![String::from("Error validating the password")],
-                    std::collections::HashMap::from([(
-                        String::from("password"),
-                        vec![format!("{:?}", e)],
-                    )]),
-                )
-                .generate_response(HttpResponse::BadRequest);
-            }
+            Err(e) => return e.http_response(""),
         };
 
     let mut transaction = match transaction {
         Ok(v) => v,
-        Err(error) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error starting transaction"),
-                error.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
     };
 
     return match crate::auth::reset_password(&body.token, password, &mut transaction).await {
-        Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error resetting password"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError),
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
         Ok(_) => {
-            if let Err(x) = transaction.commit().await {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Couldn't commit transaction"),
-                    x.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
+            if let Err(e) = transaction.commit().await {
+                return EveryReturnedError::CommitPGTransaction.http_response(e);
             }
             HttpResponse::Ok()
                 .content_type("application/json")
@@ -599,28 +393,14 @@ async fn password_reset_check_token(body: web::Json<TokenCheck>) -> HttpResponse
 
     let mut transaction = match transaction {
         Ok(v) => v,
-        Err(error) => {
-            return FinalErrorResponse::new_no_fields(vec![
-                String::from("Error starting transaction"),
-                error.to_string(),
-            ])
-            .generate_response(HttpResponse::InternalServerError);
-        }
+        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
     };
 
     return match crate::auth::is_reset_password_token_valid(&body.token, &mut transaction).await {
-        Err(e) => FinalErrorResponse::new_no_fields(vec![
-            String::from("Error getting token"),
-            e.to_string(),
-        ])
-        .generate_response(HttpResponse::InternalServerError),
+        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
         Ok(v) => {
-            if let Err(x) = transaction.commit().await {
-                return FinalErrorResponse::new_no_fields(vec![
-                    String::from("Couldn't commit transaction"),
-                    x.to_string(),
-                ])
-                .generate_response(HttpResponse::InternalServerError);
+            if let Err(e) = transaction.commit().await {
+                return EveryReturnedError::CommitPGTransaction.http_response(e);
             }
 
             HttpResponse::Ok()
