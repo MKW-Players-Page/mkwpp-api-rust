@@ -60,7 +60,7 @@ pub async fn close_connection(
     connection
         .close()
         .await
-        .map_err(|e| EveryReturnedError::ClosingConnectionFromPGPool.to_final_error(e))
+        .map_err(|e| EveryReturnedError::ClosingConnectionFromPGPool.into_final_error(e))
 }
 
 pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
@@ -69,13 +69,13 @@ pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgR
     rows.into_iter()
         .map(|r| Table::from_row(&r))
         .collect::<Result<Vec<Table>, sqlx::Error>>()
-        .map_err(|e| EveryReturnedError::DecodingDatabaseRows.to_final_error(e))
+        .map_err(|e| EveryReturnedError::DecodingDatabaseRows.into_final_error(e))
 }
 
 pub fn decode_row_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
     row: sqlx::postgres::PgRow,
 ) -> Result<Table, FinalErrorResponse> {
-    Table::from_row(&row).map_err(|e| EveryReturnedError::DecodingDatabaseRows.to_final_error(e))
+    Table::from_row(&row).map_err(|e| EveryReturnedError::DecodingDatabaseRows.into_final_error(e))
 }
 
 pub fn send_serialized_data<T: serde::Serialize>(
@@ -83,7 +83,7 @@ pub fn send_serialized_data<T: serde::Serialize>(
 ) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     serde_json::to_string(&data)
         .map(|v| HttpResponse::Ok().content_type("application/json").body(v))
-        .map_err(|e| EveryReturnedError::SerializingDataToJSON.to_final_error(e))
+        .map_err(|e| EveryReturnedError::SerializingDataToJSON.into_final_error(e))
 }
 
 pub async fn handle_basic_get<

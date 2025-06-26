@@ -61,7 +61,7 @@ pub async fn login(
     .bind(username.get_inner())
     .fetch_one(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     if cooldown::LogInAttempts::is_on_cooldown(
         cooldown::LogInAttempts::get_from_sql(executor, ip, data.id).await?,
@@ -69,12 +69,12 @@ pub async fn login(
         data.id,
     ) {
         cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
-        return Err(EveryReturnedError::UserOnCooldown.to_final_error(""));
+        return Err(EveryReturnedError::UserOnCooldown.into_final_error(""));
     };
 
     if !data.is_verified {
         cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
-        return Err(EveryReturnedError::UserNotVerified.to_final_error(""));
+        return Err(EveryReturnedError::UserNotVerified.into_final_error(""));
     };
 
     let hash = password.hash(data.salt.as_bytes());
@@ -82,7 +82,7 @@ pub async fn login(
     match hash == data.password {
         false => {
             cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
-            Err(EveryReturnedError::InvalidInput.to_final_error(""))
+            Err(EveryReturnedError::InvalidInput.into_final_error(""))
         }
         true => {
             let token_engine = base64::engine::GeneralPurpose::new(
@@ -106,7 +106,7 @@ pub async fn login(
             .bind(out_string)
             .fetch_one(&mut *executor)
             .await
-            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
             Ok(log_in_data)
         }
     }
@@ -149,7 +149,7 @@ pub async fn register(
     .bind(salt.as_str())
     .fetch_one(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     sqlx::query(const_format::formatc!(
         r#"
@@ -161,7 +161,7 @@ pub async fn register(
     .bind(user_id)
     .execute(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     crate::mail::MailService::account_verification(&username, &email, &out_string).await?;
 
@@ -193,7 +193,7 @@ pub async fn password_reset_token_gen(
     .bind(email.as_str())
     .fetch_optional(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     let user = match user {
         Some(v) => v,
@@ -213,7 +213,7 @@ pub async fn password_reset_token_gen(
     .bind(id)
     .execute(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     crate::mail::MailService::password_reset(&username, &email, &out_string).await?;
 
@@ -244,7 +244,7 @@ pub async fn reset_password(
     .bind(salt.to_string())
     .execute(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     sqlx::query(
         "DELETE FROM tokens WHERE token = $1 AND token_type = 'password_reset'::token_type",
@@ -252,7 +252,7 @@ pub async fn reset_password(
     .bind(token)
     .execute(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     Ok(())
 }
@@ -269,7 +269,7 @@ pub async fn is_reset_password_token_valid(
     .bind(token)
     .fetch_optional(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?
     {
         Some(_) => Ok(true),
         None => Ok(false),
@@ -293,13 +293,13 @@ pub async fn activate_account(
     .bind(activation_token)
     .execute(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     sqlx::query("DELETE FROM tokens WHERE token = $1 AND token_type = 'activation'::token_type")
         .bind(activation_token)
         .execute(&mut *executor)
         .await
-        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     Ok(())
 }
@@ -322,10 +322,10 @@ pub async fn update_password(
     .bind(id)
     .fetch_one(&mut *executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     if old_password.hash(data.salt.as_bytes()) != data.password {
-        return Err(EveryReturnedError::InvalidInput.to_final_error(""));
+        return Err(EveryReturnedError::InvalidInput.into_final_error(""));
     };
 
     let salt =
@@ -342,7 +342,7 @@ pub async fn update_password(
     .bind(id)
     .execute(executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
     Ok(())
 }
@@ -374,7 +374,7 @@ pub async fn is_valid_token(
     .fetch_optional(executor)
     .await
     .map(|x| x.is_some())
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
 }
 
 pub async fn is_user_admin(
@@ -391,7 +391,7 @@ pub async fn is_user_admin(
     .bind(user_id)
     .fetch_one(executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
 }
 
 #[derive(sqlx::FromRow, Deserialize, Serialize)]
@@ -424,8 +424,8 @@ pub async fn get_user_data(
         .bind(session_token)
         .fetch_optional(executor)
         .await
-        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?
-        .ok_or(EveryReturnedError::UserIDDoesntExist.to_final_error(""))?,
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?
+        .ok_or(EveryReturnedError::UserIDDoesntExist.into_final_error(""))?,
     )
 }
 
@@ -445,8 +445,8 @@ pub async fn get_user_id_from_player_id(
     .bind(player_id)
     .fetch_optional(executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?
-    .ok_or(EveryReturnedError::UserHasNoAssociatedPlayer.to_final_error(""))
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?
+    .ok_or(EveryReturnedError::UserHasNoAssociatedPlayer.into_final_error(""))
 }
 
 pub async fn logout(
@@ -462,5 +462,5 @@ pub async fn logout(
     .bind(session_token)
     .execute(executor)
     .await
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))
 }

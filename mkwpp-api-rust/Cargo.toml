@@ -8,6 +8,10 @@ readme = true
 homepage = "https://mariokart64.com/mkw/"
 build = true
 
+[features]
+default = []
+import_data = []
+
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 sqlx = { version = "0.8.3", features = [

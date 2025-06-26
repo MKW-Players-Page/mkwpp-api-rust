@@ -138,10 +138,10 @@ impl<K: ValidTimesetItem> Timeset<K> {
         let region_type = match region_type {
             RegionType::World => {
                 return Err(EveryReturnedError::InvalidInput
-                    .to_final_error("There are no Martian players yet!"));
+                    .into_final_error("There are no Martian players yet!"));
             }
             RegionType::CountryGroup | RegionType::SubnationalGroup => {
-                return Err(EveryReturnedError::InvalidInput.to_final_error(
+                return Err(EveryReturnedError::InvalidInput.into_final_error(
                     "Come back when we'll have figured out how to implement this.",
                 ));
             }
@@ -157,7 +157,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         let all_regions = decode_rows_to_table(
             RegionsWithPlayerCount::select_star_query(&mut executor)
                 .await
-                .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+                .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?,
         )?;
 
         let all_regions = RegionsWithPlayerCount::collapse_counts_of_regions(&all_regions)
@@ -251,7 +251,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::PlayerTimesheet { .. }
             | TimesetOutput::TallyPointsCharts { .. }
             | TimesetOutput::TotalTimeCharts { .. } => Err(
-                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                EveryReturnedError::TechnicallyUnreachableCode.into_final_error(
                     "Something went very wrong, the output type changed unexpectedly",
                 ),
             ),
@@ -477,7 +477,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::PlayerTimesheet { .. }
             | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::PlayerMatchup { .. } => Err(
-                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                EveryReturnedError::TechnicallyUnreachableCode.into_final_error(
                     "Something went very wrong, the output type changed unexpectedly",
                 ),
             ),
@@ -525,7 +525,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::AverageRankRatingCharts { .. }
             | TimesetOutput::PlayerMatchup { .. } => Err(
-                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                EveryReturnedError::TechnicallyUnreachableCode.into_final_error(
                     "Something went very wrong, the output type changed unexpectedly",
                 ),
             ),
@@ -853,7 +853,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::TallyPointsCharts { .. }
             | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::AverageRankRatingCharts { .. } => Err(
-                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                EveryReturnedError::TechnicallyUnreachableCode.into_final_error(
                     "Something went very wrong, the output type changed unexpectedly",
                 ),
             ),

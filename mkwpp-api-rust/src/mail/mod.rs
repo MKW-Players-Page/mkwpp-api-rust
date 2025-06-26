@@ -22,14 +22,14 @@ impl MailService {
         .allow_invalid_certs()
         .connect()
         .await
-        .map_err(|e| EveryReturnedError::CreatingEmailClient.to_final_error(e))?
+        .map_err(|e| EveryReturnedError::CreatingEmailClient.into_final_error(e))?
         .send(
             message
                 .into_message()
-                .map_err(|e| EveryReturnedError::SendingEmail.to_final_error(e))?,
+                .map_err(|e| EveryReturnedError::SendingEmail.into_final_error(e))?,
         )
         .await
-        .map_err(|e| EveryReturnedError::SendingEmail.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::SendingEmail.into_final_error(e))?;
 
         Ok(())
     }

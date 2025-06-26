@@ -10,8 +10,8 @@ pub struct Password(String);
 impl ValidatedString for Password {
     fn new_from_string(val: String) -> Result<Self, FinalErrorResponse> {
         let val = match val.len() {
-            0..=8 => return Err(EveryReturnedError::PasswordTooShort.to_final_error("")),
-            129.. => return Err(EveryReturnedError::PasswordTooLong.to_final_error("")),
+            0..=8 => return Err(EveryReturnedError::PasswordTooShort.into_final_error("")),
+            129.. => return Err(EveryReturnedError::PasswordTooLong.into_final_error("")),
             _ => val,
         };
 
@@ -42,16 +42,16 @@ impl ValidatedString for Password {
         }
 
         if !has_uppercase {
-            return Err(EveryReturnedError::PasswordMustHaveUppercase.to_final_error(""));
+            return Err(EveryReturnedError::PasswordMustHaveUppercase.into_final_error(""));
         }
         if !has_lowercase {
-            return Err(EveryReturnedError::PasswordMustHaveLowercase.to_final_error(""));
+            return Err(EveryReturnedError::PasswordMustHaveLowercase.into_final_error(""));
         }
         if !has_special_character {
-            return Err(EveryReturnedError::PasswordMustHaveSpecial.to_final_error(""));
+            return Err(EveryReturnedError::PasswordMustHaveSpecial.into_final_error(""));
         }
         if !has_number {
-            return Err(EveryReturnedError::PasswordMustHaveNumber.to_final_error(""));
+            return Err(EveryReturnedError::PasswordMustHaveNumber.into_final_error(""));
         }
 
         Ok(Self(val))

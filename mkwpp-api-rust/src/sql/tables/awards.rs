@@ -1,7 +1,8 @@
-use crate::{
-    api::errors::{EveryReturnedError, FinalErrorResponse},
-    custom_serde::DateAsTimestampNumber,
-};
+use crate::custom_serde::DateAsTimestampNumber;
+
+// Feature only required because it's only used to import data currently
+#[cfg(feature="import_data")]
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 #[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
 #[sqlx(type_name = "player_award_type", rename_all = "snake_case")]
@@ -47,10 +48,12 @@ impl Awards {
     //     sqlx::query("INSERT INTO player_awards (id, player_id, date, description, player_award_type) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(self.player_id).bind(self.date).bind(&self.description).bind(&self.player_award_type).execute(executor).await
     // }
 
+    // Feature only required because it's only used to import data currently
+    #[cfg(feature="import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query("INSERT INTO player_awards (id, player_id, date, description, player_award_type) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET player_id = $2, date = $3, description = $4, player_award_type = $5 WHERE player_awards.id = $1;").bind(self.id).bind(self.player_id).bind(self.date).bind(&self.description).bind(&self.player_award_type).execute(executor).await.map_err(| e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
+        return sqlx::query("INSERT INTO player_awards (id, player_id, date, description, player_award_type) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET player_id = $2, date = $3, description = $4, player_award_type = $5 WHERE player_awards.id = $1;").bind(self.id).bind(self.player_id).bind(self.date).bind(&self.description).bind(&self.player_award_type).execute(executor).await.map_err(| e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }

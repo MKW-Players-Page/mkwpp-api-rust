@@ -33,23 +33,7 @@ async fn main() -> std::io::Result<()> {
     );
     println!("| SERVER CONNECTION KEEP ALIVE: {}", ENV_VARS.keep_alive);
 
-    let app_state = app_state::access_app_state().await;
-    let app_state = app_state.write().await;
-
-    println!("- Reading CLI args");
-    let args: Vec<String> = std::env::args().collect();
-    let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
-
-    if args.contains(&"import") && args.contains(&"old") {
-        sql::migrate::old::load_data(&app_state.pg_pool).await;
-    }
-    if args.contains(&"exit") {
-        std::process::exit(0);
-    }
-
-    println!("- Dropping useless data");
-    std::mem::drop(args);
-    std::mem::drop(app_state);
+    import_data().await;
 
     println!("- Starting Cache Update Loop");
     tokio::task::spawn(app_state::cache::update_loop());
@@ -78,3 +62,23 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
+#[cfg(feature="import_data")]
+async fn import_data() {
+    println!("- Reading CLI args");
+    let app_state = app_state::access_app_state().await;
+    let app_state = app_state.write().await;
+
+    let args: Vec<String> = std::env::args().collect();
+    let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
+
+    if args.contains(&"import") && args.contains(&"old") {
+        sql::migrate::old::load_data(&app_state.pg_pool).await;
+    }
+    if args.contains(&"exit") {
+        std::process::exit(0);
+    }
+}
+
+#[cfg(not(feature="import_data"))]
+async fn import_data() {}

@@ -3,6 +3,9 @@ use std::env::set_current_dir;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
+    // Check custom cfg
+    println!("cargo::rustc-check-cfg=cfg(import_data, values(\"0\"))");
+    
     // build.rs sets current dir to its own directory
     set_current_dir("..")?;
 

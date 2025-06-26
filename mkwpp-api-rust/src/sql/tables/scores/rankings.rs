@@ -123,7 +123,7 @@ impl Rankings {
             .bind(&player_ids)
             .fetch_all(executor)
             .await
-            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?,
         )?;
 
         let mut timeset_encoder = Timeset::default();
