@@ -20,7 +20,7 @@ impl AppState {
         self.pg_pool
             .acquire()
             .await
-            .map_err(|e| EveryReturnedError::NoConnectionFromPGPool.to_final_error(e))
+            .map_err(|e| EveryReturnedError::NoConnectionFromPGPool.into_final_error(e))
     }
 
     pub async fn get_legacy_standard_levels(&self) -> Arc<[StandardLevels]> {

@@ -63,7 +63,7 @@ async fn update_data(
     )
     .await?
     {
-        EveryReturnedError::InvalidSessionToken.to_final_error("");
+        EveryReturnedError::InvalidSessionToken.into_final_error("");
     }
 
     let player_id = get_user_data(&data.validation_data.session_token, &mut executor)
@@ -102,7 +102,7 @@ async fn get_submitters(
     };
 
     if !is_valid_token(&data.session_token, data.user_id, &mut executor).await? {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     let player_id = get_user_data(&data.session_token, &mut executor)
@@ -129,7 +129,7 @@ async fn get_submittees(
     };
 
     if !is_valid_token(&data.session_token, data.user_id, &mut executor).await? {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     let data = match is_user_admin(data.user_id, &mut executor).await? {
@@ -186,7 +186,7 @@ async fn update_submitter_list(
     )
     .await?
     {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     let player_id = get_user_data(&data.validation_data.session_token, &mut executor)

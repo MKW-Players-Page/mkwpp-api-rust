@@ -61,7 +61,7 @@ async fn register(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     let username =
@@ -74,7 +74,7 @@ async fn register(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
 
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -98,7 +98,7 @@ async fn login(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     std::thread::sleep(std::time::Duration::from_secs(5));
@@ -116,7 +116,7 @@ async fn login(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
 
     send_serialized_data(login_attempt)
 }
@@ -150,7 +150,7 @@ async fn logout(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     let body = body.into_inner();
@@ -160,7 +160,7 @@ async fn logout(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
 
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -185,7 +185,7 @@ async fn update_password(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     let body = body.into_inner();
@@ -196,7 +196,7 @@ async fn update_password(
     )
     .await?
     {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     let old_password =
@@ -215,7 +215,7 @@ async fn update_password(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
 
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -236,7 +236,7 @@ async fn activate(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     activate_account(&body.0.token, &mut transaction).await?;
@@ -244,7 +244,7 @@ async fn activate(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
 
     Ok(HttpResponse::Ok()
         .content_type("application/json")
@@ -267,7 +267,7 @@ async fn password_forgot(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     let email = crate::auth::validated_strings::email::Email::new_from_string(body.email)?;
@@ -277,7 +277,7 @@ async fn password_forgot(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body("{}"))
@@ -299,7 +299,7 @@ async fn password_reset(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     let password =
@@ -310,7 +310,7 @@ async fn password_reset(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body("{}"))
@@ -331,7 +331,7 @@ async fn password_reset_check_token(
         data.pg_pool
             .begin()
             .await
-            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.into_final_error(e))?
     };
 
     crate::auth::is_reset_password_token_valid(&body.token, &mut transaction).await?;
@@ -339,7 +339,7 @@ async fn password_reset_check_token(
     transaction
         .commit()
         .await
-        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body("{}"))

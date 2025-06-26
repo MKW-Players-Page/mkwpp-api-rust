@@ -22,7 +22,7 @@ To run migrations, you'll have to type (this will be run every time the package 
 sqlx database setup --source db/migrations --database-url database_url
 ```
 
-To import Fixtures instead, you should run the executable with the arguments `import old` for Fixtures created by the old Django Database
+To import Fixtures instead, you should run the executable with the arguments `import old` for Fixtures created by the old Django Database (This will only work if you have compiled it with the correct features enabled)
 
 ```bash
 ./mkwpp-api-rust import old
@@ -32,6 +32,12 @@ To import Fixtures instead, you should run the executable with the arguments `im
 Not everything is actually stored in PSQL like the Python+Django backend, as that's not actually needed (how often will we actually change the `cups` table, lets be real).
 
 This will be actually faster, by the nature of not being an interpreted language.
+
+## Possible crate features
+These can be enabled by compiling with `--features=<feature_name>,<feature_name2>,...`
+| Feature | Description |
+|-|-|
+| import_data | this enables the CLI arguments which allow for importing of fixtures. |
 
 ## Possible .env Parameters
 These parameters can also be passed via command line as Key=Value pairs if the command line has been passed the argument `envline`

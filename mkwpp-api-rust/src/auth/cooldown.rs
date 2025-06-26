@@ -29,7 +29,7 @@ impl LogInAttempts {
         .bind(user_id)
         .execute(executor)
         .await
-        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))
     }
 
     pub fn is_on_cooldown(mut data: Vec<Self>, ip: IpAddr, user_id: i32) -> bool {
@@ -72,7 +72,7 @@ impl LogInAttempts {
             )
             .fetch_all(&mut *executor)
             .await
-            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?,
         )?;
 
         user_data.extend(decode_rows_to_table::<Self>(
@@ -89,7 +89,7 @@ impl LogInAttempts {
             .bind(ip)
             .fetch_all(executor)
             .await
-            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?,
         )?);
 
         Ok(user_data)

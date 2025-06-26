@@ -125,7 +125,7 @@ impl From<EveryReturnedError> for u64 {
 }
 
 impl EveryReturnedError {
-    pub fn to_final_error(self, library_error: impl ToString) -> FinalErrorResponse {
+    pub fn into_final_error(self, library_error: impl ToString) -> FinalErrorResponse {
         let mut out = match self {
             Self::NoConnectionFromPGPool => FinalErrorResponse::new(
                 self.into(),

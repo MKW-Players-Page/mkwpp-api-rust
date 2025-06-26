@@ -16,7 +16,7 @@ impl BasicTableQueries for ScoresWithPlayer {
             players_table = PlayersBasic::TABLE_NAME,
         ))
         .fetch_all(executor)
-        .await.map_err(| e | EveryReturnedError::GettingFromDatabase.to_final_error(e));
+        .await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }
 
@@ -96,7 +96,7 @@ impl ScoresWithPlayer {
         .bind(region_ids)
         .bind(limit)
         .fetch_all(executor)
-        .await.map_err(| e | EveryReturnedError::GettingFromDatabase.to_final_error(e));
+        .await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
     // TODO: Hardcoded value for Newbie Code
@@ -175,6 +175,6 @@ impl ScoresWithPlayer {
         .bind(is_lap)
         .fetch_all(executor)
         .await
-        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }

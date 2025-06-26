@@ -144,18 +144,20 @@ impl Regions {
     //     sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await
     // }
 
+    // Feature only required because it's only used to import data currently
+    #[cfg(feature="import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET code = $2, region_type = $3, parent_id = $4, is_ranked = $5 WHERE {table_name}.id = $1;", table_name = Regions::TABLE_NAME)).bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.to_final_error(e));
+        return sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET code = $2, region_type = $3, parent_id = $4, is_ranked = $5 WHERE {table_name}.id = $1;", table_name = Regions::TABLE_NAME)).bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
     pub async fn get_ancestors(
         executor: &mut sqlx::PgConnection,
         id: i32,
     ) -> Result<Vec<i32>, FinalErrorResponse> {
-        return sqlx::query_scalar(const_format::formatcp!("WITH RECURSIVE ancestors AS (SELECT id, parent_id FROM {table_name} WHERE id = $1 UNION SELECT e.id, e.parent_id FROM {table_name} e INNER JOIN ancestors s ON s.parent_id = e.id) SELECT id FROM ancestors;", table_name = Regions::TABLE_NAME)).bind(id).fetch_all(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.to_final_error(e));
+        return sqlx::query_scalar(const_format::formatcp!("WITH RECURSIVE ancestors AS (SELECT id, parent_id FROM {table_name} WHERE id = $1 UNION SELECT e.id, e.parent_id FROM {table_name} e INNER JOIN ancestors s ON s.parent_id = e.id) SELECT id FROM ancestors;", table_name = Regions::TABLE_NAME)).bind(id).fetch_all(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
     pub async fn get_descendants(
@@ -179,6 +181,6 @@ impl Regions {
         .bind(id)
         .fetch_all(executor)
         .await
-        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }

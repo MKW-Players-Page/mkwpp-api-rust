@@ -107,7 +107,7 @@ async fn get<
     };
 
     if !is_valid_token(&data.session_token, data.user_id, &mut executor).await? {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     let player_id = get_user_data(&data.session_token, &mut executor)
@@ -223,7 +223,7 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
     )
     .await?
     {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     let submission = decode_row_to_table::<X>(get_callback(data.data, &mut executor).await?)?;
@@ -246,7 +246,7 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
     };
 
     if !can_delete {
-        return Err(EveryReturnedError::InsufficientPermissions.to_final_error(""));
+        return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
     }
 
     delete_callback(data.data, &mut executor).await?;
@@ -291,11 +291,11 @@ async fn create_or_edit_submission(
     )
     .await?
     {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     if data.data.submitter_id != data.validation_data.user_id {
-        return Err(EveryReturnedError::MismatchedIds.to_final_error(""));
+        return Err(EveryReturnedError::MismatchedIds.into_final_error(""));
     }
 
     let can_submit = match (
@@ -310,7 +310,7 @@ async fn create_or_edit_submission(
     };
 
     if !can_submit {
-        return Err(EveryReturnedError::InsufficientPermissions.to_final_error(""));
+        return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
     }
 
     Submissions::create_or_edit_submission(data.data, &mut executor).await?;
@@ -355,11 +355,11 @@ async fn create_or_edit_edit_submission(
     )
     .await?
     {
-        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
     if data.data.submitter_id != data.validation_data.user_id {
-        return Err(EveryReturnedError::MismatchedIds.to_final_error(""));
+        return Err(EveryReturnedError::MismatchedIds.into_final_error(""));
     }
 
     let score = decode_row_to_table::<Scores>(
@@ -377,7 +377,7 @@ async fn create_or_edit_edit_submission(
         && !data.data.date_edited
         && data.data.edit_submission_id.is_none()
     {
-        return Err(EveryReturnedError::NothingChanged.to_final_error(""));
+        return Err(EveryReturnedError::NothingChanged.into_final_error(""));
     }
 
     let can_submit = match (
@@ -392,7 +392,7 @@ async fn create_or_edit_edit_submission(
     };
 
     if !can_submit {
-        return Err(EveryReturnedError::InsufficientPermissions.to_final_error(""));
+        return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
     }
 
     EditSubmissions::create_or_edit_submission(data.data, &mut executor).await?;
