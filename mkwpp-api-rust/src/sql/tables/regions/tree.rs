@@ -113,7 +113,7 @@ macro_rules! region_tree_generator {
 
             for region in data {
                 if let Some(parent_id) = region.parent_id {
-                    _ = tree.insert(parent_id, ChildrenTree::new(region.id));
+                    let _ = tree.insert(parent_id, ChildrenTree::new(region.id));
                 }
             }
 

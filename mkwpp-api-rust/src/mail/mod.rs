@@ -2,12 +2,14 @@ use mail_send::{
     Credentials, SmtpClientBuilder, mail_builder::MessageBuilder, smtp::message::IntoMessage,
 };
 
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
+
 const MKWPP_NAME: &str = "Mario Kart Wii Players' Page";
 const MKWPP_EMAIL: &str = "no-reply@mariokart64.com";
 
 pub struct MailService;
 impl MailService {
-    async fn send_message(message: impl IntoMessage<'_>) -> Result<(), anyhow::Error> {
+    async fn send_message(message: impl IntoMessage<'_>) -> Result<(), FinalErrorResponse> {
         SmtpClientBuilder::new(
             crate::ENV_VARS.smtp_hostname.as_str(),
             crate::ENV_VARS.smtp_port,
@@ -19,9 +21,15 @@ impl MailService {
         ))
         .allow_invalid_certs()
         .connect()
-        .await?
-        .send(message.into_message()?)
-        .await?;
+        .await
+        .map_err(|e| EveryReturnedError::CreatingEmailClient.to_final_error(e))?
+        .send(
+            message
+                .into_message()
+                .map_err(|e| EveryReturnedError::SendingEmail.to_final_error(e))?,
+        )
+        .await
+        .map_err(|e| EveryReturnedError::SendingEmail.to_final_error(e))?;
 
         Ok(())
     }
@@ -30,7 +38,7 @@ impl MailService {
         username: &str,
         email: &str,
         token: &str,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<(), FinalErrorResponse> {
         Self::send_message(
             MessageBuilder::new()
                 .from((MKWPP_NAME, MKWPP_EMAIL))
@@ -57,7 +65,7 @@ impl MailService {
         username: &str,
         email: &str,
         token: &str,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<(), FinalErrorResponse> {
         Self::send_message(
             MessageBuilder::new()
                 .from((MKWPP_NAME, MKWPP_EMAIL))

@@ -1,3 +1,5 @@
+use crate::api::errors::FinalErrorResponse;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct Standards {
     level: i32,
@@ -12,7 +14,7 @@ impl super::OldFixtureJson for Standards {
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return crate::sql::tables::standards::Standards {
             id: key,
             category: crate::sql::tables::Category::try_from(self.category).unwrap(),

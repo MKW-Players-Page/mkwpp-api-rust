@@ -2,7 +2,7 @@ use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
     api::{
-        errors::EveryReturnedError,
+        errors::{EveryReturnedError, FinalErrorResponse},
         v1::{close_connection, send_serialized_data},
     },
     app_state::access_app_state,
@@ -46,136 +46,98 @@ async fn update_data(
         &mut sqlx::PgConnection,
         i32,
         &str,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error>,
-) -> HttpResponse {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) = is_valid_token(
+    if !is_valid_token(
         &data.validation_data.session_token,
         data.validation_data.user_id,
         &mut executor,
     )
-    .await
+    .await?
     {
-        EveryReturnedError::InvalidSessionToken.http_response("");
+        EveryReturnedError::InvalidSessionToken.to_final_error("");
     }
 
-    let player_id = match get_user_data(&data.validation_data.session_token, &mut executor).await {
-        Ok(v) => match v {
-            Some(v) => match v {
-                Ok(v) => v.player_id,
-                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-            },
-            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
-        },
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    let player_id = get_user_data(&data.validation_data.session_token, &mut executor)
+        .await?
+        .player_id;
 
-    let data = match callback(&mut executor, player_id, &data.data).await {
-        Ok(v) => v.rows_affected().to_string(),
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    callback(&mut executor, player_id, &data.data).await?;
 
-    if let Err(e) = close_connection(executor).await {
-        return e;
-    }
+    close_connection(executor).await?;
 
-    HttpResponse::Ok()
+    Ok(HttpResponse::Ok()
         .content_type("application/json")
-        .body(data)
+        .body("{}"))
 }
 
-async fn update_player_bio(data: web::Json<UpdateData>) -> HttpResponse {
+async fn update_player_bio(
+    data: web::Json<UpdateData>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     update_data(data, Players::update_player_bio).await
 }
-async fn update_player_alias(data: web::Json<UpdateData>) -> HttpResponse {
+async fn update_player_alias(
+    data: web::Json<UpdateData>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     update_data(data, Players::update_player_alias).await
 }
 
-async fn get_submitters(data: web::Json<BareMinimumValidationData>) -> HttpResponse {
+async fn get_submitters(
+    data: web::Json<BareMinimumValidationData>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) =
-        is_valid_token(&data.session_token, data.user_id, &mut executor).await
-    {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+    if !is_valid_token(&data.session_token, data.user_id, &mut executor).await? {
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
-    let player_id = match get_user_data(&data.session_token, &mut executor).await {
-        Ok(v) => match v {
-            Some(v) => match v {
-                Ok(v) => v.player_id,
-                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-            },
-            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
-        },
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    let player_id = get_user_data(&data.session_token, &mut executor)
+        .await?
+        .player_id;
 
-    let data = match Players::get_player_submitters(&mut executor, player_id).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    let data = Players::get_player_submitters(&mut executor, player_id).await?;
+    let data = Players::get_player_ids_from_user_ids(&mut executor, &data).await?;
 
-    let data = match Players::get_player_ids_from_user_ids(&mut executor, &data).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
-    };
-
-    if let Err(e) = close_connection(executor).await {
-        return e;
-    }
+    close_connection(executor).await?;
 
     send_serialized_data(data)
 }
 
-async fn get_submittees(data: web::Json<BareMinimumValidationData>) -> HttpResponse {
+async fn get_submittees(
+    data: web::Json<BareMinimumValidationData>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) =
-        is_valid_token(&data.session_token, data.user_id, &mut executor).await
-    {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+    if !is_valid_token(&data.session_token, data.user_id, &mut executor).await? {
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
-    let data = match match is_user_admin(data.user_id, &mut executor).await {
-        Ok(true) => Players::get_ids_but_list(&mut executor, &[]).await,
-        _ => Players::get_submittees(&mut executor, data.user_id).await,
-    } {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
+    let data = match is_user_admin(data.user_id, &mut executor).await? {
+        true => Players::get_ids_but_list(&mut executor, &[]).await?,
+        false => Players::get_submittees(&mut executor, data.user_id).await?,
     };
 
-    if let Err(e) = close_connection(executor).await {
-        return e;
-    }
+    close_connection(executor).await?;
 
     send_serialized_data(data)
 }
@@ -188,132 +150,65 @@ struct SubmitterAddRemove {
     validation_data: BareMinimumValidationData,
 }
 
-async fn add_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
-    let data = data.0;
-
-    let app_state = access_app_state().await;
-    let mut executor = {
-        let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
-    };
-
-    if let Ok(false) | Err(_) = is_valid_token(
-        &data.validation_data.session_token,
-        data.validation_data.user_id,
-        &mut executor,
-    )
-    .await
-    {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
-    }
-
-    let player_id = match get_user_data(&data.validation_data.session_token, &mut executor).await {
-        Ok(v) => match v {
-            Some(v) => match v {
-                Ok(v) => v.player_id,
-                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-            },
-            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
-        },
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    let associated_user_id = match get_user_id_from_player_id(data.player_id, &mut executor).await {
-        Ok(v) => match v {
-            Some(v) => v,
-            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
-        },
-        Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-    };
-
-    let mut submitters_list = match Players::get_player_submitters(&mut executor, player_id).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    if submitters_list.contains(&associated_user_id) {
-        return HttpResponse::Ok().content_type("application/json").body("");
-    }
-
-    submitters_list.push(associated_user_id);
-
-    if let Err(e) =
-        Players::update_player_submitters(&mut executor, player_id, &submitters_list).await
-    {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    };
-
-    if let Err(e) = close_connection(executor).await {
-        return e;
-    }
-
-    send_serialized_data(submitters_list)
+enum SubmitterListAction {
+    Add,
+    Remove,
 }
 
-async fn remove_submitter(data: web::Json<SubmitterAddRemove>) -> HttpResponse {
+async fn add_submitter(
+    data: web::Json<SubmitterAddRemove>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    update_submitter_list(data, SubmitterListAction::Add).await
+}
+
+async fn remove_submitter(
+    data: web::Json<SubmitterAddRemove>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    update_submitter_list(data, SubmitterListAction::Remove).await
+}
+
+async fn update_submitter_list(
+    data: web::Json<SubmitterAddRemove>,
+    action: SubmitterListAction,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) = is_valid_token(
+    if !is_valid_token(
         &data.validation_data.session_token,
         data.validation_data.user_id,
         &mut executor,
     )
-    .await
+    .await?
     {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
-    let player_id = match get_user_data(&data.validation_data.session_token, &mut executor).await {
-        Ok(v) => match v {
-            Some(v) => match v {
-                Ok(v) => v.player_id,
-                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-            },
-            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
-        },
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    let associated_user_id = match get_user_id_from_player_id(data.player_id, &mut executor).await {
-        Ok(v) => match v {
-            Some(v) => v,
-            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
-        },
-        Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-    };
-
-    let mut submitters_list = match Players::get_player_submitters(&mut executor, player_id).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    let player_id = get_user_data(&data.validation_data.session_token, &mut executor)
+        .await?
+        .player_id;
+    let associated_user_id = get_user_id_from_player_id(data.player_id, &mut executor).await?;
+    let mut submitters_list = Players::get_player_submitters(&mut executor, player_id).await?;
 
     if !submitters_list.contains(&associated_user_id) {
-        return HttpResponse::Ok().content_type("application/json").body("");
+        return Ok(HttpResponse::Ok()
+            .content_type("application/json")
+            .body("{}"));
     }
 
-    submitters_list.retain(|x| *x != associated_user_id);
-
-    if let Err(e) =
-        Players::update_player_submitters(&mut executor, player_id, &submitters_list).await
-    {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    };
-
-    if let Err(e) = close_connection(executor).await {
-        return e;
+    match action {
+        SubmitterListAction::Add => submitters_list.push(associated_user_id),
+        SubmitterListAction::Remove => submitters_list.retain(|x| *x != associated_user_id),
     }
+
+    Players::update_player_submitters(&mut executor, player_id, &submitters_list).await?;
+
+    close_connection(executor).await?;
 
     send_serialized_data(submitters_list)
 }

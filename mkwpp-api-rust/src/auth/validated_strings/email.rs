@@ -1,4 +1,4 @@
-use crate::api::errors::EveryReturnedError;
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 use super::ValidatedString;
 
@@ -6,16 +6,15 @@ use super::ValidatedString;
 pub struct Email(String);
 
 impl ValidatedString for Email {
-    type Err = EveryReturnedError;
-    fn new_from_string(val: String) -> Result<Self, Self::Err> {
+    fn new_from_string(val: String) -> Result<Self, FinalErrorResponse> {
         if val.len() > 254 {
-            return Err(EveryReturnedError::EmailTooLong);
+            return Err(EveryReturnedError::EmailTooLong.to_final_error(""));
         }
 
         let regex_checker = regex::Regex::new(r"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$").unwrap();
         match regex_checker.is_match(&val) {
             true => Ok(Self(val)),
-            false => Err(EveryReturnedError::EmailInvalid),
+            false => Err(EveryReturnedError::EmailInvalid.to_final_error("")),
         }
     }
 

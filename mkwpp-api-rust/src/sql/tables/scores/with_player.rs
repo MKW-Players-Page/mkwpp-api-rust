@@ -1,3 +1,4 @@
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 use crate::sql::tables::BasicTableQueries;
 use crate::sql::tables::players::players_basic::PlayersBasic;
 
@@ -8,14 +9,14 @@ impl BasicTableQueries for ScoresWithPlayer {
 
     async fn select_star_query(
         executor: &mut sqlx::PgConnection,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
         return sqlx::query(const_format::formatc!(
             "SELECT {scores_table}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {players_table}.id, name, alias, region_id FROM {scores_table} LEFT JOIN {players_table} ON {scores_table}.player_id = {players_table}.id;",
             scores_table = super::Scores::TABLE_NAME,
             players_table = PlayersBasic::TABLE_NAME,
         ))
         .fetch_all(executor)
-        .await;
+        .await.map_err(| e | EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 }
 
@@ -29,7 +30,7 @@ impl ScoresWithPlayer {
         max_date: chrono::NaiveDate,
         region_id: i32,
         limit: i32,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
         let region_ids =
             crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
 
@@ -95,7 +96,7 @@ impl ScoresWithPlayer {
         .bind(region_ids)
         .bind(limit)
         .fetch_all(executor)
-        .await;
+        .await.map_err(| e | EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 
     // TODO: Hardcoded value for Newbie Code
@@ -105,7 +106,7 @@ impl ScoresWithPlayer {
         is_lap: Option<bool>,
         max_date: chrono::NaiveDate,
         region_id: i32,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
         let region_ids =
             crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
 
@@ -173,6 +174,7 @@ impl ScoresWithPlayer {
         .bind(region_ids)
         .bind(is_lap)
         .fetch_all(executor)
-        .await;
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 }

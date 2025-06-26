@@ -1,3 +1,4 @@
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 use crate::sql::tables::BasicTableQueries;
 use crate::sql::tables::players::FilterPlayers;
 
@@ -16,13 +17,14 @@ impl BasicTableQueries for PlayersBasic {
 
     async fn select_star_query(
         executor: &mut sqlx::PgConnection,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
         return sqlx::query(&format!(
             "SELECT id, name, alias, region_id from {};",
             Self::TABLE_NAME,
         ))
         .fetch_all(executor)
-        .await;
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 }
 

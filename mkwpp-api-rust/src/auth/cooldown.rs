@@ -1,6 +1,11 @@
 use sqlx::{FromRow, postgres::PgQueryResult};
 use std::net::IpAddr;
 
+use crate::api::{
+    errors::{EveryReturnedError, FinalErrorResponse},
+    v1::decode_rows_to_table,
+};
+
 #[derive(FromRow)]
 pub struct LogInAttempts {
     pub ip: IpAddr,
@@ -13,7 +18,7 @@ impl LogInAttempts {
         executor: &mut sqlx::PgConnection,
         ip: IpAddr,
         user_id: i32,
-    ) -> Result<PgQueryResult, sqlx::Error> {
+    ) -> Result<PgQueryResult, FinalErrorResponse> {
         sqlx::query(
             r#"
                 INSERT INTO ip_request_throttles (ip, user_id, timestamp)
@@ -24,6 +29,7 @@ impl LogInAttempts {
         .bind(user_id)
         .execute(executor)
         .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))
     }
 
     pub fn is_on_cooldown(mut data: Vec<Self>, ip: IpAddr, user_id: i32) -> bool {
@@ -54,19 +60,22 @@ impl LogInAttempts {
         executor: &mut sqlx::PgConnection,
         ip: IpAddr,
         user_id: i32,
-    ) -> Result<Vec<Self>, sqlx::Error> {
-        let mut user_data = sqlx::query(
-            "SELECT * FROM ip_request_throttles WHERE user_id = $1 AND timestamp <= $2",
-        )
-        .bind(user_id)
-        .bind(chrono::DateTime::from_timestamp(chrono::Utc::now().timestamp() - 86400, 0).unwrap())
-        .fetch_all(&mut *executor)
-        .await?
-        .into_iter()
-        .map(|r| Self::from_row(&r))
-        .collect::<Result<Vec<Self>, sqlx::Error>>()?;
+    ) -> Result<Vec<Self>, FinalErrorResponse> {
+        let mut user_data = decode_rows_to_table::<Self>(
+            sqlx::query(
+                "SELECT * FROM ip_request_throttles WHERE user_id = $1 AND timestamp <= $2",
+            )
+            .bind(user_id)
+            .bind(
+                chrono::DateTime::from_timestamp(chrono::Utc::now().timestamp() - 86400, 0)
+                    .unwrap(),
+            )
+            .fetch_all(&mut *executor)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+        )?;
 
-        user_data.extend(
+        user_data.extend(decode_rows_to_table::<Self>(
             sqlx::query(
                 r"
                 SELECT *
@@ -79,11 +88,9 @@ impl LogInAttempts {
             )
             .bind(ip)
             .fetch_all(executor)
-            .await?
-            .into_iter()
-            .map(|r| Self::from_row(&r))
-            .collect::<Result<Vec<Self>, sqlx::Error>>()?,
-        );
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+        )?);
 
         Ok(user_data)
     }

@@ -1,3 +1,4 @@
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 use crate::custom_serde::DateAsTimestampNumber;
 use crate::sql::tables::BasicTableQueries;
 use sqlx::postgres::PgRow;
@@ -22,22 +23,23 @@ impl BlogPosts {
     pub async fn get_limit(
         limit: i32,
         executor: &mut sqlx::PgConnection,
-    ) -> Result<Vec<PgRow>, sqlx::Error> {
+    ) -> Result<Vec<PgRow>, FinalErrorResponse> {
         return sqlx::query(
             "SELECT * FROM blog_posts WHERE is_published = true ORDER BY published_at DESC LIMIT $1",
         )
         .bind(limit)
         .fetch_all(executor)
-        .await;
+        .await.map_err(| e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 
     pub async fn get_by_id(
         id: i32,
         executor: &mut sqlx::PgConnection,
-    ) -> Result<PgRow, sqlx::Error> {
+    ) -> Result<PgRow, FinalErrorResponse> {
         return sqlx::query("SELECT * FROM blog_posts WHERE is_published = true AND id = $1")
             .bind(id)
             .fetch_one(executor)
-            .await;
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 }

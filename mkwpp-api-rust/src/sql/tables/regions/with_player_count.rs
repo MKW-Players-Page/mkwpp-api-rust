@@ -1,6 +1,9 @@
-use crate::sql::tables::{
-    BasicTableQueries,
-    regions::tree::{ChildrenTree, generate_region_tree_player_count},
+use crate::{
+    api::errors::{EveryReturnedError, FinalErrorResponse},
+    sql::tables::{
+        BasicTableQueries,
+        regions::tree::{ChildrenTree, generate_region_tree_player_count},
+    },
 };
 
 pub use super::RegionsWithPlayerCount;
@@ -11,7 +14,7 @@ impl BasicTableQueries for RegionsWithPlayerCount {
     // This returns the number of players with the region selected
     async fn select_star_query(
         executor: &mut sqlx::PgConnection,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
         return sqlx::query(const_format::formatc!(
             r#"
             SELECT
@@ -30,7 +33,8 @@ impl BasicTableQueries for RegionsWithPlayerCount {
             players_table = crate::sql::tables::players::Players::TABLE_NAME
         ))
         .fetch_all(executor)
-        .await;
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 }
 

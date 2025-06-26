@@ -2,7 +2,7 @@ use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
     api::{
-        errors::EveryReturnedError,
+        errors::FinalErrorResponse,
         v1::{
             custom::params::{Params, ParamsDestructured},
             decode_row_to_table, decode_rows_to_table, send_serialized_data,
@@ -19,7 +19,7 @@ pub fn blog() -> impl HttpServiceFactory {
 }
 default_paths_fn!("/list", "/id/:id");
 
-async fn get_list(req: HttpRequest) -> HttpResponse {
+async fn get_list(req: HttpRequest) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
@@ -27,70 +27,33 @@ async fn get_list(req: HttpRequest) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
     let mut executor = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
-    let data = match BlogPosts::get_limit(params.limit, &mut executor).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    let mut data = match decode_rows_to_table::<BlogPosts>(data) {
-        Ok(v) => v,
-        Err(e) => return e,
-    };
+    let mut data = decode_rows_to_table::<BlogPosts>(
+        BlogPosts::get_limit(params.limit, &mut executor).await?,
+    )?;
 
     for post in data.iter_mut() {
-        post.author_id =
-            match Players::get_player_ids_from_user_ids(&mut executor, &[post.author_id]).await {
-                Ok(v) => match v.first() {
-                    Some(v) => *v,
-                    None => return EveryReturnedError::UserIDDoesntExist.http_response(""),
-                },
-                Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
-            };
+        post.author_id = Players::get_player_id_from_user_id(&mut executor, post.author_id).await?;
     }
 
-    if let Err(e) = crate::api::v1::close_connection(executor).await {
-        return e;
-    }
+    crate::api::v1::close_connection(executor).await?;
+
     send_serialized_data(data)
 }
-async fn get_by_id(path: web::Path<i32>) -> HttpResponse {
+async fn get_by_id(path: web::Path<i32>) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = crate::app_state::access_app_state().await;
     let mut executor = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
-    let data = match BlogPosts::get_by_id(path.into_inner(), &mut executor).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    let mut data = decode_row_to_table::<BlogPosts>(
+        BlogPosts::get_by_id(path.into_inner(), &mut executor).await?,
+    )?;
+    data.author_id = Players::get_player_id_from_user_id(&mut executor, data.author_id).await?;
 
-    let mut data = match decode_row_to_table::<BlogPosts>(data) {
-        Ok(v) => v,
-        Err(e) => return e,
-    };
-
-    data.author_id =
-        match Players::get_player_ids_from_user_ids(&mut executor, &[data.author_id]).await {
-            Ok(v) => match v.first() {
-                Some(v) => *v,
-                None => return EveryReturnedError::UserIDDoesntExist.http_response(""),
-            },
-            Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
-        };
-
-    if let Err(e) = crate::api::v1::close_connection(executor).await {
-        return e;
-    }
-
+    crate::api::v1::close_connection(executor).await?;
     send_serialized_data(data)
 }
