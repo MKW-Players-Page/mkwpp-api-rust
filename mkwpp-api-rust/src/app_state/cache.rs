@@ -1,6 +1,9 @@
 use std::{hash::Hash, sync::Arc};
 
-use crate::sql::tables::{standard_levels::StandardLevels, standards::Standards};
+use crate::{
+    api::errors::FinalErrorResponse,
+    sql::tables::{standard_levels::StandardLevels, standards::Standards},
+};
 
 #[derive(Default)]
 pub struct Cache {
@@ -24,7 +27,7 @@ pub trait CacheItem {
     async fn load(
         executor: &mut sqlx::PgConnection,
         input: Self::Input,
-    ) -> Result<Vec<Self>, anyhow::Error>
+    ) -> Result<Vec<Self>, FinalErrorResponse>
     where
         Self: Sized;
 }

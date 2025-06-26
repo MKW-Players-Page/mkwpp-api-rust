@@ -1,10 +1,15 @@
 pub use super::{RankingsTimesetData, timesets::ValidTimesetItem};
-use crate::sql::tables::{
-    BasicTableQueries, Category,
-    players::{FilterPlayers, players_basic::PlayersBasic},
-    scores::timesets::Timeset,
+use crate::{
+    api::{
+        errors::{EveryReturnedError, FinalErrorResponse},
+        v1::decode_rows_to_table,
+    },
+    sql::tables::{
+        BasicTableQueries, Category,
+        players::{FilterPlayers, players_basic::PlayersBasic},
+        scores::timesets::Timeset,
+    },
 };
-use sqlx::FromRow;
 
 #[derive(serde::Deserialize, Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -67,20 +72,19 @@ impl Rankings {
         is_lap: Option<bool>,
         max_date: chrono::NaiveDate,
         region_id: i32,
-    ) -> Result<Vec<Rankings>, anyhow::Error> {
+    ) -> Result<Vec<Rankings>, FinalErrorResponse> {
         let region_ids =
             crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
 
-        let mut players = PlayersBasic::get_players_by_region_ids(executor, region_ids)
-            .await?
-            .into_iter()
-            .map(|player_row| PlayersBasic::from_row(&player_row))
-            .collect::<Result<Vec<PlayersBasic>, sqlx::Error>>()?;
+        let mut players = decode_rows_to_table::<PlayersBasic>(
+            PlayersBasic::get_players_by_region_ids(executor, region_ids).await?,
+        )?;
 
         let player_ids = players.iter().map(|x| x.id).collect::<Vec<i32>>();
 
-        let timeset = sqlx::query(&format!(
-            r#"
+        let timeset = decode_rows_to_table::<RankingsTimesetData>(
+            sqlx::query(&format!(
+                r#"
                 SELECT
                     value, category, is_lap, track_id, player_id
                 FROM (
@@ -106,22 +110,21 @@ impl Rankings {
                 WHERE row_n = 1
                 ORDER BY track_id ASC, is_lap ASC, value ASC, date DESC;
                 "#,
-            this_table = super::Scores::TABLE_NAME,
-            is_lap = if is_lap.is_some() {
-                "AND is_lap = $2".to_string()
-            } else {
-                String::new()
-            }
-        ))
-        .bind(category)
-        .bind(is_lap)
-        .bind(max_date)
-        .bind(&player_ids)
-        .fetch_all(executor)
-        .await?
-        .into_iter()
-        .map(|score_row| RankingsTimesetData::from_row(&score_row))
-        .collect::<Result<Vec<RankingsTimesetData>, sqlx::Error>>()?;
+                this_table = super::Scores::TABLE_NAME,
+                is_lap = if is_lap.is_some() {
+                    "AND is_lap = $2".to_string()
+                } else {
+                    String::new()
+                }
+            ))
+            .bind(category)
+            .bind(is_lap)
+            .bind(max_date)
+            .bind(&player_ids)
+            .fetch_all(executor)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+        )?;
 
         let mut timeset_encoder = Timeset::default();
         timeset_encoder.timeset = timeset;

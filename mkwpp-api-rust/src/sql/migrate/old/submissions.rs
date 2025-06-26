@@ -1,3 +1,5 @@
+use crate::api::errors::FinalErrorResponse;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct Submissions {
     value: i32,
@@ -25,7 +27,7 @@ impl super::OldFixtureJson for Submissions {
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return crate::sql::tables::submissions::Submissions {
             id: key,
             value: self.value,

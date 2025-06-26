@@ -1,10 +1,14 @@
-use sqlx::FromRow;
-
-use crate::sql::tables::{
-    BasicTableQueries, Category,
-    players::Players,
-    regions::RegionType,
-    scores::{CountryRankingsTimesetData, rankings::ValidTimesetItem, timesets::Timeset},
+use crate::{
+    api::{
+        errors::{EveryReturnedError, FinalErrorResponse},
+        v1::decode_rows_to_table,
+    },
+    sql::tables::{
+        BasicTableQueries, Category,
+        players::Players,
+        regions::RegionType,
+        scores::{CountryRankingsTimesetData, rankings::ValidTimesetItem, timesets::Timeset},
+    },
 };
 
 #[derive(serde::Serialize)]
@@ -23,9 +27,10 @@ impl CountryRankings {
         max_date: chrono::NaiveDate,
         region_type: RegionType,
         player_numbers: i32,
-    ) -> Result<Vec<CountryRankings>, anyhow::Error> {
-        let timeset = sqlx::query(&format!(
-            r#"
+    ) -> Result<Vec<CountryRankings>, FinalErrorResponse> {
+        let timeset = decode_rows_to_table::<CountryRankingsTimesetData>(
+            sqlx::query(&format!(
+                r#"
             SELECT
                 value, category, is_lap, track_id, player_id, region_id
             FROM (
@@ -53,22 +58,21 @@ impl CountryRankings {
             WHERE row_n = 1
             ORDER BY track_id ASC, is_lap ASC, value ASC, date DESC;
             "#,
-            this_table = super::Scores::TABLE_NAME,
-            players_table = Players::TABLE_NAME,
-            is_lap = if is_lap.is_some() {
-                "AND is_lap = $2".to_string()
-            } else {
-                String::new()
-            }
-        ))
-        .bind(category)
-        .bind(is_lap)
-        .bind(max_date)
-        .fetch_all(executor)
-        .await?
-        .into_iter()
-        .map(|score_row| CountryRankingsTimesetData::from_row(&score_row))
-        .collect::<Result<Vec<CountryRankingsTimesetData>, sqlx::Error>>()?;
+                this_table = super::Scores::TABLE_NAME,
+                players_table = Players::TABLE_NAME,
+                is_lap = if is_lap.is_some() {
+                    "AND is_lap = $2".to_string()
+                } else {
+                    String::new()
+                }
+            ))
+            .bind(category)
+            .bind(is_lap)
+            .bind(max_date)
+            .fetch_all(executor)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+        )?;
 
         let mut timeset_encoder = Timeset::default();
         timeset_encoder.timeset = timeset;

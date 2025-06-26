@@ -1,9 +1,10 @@
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use anyhow::anyhow;
-
-use crate::sql::tables::{standard_levels::StandardLevels, standards::Standards};
+use crate::{
+    api::errors::{EveryReturnedError, FinalErrorResponse},
+    sql::tables::{standard_levels::StandardLevels, standards::Standards},
+};
 
 pub mod cache;
 
@@ -15,8 +16,11 @@ pub struct AppState {
 impl AppState {
     pub async fn acquire_pg_connection(
         &self,
-    ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, anyhow::Error> {
-        self.pg_pool.acquire().await.map_err(|e| anyhow!("{e}"))
+    ) -> Result<sqlx::pool::PoolConnection<sqlx::Postgres>, FinalErrorResponse> {
+        self.pg_pool
+            .acquire()
+            .await
+            .map_err(|e| EveryReturnedError::NoConnectionFromPGPool.to_final_error(e))
     }
 
     pub async fn get_legacy_standard_levels(&self) -> Arc<[StandardLevels]> {

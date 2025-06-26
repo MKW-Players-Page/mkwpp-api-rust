@@ -1,8 +1,10 @@
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 use crate::{
-    api::errors::EveryReturnedError,
-    app_state::access_app_state,
+    api::{
+        errors::{EveryReturnedError, FinalErrorResponse},
+        v1::send_serialized_data,
+    },
     auth::{
         BareMinimumValidationData, activate_account, is_valid_token,
         validated_strings::ValidatedString,
@@ -48,48 +50,35 @@ struct RegisterBody {
     email: String,
 }
 
-async fn register(body: web::Json<RegisterBody>) -> HttpResponse {
+async fn register(
+    body: web::Json<RegisterBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let body = body.into_inner();
 
     let data = crate::app_state::access_app_state().await;
-    let transaction = {
+    let mut transaction = {
         let data = data.read().await;
-        data.pg_pool.begin().await
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
     let username =
-        match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
-            Ok(v) => v,
-            Err(e) => return e.http_response(""),
-        };
-
+        crate::auth::validated_strings::username::Username::new_from_string(body.username)?;
     let password =
-        match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
-            Ok(v) => v,
-            Err(e) => return e.http_response(""),
-        };
+        crate::auth::validated_strings::password::Password::new_from_string(body.password)?;
+    let email = crate::auth::validated_strings::email::Email::new_from_string(body.email)?;
 
-    let email = match crate::auth::validated_strings::email::Email::new_from_string(body.email) {
-        Ok(v) => v,
-        Err(e) => return e.http_response(""),
-    };
+    crate::auth::register(username, password, email, &mut transaction).await?;
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
 
-    let mut transaction = match transaction {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-    };
-
-    return match crate::auth::register(username, password, email, &mut transaction).await {
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-        Ok(_) => {
-            if let Err(e) = transaction.commit().await {
-                return EveryReturnedError::CommitPGTransaction.http_response(e);
-            }
-            HttpResponse::Ok()
-                .content_type("application/json")
-                .body("{}")
-        }
-    };
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
@@ -99,48 +88,37 @@ struct LoginBody {
     password: String,
 }
 
-async fn login(req: HttpRequest, body: web::Json<LoginBody>) -> HttpResponse {
+async fn login(
+    req: HttpRequest,
+    body: web::Json<LoginBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = crate::app_state::access_app_state().await;
-    let transaction = {
+    let mut transaction = {
         let data = data.read().await;
-        data.pg_pool.begin().await
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
     std::thread::sleep(std::time::Duration::from_secs(5));
     let body = body.into_inner();
 
     let ip = req.peer_addr().unwrap().ip();
+
     let username =
-        match crate::auth::validated_strings::username::Username::new_from_string(body.username) {
-            Ok(v) => v,
-            Err(e) => return e.http_response(""),
-        };
+        crate::auth::validated_strings::username::Username::new_from_string(body.username)?;
     let password =
-        match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
-            Ok(v) => v,
-            Err(e) => return e.http_response(""),
-        };
+        crate::auth::validated_strings::password::Password::new_from_string(body.password)?;
 
-    let mut transaction = match transaction {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-    };
+    let login_attempt = crate::auth::login(username, password, ip, &mut transaction).await?;
 
-    let login_attempt = crate::auth::login(username, password, ip, &mut transaction).await;
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
 
-    if let Err(e) = transaction.commit().await {
-        return EveryReturnedError::CommitPGTransaction.http_response(e);
-    }
-
-    let login_attempt = match login_attempt {
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-        Ok(v) => v,
-    };
-
-    match serde_json::to_string(&login_attempt) {
-        Err(e) => EveryReturnedError::SerializingDataToJSON.http_response(e),
-        Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
-    }
+    send_serialized_data(login_attempt)
 }
 
 #[derive(serde::Deserialize)]
@@ -149,67 +127,44 @@ pub struct UserDataBody {
     pub session_token: String,
 }
 
-async fn user_data(body: web::Json<UserDataBody>) -> HttpResponse {
+async fn user_data(
+    body: web::Json<UserDataBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let body = body.into_inner();
 
     let data = crate::app_state::access_app_state().await;
     let mut connection = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
-    let user_data = match crate::auth::get_user_data(&body.session_token, &mut connection).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    let user_data = match user_data {
-        Some(v) => v,
-        None => return EveryReturnedError::UserIDDoesntExist.http_response(""),
-    };
-
-    let user_data = match user_data {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-    };
-
-    let user_data = match serde_json::to_string(&user_data) {
-        Ok(v) => v,
-        Err(e) => {
-            return EveryReturnedError::SerializingDataToJSON.http_response(e);
-        }
-    };
-
-    HttpResponse::Ok()
-        .content_type("application/json")
-        .body(user_data)
+    send_serialized_data(crate::auth::get_user_data(&body.session_token, &mut connection).await?)
 }
 
-async fn logout(body: web::Json<UserDataBody>) -> HttpResponse {
+async fn logout(
+    body: web::Json<UserDataBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = crate::app_state::access_app_state().await;
     let mut transaction = {
         let data = data.read().await;
-        match data.pg_pool.begin().await {
-            Ok(v) => v,
-            Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-        }
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
     let body = body.into_inner();
 
-    if let Err(e) = crate::auth::logout(&body.session_token, &mut transaction).await {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    }
+    crate::auth::logout(&body.session_token, &mut transaction).await?;
 
-    return match transaction.commit().await {
-        Ok(_) => HttpResponse::Ok()
-            .content_type("application/json")
-            .body("{}"),
-        Err(e) => return EveryReturnedError::CommitPGTransaction.http_response(e),
-    };
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
@@ -221,58 +176,50 @@ struct UpdatePasswordBody {
     validation_data: BareMinimumValidationData,
 }
 
-async fn update_password(body: web::Json<UpdatePasswordBody>) -> HttpResponse {
+async fn update_password(
+    body: web::Json<UpdatePasswordBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = crate::app_state::access_app_state().await;
     let mut transaction = {
         let data = data.read().await;
-        match data.pg_pool.begin().await {
-            Ok(v) => v,
-            Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-        }
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
     let body = body.into_inner();
-    if let Ok(false) | Err(_) = is_valid_token(
+    if !is_valid_token(
         &body.validation_data.session_token,
         body.validation_data.user_id,
         &mut transaction,
     )
-    .await
+    .await?
     {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
-    let old_password = match crate::auth::validated_strings::password::Password::new_from_string(
-        body.old_password,
-    ) {
-        Ok(v) => v,
-        Err(e) => return e.http_response(""),
-    };
-    let new_password = match crate::auth::validated_strings::password::Password::new_from_string(
-        body.new_password,
-    ) {
-        Ok(v) => v,
-        Err(e) => return e.http_response(""),
-    };
+    let old_password =
+        crate::auth::validated_strings::password::Password::new_from_string(body.old_password)?;
+    let new_password =
+        crate::auth::validated_strings::password::Password::new_from_string(body.new_password)?;
 
-    if let Err(e) = crate::auth::update_password(
+    crate::auth::update_password(
         body.validation_data.user_id,
         old_password,
         new_password,
         &mut transaction,
     )
-    .await
-    {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    };
+    .await?;
 
-    if let Err(e) = transaction.commit().await {
-        return EveryReturnedError::CommitPGTransaction.http_response(e);
-    }
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
 
-    HttpResponse::Ok()
+    Ok(HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
@@ -280,27 +227,28 @@ struct ActivateBody {
     token: String,
 }
 
-async fn activate(body: web::Json<ActivateBody>) -> HttpResponse {
+async fn activate(
+    body: web::Json<ActivateBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    let data = crate::app_state::access_app_state().await;
     let mut transaction = {
-        let data = access_app_state().await;
         let data = data.read().await;
-        match data.pg_pool.begin().await {
-            Ok(v) => v,
-            Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-        }
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
-    if let Err(e) = activate_account(&body.0.token, &mut transaction).await {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    }
+    activate_account(&body.0.token, &mut transaction).await?;
 
-    if let Err(e) = transaction.commit().await {
-        return EveryReturnedError::CommitPGTransaction.http_response(e);
-    }
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
 
-    HttpResponse::Ok()
+    Ok(HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
@@ -308,36 +256,31 @@ struct PasswordForgotBody {
     email: String,
 }
 
-async fn password_forgot(body: web::Json<PasswordForgotBody>) -> HttpResponse {
+async fn password_forgot(
+    body: web::Json<PasswordForgotBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let body = body.into_inner();
 
     let data = crate::app_state::access_app_state().await;
-    let transaction = {
+    let mut transaction = {
         let data = data.read().await;
-        data.pg_pool.begin().await
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
-    let email = match crate::auth::validated_strings::email::Email::new_from_string(body.email) {
-        Ok(v) => v,
-        Err(e) => return e.http_response(""),
-    };
+    let email = crate::auth::validated_strings::email::Email::new_from_string(body.email)?;
 
-    let mut transaction = match transaction {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-    };
+    crate::auth::password_reset_token_gen(email, &mut transaction).await?;
 
-    return match crate::auth::password_reset_token_gen(email, &mut transaction).await {
-        Err(e) => return EveryReturnedError::GeneratingToken.http_response(e),
-        Ok(_) => {
-            if let Err(e) = transaction.commit().await {
-                return EveryReturnedError::CommitPGTransaction.http_response(e);
-            }
-            HttpResponse::Ok()
-                .content_type("application/json")
-                .body("{}")
-        }
-    };
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
@@ -345,67 +288,59 @@ struct PasswordResetBody {
     password: String,
     token: String,
 }
-async fn password_reset(body: web::Json<PasswordResetBody>) -> HttpResponse {
+async fn password_reset(
+    body: web::Json<PasswordResetBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let body = body.into_inner();
 
     let data = crate::app_state::access_app_state().await;
-    let transaction = {
+    let mut transaction = {
         let data = data.read().await;
-        data.pg_pool.begin().await
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
     let password =
-        match crate::auth::validated_strings::password::Password::new_from_string(body.password) {
-            Ok(v) => v,
-            Err(e) => return e.http_response(""),
-        };
+        crate::auth::validated_strings::password::Password::new_from_string(body.password)?;
 
-    let mut transaction = match transaction {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-    };
+    crate::auth::reset_password(&body.token, password, &mut transaction).await?;
 
-    return match crate::auth::reset_password(&body.token, password, &mut transaction).await {
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-        Ok(_) => {
-            if let Err(e) = transaction.commit().await {
-                return EveryReturnedError::CommitPGTransaction.http_response(e);
-            }
-            HttpResponse::Ok()
-                .content_type("application/json")
-                .body("{}")
-        }
-    };
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
 struct TokenCheck {
     token: String,
 }
-async fn password_reset_check_token(body: web::Json<TokenCheck>) -> HttpResponse {
+async fn password_reset_check_token(
+    body: web::Json<TokenCheck>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let body = body.into_inner();
 
     let data = crate::app_state::access_app_state().await;
-    let transaction = {
+    let mut transaction = {
         let data = data.read().await;
-        data.pg_pool.begin().await
+        data.pg_pool
+            .begin()
+            .await
+            .map_err(|e| EveryReturnedError::CreatePGTransaction.to_final_error(e))?
     };
 
-    let mut transaction = match transaction {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::CreatePGTransaction.http_response(e),
-    };
+    crate::auth::is_reset_password_token_valid(&body.token, &mut transaction).await?;
 
-    return match crate::auth::is_reset_password_token_valid(&body.token, &mut transaction).await {
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-        Ok(v) => {
-            if let Err(e) = transaction.commit().await {
-                return EveryReturnedError::CommitPGTransaction.http_response(e);
-            }
-
-            HttpResponse::Ok()
-                .content_type("application/json")
-                .body(format!("{{\"is_valid\": {v}}}"))
-        }
-    };
+    transaction
+        .commit()
+        .await
+        .map_err(|e| EveryReturnedError::CommitPGTransaction.to_final_error(e))?;
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body("{}"))
 }

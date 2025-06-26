@@ -1,10 +1,11 @@
+use chrono::NaiveDate;
 use std::collections::HashMap;
 
-use anyhow::anyhow;
-use chrono::NaiveDate;
-use sqlx::FromRow;
-
 use crate::{
+    api::{
+        errors::{EveryReturnedError, FinalErrorResponse},
+        v1::decode_rows_to_table,
+    },
     app_state::access_app_state,
     sql::tables::{
         BasicTableQueries, Category,
@@ -133,12 +134,15 @@ impl<K: ValidTimesetItem> Timeset<K> {
         &mut self,
         region_type: RegionType,
         players_numbers: i32,
-    ) -> Result<Vec<CountryRankings>, anyhow::Error> {
+    ) -> Result<Vec<CountryRankings>, FinalErrorResponse> {
         let region_type = match region_type {
-            RegionType::World => return Err(anyhow!("There are no Martian players yet!")),
+            RegionType::World => {
+                return Err(EveryReturnedError::InvalidInput
+                    .to_final_error("There are no Martian players yet!"));
+            }
             RegionType::CountryGroup | RegionType::SubnationalGroup => {
-                return Err(anyhow!(
-                    "Come back when we'll have figured out how to implement this."
+                return Err(EveryReturnedError::InvalidInput.to_final_error(
+                    "Come back when we'll have figured out how to implement this.",
                 ));
             }
             x => x,
@@ -150,11 +154,11 @@ impl<K: ValidTimesetItem> Timeset<K> {
             app_state.acquire_pg_connection().await?
         };
 
-        let all_regions_rows = RegionsWithPlayerCount::select_star_query(&mut executor).await?;
-        let all_regions = all_regions_rows
-            .into_iter()
-            .map(|r| RegionsWithPlayerCount::from_row(&r))
-            .collect::<Result<Vec<RegionsWithPlayerCount>, sqlx::Error>>()?;
+        let all_regions = decode_rows_to_table(
+            RegionsWithPlayerCount::select_star_query(&mut executor)
+                .await
+                .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+        )?;
 
         let all_regions = RegionsWithPlayerCount::collapse_counts_of_regions(&all_regions)
             .await
@@ -246,15 +250,17 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
             | TimesetOutput::PlayerTimesheet { .. }
             | TimesetOutput::TallyPointsCharts { .. }
-            | TimesetOutput::TotalTimeCharts { .. } => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
+            | TimesetOutput::TotalTimeCharts { .. } => Err(
+                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                    "Something went very wrong, the output type changed unexpectedly",
+                ),
+            ),
         }
     }
 
     pub async fn calculate_average_finish_charts(
         &mut self,
-    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+    ) -> Result<Vec<(i32, i32, RankingType)>, FinalErrorResponse> {
         self.internal_rankings_charts(TimesetOutput::AverageFinishCharts {
             rank_sums: vec![None; 0],
             players_found: vec![false; 0],
@@ -265,7 +271,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
     pub async fn calculate_total_time_charts(
         &mut self,
-    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+    ) -> Result<Vec<(i32, i32, RankingType)>, FinalErrorResponse> {
         self.internal_rankings_charts(TimesetOutput::TotalTimeCharts {
             total_times: vec![None; 0],
             players_found: vec![false; 0],
@@ -276,7 +282,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
     pub async fn calculate_tally_points_charts(
         &mut self,
-    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+    ) -> Result<Vec<(i32, i32, RankingType)>, FinalErrorResponse> {
         self.internal_rankings_charts(TimesetOutput::TallyPointsCharts {
             tally_points: vec![None; 0],
             players_found: vec![false; 0],
@@ -286,7 +292,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
     pub async fn calculate_personal_record_world_record_charts(
         &mut self,
-    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+    ) -> Result<Vec<(i32, i32, RankingType)>, FinalErrorResponse> {
         self.internal_rankings_charts(TimesetOutput::PersonalRecordWorldRecordCharts {
             prwr_sums: vec![None; 0],
             players_found: vec![false; 0],
@@ -297,7 +303,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
 
     pub async fn calculate_average_rank_rating_charts(
         &mut self,
-    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+    ) -> Result<Vec<(i32, i32, RankingType)>, FinalErrorResponse> {
         self.internal_rankings_charts(TimesetOutput::AverageRankRatingCharts {
             arr_value_sums: vec![None; 0],
             players_found: vec![false; 0],
@@ -309,7 +315,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
     async fn internal_rankings_charts(
         &mut self,
         mut output_type: TimesetOutput,
-    ) -> Result<Vec<(i32, i32, RankingType)>, anyhow::Error> {
+    ) -> Result<Vec<(i32, i32, RankingType)>, FinalErrorResponse> {
         if self.filters.player_ids.is_empty() && self.filters.whitelist_player_ids {
             return Ok(vec![]);
         }
@@ -470,13 +476,15 @@ impl<K: ValidTimesetItem> Timeset<K> {
             TimesetOutput::None
             | TimesetOutput::PlayerTimesheet { .. }
             | TimesetOutput::CountryRankings { .. }
-            | TimesetOutput::PlayerMatchup { .. } => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
+            | TimesetOutput::PlayerMatchup { .. } => Err(
+                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                    "Something went very wrong, the output type changed unexpectedly",
+                ),
+            ),
         }
     }
 
-    pub async fn timesheet(&mut self, player_id: i32) -> Result<Timesheet, anyhow::Error> {
+    pub async fn timesheet(&mut self, player_id: i32) -> Result<Timesheet, FinalErrorResponse> {
         self.calculate_divvie_value();
         self.output = TimesetOutput::PlayerTimesheet {
             times: vec![None; self.divvie_value as usize],
@@ -516,13 +524,18 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::TallyPointsCharts { .. }
             | TimesetOutput::CountryRankings { .. }
             | TimesetOutput::AverageRankRatingCharts { .. }
-            | TimesetOutput::PlayerMatchup { .. } => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
+            | TimesetOutput::PlayerMatchup { .. } => Err(
+                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                    "Something went very wrong, the output type changed unexpectedly",
+                ),
+            ),
         }
     }
 
-    pub async fn matchup(&mut self, player_ids: Vec<i32>) -> Result<MatchupData, anyhow::Error> {
+    pub async fn matchup(
+        &mut self,
+        player_ids: Vec<i32>,
+    ) -> Result<MatchupData, FinalErrorResponse> {
         self.calculate_divvie_value();
         let player_numbers = player_ids.len();
 
@@ -839,13 +852,15 @@ impl<K: ValidTimesetItem> Timeset<K> {
             | TimesetOutput::PersonalRecordWorldRecordCharts { .. }
             | TimesetOutput::TallyPointsCharts { .. }
             | TimesetOutput::CountryRankings { .. }
-            | TimesetOutput::AverageRankRatingCharts { .. } => Err(anyhow!(
-                "Something went very wrong, the output type changed unexpectedly"
-            )),
+            | TimesetOutput::AverageRankRatingCharts { .. } => Err(
+                EveryReturnedError::TechnicallyUnreachableCode.to_final_error(
+                    "Something went very wrong, the output type changed unexpectedly",
+                ),
+            ),
         }
     }
 
-    async fn invert_blacklist(&mut self) -> Result<(), anyhow::Error> {
+    async fn invert_blacklist(&mut self) -> Result<(), FinalErrorResponse> {
         if self.filters.whitelist_player_ids {
             return Ok(());
         }
@@ -859,8 +874,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
             &mut executor,
             &self.filters.player_ids,
         )
-        .await
-        .map_err(|e| anyhow!("Couldn't get the player ids from the list. {e}"))?;
+        .await?;
         self.filters.whitelist_player_ids = true;
 
         Ok(())
@@ -873,7 +887,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
         };
     }
 
-    async fn core_loop(&mut self) -> Result<(), anyhow::Error> {
+    async fn core_loop(&mut self) -> Result<(), FinalErrorResponse> {
         let app_state = crate::app_state::access_app_state().await;
         let app_state = app_state.read().await;
         let standard_levels = app_state.get_legacy_standard_levels().await;

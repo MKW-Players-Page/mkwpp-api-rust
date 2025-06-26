@@ -1,3 +1,5 @@
+use crate::api::errors::FinalErrorResponse;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct Regions {
     code: String,
@@ -12,7 +14,7 @@ impl super::OldFixtureJson for Regions {
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return crate::sql::tables::regions::Regions {
             id: key,
             code: self.code,

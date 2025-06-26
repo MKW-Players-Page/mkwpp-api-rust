@@ -1,6 +1,6 @@
 use base64::Engine;
 
-use crate::api::errors::EveryReturnedError;
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 use super::ValidatedString;
 
@@ -8,12 +8,10 @@ use super::ValidatedString;
 pub struct Password(String);
 
 impl ValidatedString for Password {
-    type Err = EveryReturnedError;
-
-    fn new_from_string(val: String) -> Result<Self, Self::Err> {
+    fn new_from_string(val: String) -> Result<Self, FinalErrorResponse> {
         let val = match val.len() {
-            0..=8 => return Err(EveryReturnedError::PasswordTooShort),
-            129.. => return Err(EveryReturnedError::PasswordTooLong),
+            0..=8 => return Err(EveryReturnedError::PasswordTooShort.to_final_error("")),
+            129.. => return Err(EveryReturnedError::PasswordTooLong.to_final_error("")),
             _ => val,
         };
 
@@ -44,16 +42,16 @@ impl ValidatedString for Password {
         }
 
         if !has_uppercase {
-            return Err(EveryReturnedError::PasswordMustHaveUppercase);
+            return Err(EveryReturnedError::PasswordMustHaveUppercase.to_final_error(""));
         }
         if !has_lowercase {
-            return Err(EveryReturnedError::PasswordMustHaveLowercase);
+            return Err(EveryReturnedError::PasswordMustHaveLowercase.to_final_error(""));
         }
         if !has_special_character {
-            return Err(EveryReturnedError::PasswordMustHaveSpecial);
+            return Err(EveryReturnedError::PasswordMustHaveSpecial.to_final_error(""));
         }
         if !has_number {
-            return Err(EveryReturnedError::PasswordMustHaveNumber);
+            return Err(EveryReturnedError::PasswordMustHaveNumber.to_final_error(""));
         }
 
         Ok(Self(val))

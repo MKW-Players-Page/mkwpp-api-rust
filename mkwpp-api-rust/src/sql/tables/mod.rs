@@ -1,3 +1,5 @@
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
+
 pub mod awards;
 pub mod blog_posts;
 pub mod champs;
@@ -110,9 +112,10 @@ pub trait BasicTableQueries {
 
     async fn select_star_query(
         executor: &mut sqlx::PgConnection,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error> {
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
         return sqlx::query(&format!("SELECT * FROM {};", Self::TABLE_NAME))
             .fetch_all(executor)
-            .await;
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
     }
 }

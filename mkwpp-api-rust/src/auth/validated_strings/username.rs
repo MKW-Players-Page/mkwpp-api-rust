@@ -1,4 +1,4 @@
-use crate::api::errors::EveryReturnedError;
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 use super::ValidatedString;
 
@@ -6,12 +6,10 @@ use super::ValidatedString;
 pub struct Username(String);
 
 impl ValidatedString for Username {
-    type Err = EveryReturnedError;
-
-    fn new_from_string(val: String) -> Result<Self, Self::Err> {
+    fn new_from_string(val: String) -> Result<Self, FinalErrorResponse> {
         match val.len() {
-            0..=4 => Err(EveryReturnedError::UsernameTooShort),
-            151.. => Err(EveryReturnedError::UsernameTooLong),
+            0..=4 => Err(EveryReturnedError::UsernameTooShort.to_final_error("")),
+            151.. => Err(EveryReturnedError::UsernameTooLong.to_final_error("")),
             _ => Ok(Self(val)),
         }
     }

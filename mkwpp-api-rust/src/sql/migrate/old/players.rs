@@ -1,3 +1,5 @@
+use crate::api::errors::FinalErrorResponse;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct Players {
     name: String,
@@ -13,7 +15,7 @@ impl super::OldFixtureJson for Players {
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         let joined_date = self
             .joined_date
             .map(|time_str| chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())

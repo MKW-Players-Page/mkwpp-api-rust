@@ -1,4 +1,7 @@
-use crate::{api::errors::EveryReturnedError, sql::tables::BasicTableQueries};
+use crate::{
+    api::errors::{EveryReturnedError, FinalErrorResponse},
+    sql::tables::BasicTableQueries,
+};
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 macro_rules! default_paths_fn {
@@ -53,61 +56,44 @@ async fn doc_css() -> HttpResponse {
 
 pub async fn close_connection(
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
-) -> Result<(), HttpResponse> {
+) -> Result<(), FinalErrorResponse> {
     connection
         .close()
         .await
-        .map_err(|e| EveryReturnedError::ClosingConnectionFromPGPool.http_response(e))
-}
-
-pub fn match_rows(
-    rows_request: Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
-) -> Result<Vec<sqlx::postgres::PgRow>, HttpResponse> {
-    rows_request.map_err(|e| EveryReturnedError::GettingFromDatabase.http_response(e))
+        .map_err(|e| EveryReturnedError::ClosingConnectionFromPGPool.to_final_error(e))
 }
 
 pub fn decode_rows_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
-    rows: Vec<sqlx::postgres::PgRow>,
-) -> Result<Vec<Table>, HttpResponse> {
+    rows: impl IntoIterator<Item = sqlx::postgres::PgRow>,
+) -> Result<Vec<Table>, FinalErrorResponse> {
     rows.into_iter()
         .map(|r| Table::from_row(&r))
         .collect::<Result<Vec<Table>, sqlx::Error>>()
-        .map_err(|e| EveryReturnedError::DecodingDatabaseRows.http_response(e))
+        .map_err(|e| EveryReturnedError::DecodingDatabaseRows.to_final_error(e))
 }
 
 pub fn decode_row_to_table<Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow>>(
     row: sqlx::postgres::PgRow,
-) -> Result<Table, HttpResponse> {
-    Table::from_row(&row).map_err(|e| EveryReturnedError::DecodingDatabaseRows.http_response(e))
+) -> Result<Table, FinalErrorResponse> {
+    Table::from_row(&row).map_err(|e| EveryReturnedError::DecodingDatabaseRows.to_final_error(e))
 }
 
-pub fn send_serialized_data<T: serde::Serialize>(data: T) -> HttpResponse {
-    match serde_json::to_string(&data) {
-        Ok(v) => HttpResponse::Ok().content_type("application/json").body(v),
-        Err(e) => EveryReturnedError::SerializingDataToJSON.http_response(e),
-    }
+pub fn send_serialized_data<T: serde::Serialize>(
+    data: T,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    serde_json::to_string(&data)
+        .map(|v| HttpResponse::Ok().content_type("application/json").body(v))
+        .map_err(|e| EveryReturnedError::SerializingDataToJSON.to_final_error(e))
 }
 
 pub async fn handle_basic_get<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize,
 >(
-    rows_request: Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
+    rows: Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse>,
     connection: sqlx::pool::PoolConnection<sqlx::Postgres>,
-) -> HttpResponse {
-    if let Err(e) = close_connection(connection).await {
-        return e;
-    }
-
-    let rows = match match_rows(rows_request) {
-        Ok(rows) => rows,
-        Err(e) => return e,
-    };
-
-    let data = match decode_rows_to_table::<Table>(rows) {
-        Ok(data) => data,
-        Err(e) => return e,
-    };
-
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    close_connection(connection).await?;
+    let data = decode_rows_to_table::<Table>(rows?)?;
     send_serialized_data(data)
 }
 
@@ -116,15 +102,12 @@ pub async fn basic_get<
 >(
     rows_function: impl AsyncFnOnce(
         &mut sqlx::PgConnection,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
-) -> HttpResponse {
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = crate::app_state::access_app_state().await;
     let mut connection = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
     let rows_request = rows_function(&mut connection).await;
@@ -137,39 +120,25 @@ pub async fn basic_get_with_data_mod<
 >(
     rows_function: impl AsyncFnOnce(
         &mut sqlx::PgConnection,
-    ) -> Result<Vec<sqlx::postgres::PgRow>, sqlx::Error>,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse>,
     modifier_function: impl AsyncFnOnce(&[Table]) -> T,
-) -> HttpResponse {
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = crate::app_state::access_app_state().await;
     let mut connection = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
-    let rows_request = rows_function(&mut connection).await;
-
-    if let Err(e) = close_connection(connection).await {
-        return e;
-    }
-
-    let rows = match match_rows(rows_request) {
-        Ok(rows) => rows,
-        Err(e) => return e,
-    };
-
-    let data = match decode_rows_to_table::<Table>(rows) {
-        Ok(data) => modifier_function(&data).await,
-        Err(e) => return e,
-    };
+    let rows = rows_function(&mut connection).await?;
+    close_connection(connection).await?;
+    let data = decode_rows_to_table::<Table>(rows)?;
+    let data = modifier_function(&data).await;
 
     send_serialized_data(data)
 }
 
 pub async fn get_star_query<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + BasicTableQueries,
->() -> HttpResponse {
+>() -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     basic_get::<Table>(Table::select_star_query).await
 }

@@ -1,3 +1,4 @@
+use crate::api::errors::FinalErrorResponse;
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::sql::tables::scores::with_player::ScoresWithPlayer;
 use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
@@ -6,7 +7,7 @@ pub fn records() -> impl HttpServiceFactory {
     web::scope("/records").default_service(web::get().to(get))
 }
 
-pub async fn get(req: HttpRequest) -> HttpResponse {
+pub async fn get(req: HttpRequest) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );

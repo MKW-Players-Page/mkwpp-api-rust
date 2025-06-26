@@ -1,3 +1,5 @@
+use crate::api::errors::FinalErrorResponse;
+
 mod awards;
 mod champs;
 mod edit_submissions;
@@ -162,7 +164,7 @@ trait OldFixtureJson: std::fmt::Debug {
         file_name: &str,
         buffer: &'d mut String,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<(), sqlx::Error>
+    ) -> Result<(), FinalErrorResponse>
     where
         Self: Sized + serde::Deserialize<'d> + std::marker::Sync + std::marker::Send,
     {
@@ -209,7 +211,7 @@ trait OldFixtureJson: std::fmt::Debug {
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error>;
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse>;
 }
 
 #[derive(serde::Deserialize, Debug)]
@@ -222,7 +224,7 @@ impl<T: OldFixtureJson + std::marker::Sync + std::marker::Send> OldFixtureWrappe
     async fn add_to_db(
         self,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         self.fields.add_to_db(self.pk, transaction).await
     }
 }

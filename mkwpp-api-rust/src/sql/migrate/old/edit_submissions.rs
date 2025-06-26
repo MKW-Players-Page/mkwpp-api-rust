@@ -1,3 +1,5 @@
+use crate::api::errors::FinalErrorResponse;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct EditSubmissions {
     video_link: Option<String>,
@@ -22,7 +24,7 @@ impl super::OldFixtureJson for EditSubmissions {
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return crate::sql::tables::submissions::edit_submissions::EditSubmissions {
             id: key,
             date: None,

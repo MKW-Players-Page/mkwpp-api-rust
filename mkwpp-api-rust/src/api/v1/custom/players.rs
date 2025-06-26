@@ -1,4 +1,7 @@
-use crate::sql::tables::players::{FilterPlayers, Players, players_basic::PlayersBasic};
+use crate::{
+    api::errors::FinalErrorResponse,
+    sql::tables::players::{FilterPlayers, Players, players_basic::PlayersBasic},
+};
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn players() -> impl HttpServiceFactory {
@@ -20,7 +23,7 @@ pub async fn get_with_decode<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + FilterPlayers,
 >(
     body: web::Json<Vec<i32>>,
-) -> HttpResponse {
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let player_ids = body.into_inner();
     return crate::api::v1::basic_get::<Table>(async |x| {
         return Table::get_select_players(x, player_ids).await;

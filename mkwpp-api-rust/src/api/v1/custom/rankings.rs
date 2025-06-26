@@ -1,4 +1,4 @@
-use crate::api::errors::EveryReturnedError;
+use crate::api::errors::FinalErrorResponse;
 use crate::api::v1::custom::params::{Params, ParamsDestructured};
 use crate::api::v1::{close_connection, send_serialized_data};
 use crate::sql::tables::scores::country_rankings::CountryRankings;
@@ -7,7 +7,7 @@ use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 
 macro_rules! ranking {
     ($fn_name:ident, $enum_variant:ident, $default_val:expr) => {
-        async fn $fn_name(req: HttpRequest) -> HttpResponse {
+        async fn $fn_name(req: HttpRequest) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
             return get(RankingType::$enum_variant($default_val), req).await;
         }
     };
@@ -31,7 +31,10 @@ ranking!(prwr, PersonalRecordWorldRecord, 0.0);
 ranking!(tally, TallyPoints, 0);
 ranking!(total_time, TotalTime, 0);
 
-async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
+async fn get(
+    ranking_type: RankingType,
+    req: HttpRequest,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
@@ -39,13 +42,10 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
     let mut connection = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
-    let data = match Rankings::get(
+    let data = Rankings::get(
         &mut connection,
         ranking_type,
         params.category,
@@ -53,19 +53,13 @@ async fn get(ranking_type: RankingType, req: HttpRequest) -> HttpResponse {
         params.date,
         params.region_id,
     )
-    .await
-    {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    .await?;
 
-    if let Err(e) = close_connection(connection).await {
-        return e;
-    }
+    close_connection(connection).await?;
     send_serialized_data(data)
 }
 
-async fn country(req: HttpRequest) -> HttpResponse {
+async fn country(req: HttpRequest) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let params = ParamsDestructured::from_query(
         web::Query::<Params>::from_query(req.query_string()).unwrap(),
     );
@@ -73,13 +67,10 @@ async fn country(req: HttpRequest) -> HttpResponse {
     let data = crate::app_state::access_app_state().await;
     let mut connection = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
-    let data = match CountryRankings::get_country_af(
+    let data = CountryRankings::get_country_af(
         &mut connection,
         params.category,
         params.lap_mode,
@@ -87,14 +78,8 @@ async fn country(req: HttpRequest) -> HttpResponse {
         params.region_type,
         params.limit,
     )
-    .await
-    {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    .await?;
 
-    if let Err(e) = close_connection(connection).await {
-        return e;
-    }
+    close_connection(connection).await?;
     send_serialized_data(data)
 }

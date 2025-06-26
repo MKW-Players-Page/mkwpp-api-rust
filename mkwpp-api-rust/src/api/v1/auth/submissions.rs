@@ -6,7 +6,7 @@ use sqlx::{
 
 use crate::{
     api::{
-        errors::EveryReturnedError,
+        errors::{EveryReturnedError, FinalErrorResponse},
         v1::{close_connection, decode_row_to_table, decode_rows_to_table, send_serialized_data},
     },
     app_state::access_app_state,
@@ -44,10 +44,14 @@ pub fn submissions() -> impl HttpServiceFactory {
 
 default_paths_fn!("/get_submissions", "/get_edit_submissions");
 
-async fn get_submissions(data: web::Json<BareMinimumValidationData>) -> HttpResponse {
+async fn get_submissions(
+    data: web::Json<BareMinimumValidationData>,
+) -> Result<HttpResponse, FinalErrorResponse> {
     get::<Submissions>(data, Submissions::get_user_submissions).await
 }
-async fn get_edit_submissions(data: web::Json<BareMinimumValidationData>) -> HttpResponse {
+async fn get_edit_submissions(
+    data: web::Json<BareMinimumValidationData>,
+) -> Result<HttpResponse, FinalErrorResponse> {
     get::<EditSubmissions>(data, EditSubmissions::get_user_edit_submissions).await
 }
 
@@ -92,63 +96,39 @@ async fn get<
     T: serde::Serialize + for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + Convertible,
 >(
     data: web::Json<BareMinimumValidationData>,
-    callback: impl AsyncFn(i32, i32, &mut sqlx::PgConnection) -> Result<Vec<PgRow>, sqlx::Error>,
-) -> HttpResponse {
+    callback: impl AsyncFn(i32, i32, &mut sqlx::PgConnection) -> Result<Vec<PgRow>, FinalErrorResponse>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) =
-        is_valid_token(&data.session_token, data.user_id, &mut executor).await
-    {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+    if !is_valid_token(&data.session_token, data.user_id, &mut executor).await? {
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
-    let player_id = match get_user_data(&data.session_token, &mut executor).await {
-        Ok(v) => match v {
-            Some(v) => match v {
-                Ok(v) => v.player_id,
-                Err(e) => return EveryReturnedError::DecodingDatabaseRows.http_response(e),
-            },
-            None => return EveryReturnedError::UserHasNoAssociatedPlayer.http_response(""),
-        },
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
+    let player_id = get_user_data(&data.session_token, &mut executor)
+        .await?
+        .player_id;
 
-    let data = match callback(data.user_id, player_id, &mut executor).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    let mut data = match decode_rows_to_table::<T>(data) {
-        Err(e) => return e,
-        Ok(v) => v,
-    };
+    let mut data =
+        decode_rows_to_table::<T>(callback(data.user_id, player_id, &mut executor).await?)?;
 
     for item in data.iter_mut() {
-        match Players::get_player_ids_from_user_ids(&mut executor, &[item.get_submitter_id()]).await
-        {
-            Ok(v) => item.set_submitter_id(v[0]),
-            Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
-        }
+        item.set_submitter_id(
+            Players::get_player_id_from_user_id(&mut executor, item.get_submitter_id()).await?,
+        );
         if let Some(reviewer_id) = item.get_reviewer_id() {
-            match Players::get_player_ids_from_user_ids(&mut executor, &[reviewer_id]).await {
-                Ok(v) => item.set_reviewer_id(v[0]),
-                Err(e) => return EveryReturnedError::UserIdToPlayerId.http_response(e),
-            }
+            item.set_reviewer_id(
+                Players::get_player_id_from_user_id(&mut executor, reviewer_id).await?,
+            );
         }
     }
 
-    if let Err(e) = close_connection(executor).await {
-        return e;
-    }
+    close_connection(executor).await?;
 
     send_serialized_data(data)
 }
@@ -169,12 +149,12 @@ struct Data<T> {
 }
 
 trait Deletable {
-    async fn get_player_id(&self) -> Result<i32, HttpResponse>;
+    async fn get_player_id(&self) -> Result<i32, FinalErrorResponse>;
     fn get_submitter_id(&self) -> i32;
 }
 
 impl Deletable for Submissions {
-    async fn get_player_id(&self) -> Result<i32, HttpResponse> {
+    async fn get_player_id(&self) -> Result<i32, FinalErrorResponse> {
         Ok(self.player_id)
     }
     fn get_submitter_id(&self) -> i32 {
@@ -183,28 +163,24 @@ impl Deletable for Submissions {
 }
 
 impl Deletable for EditSubmissions {
-    async fn get_player_id(&self) -> Result<i32, HttpResponse> {
+    async fn get_player_id(&self) -> Result<i32, FinalErrorResponse> {
         let app_state = access_app_state().await;
         let mut executor = {
             let app_state = app_state.read().await;
-            app_state
-                .acquire_pg_connection()
-                .await
-                .map_err(|e| EveryReturnedError::NoConnectionFromPGPool.http_response(e))?
+            app_state.acquire_pg_connection().await?
         };
 
-        let row = Scores::get_from_id(self.score_id, &mut executor)
-            .await
-            .map_err(|e| EveryReturnedError::GettingFromDatabase.http_response(e))?;
-
-        decode_row_to_table::<Scores>(row).map(|s| s.player_id)
+        decode_row_to_table::<Scores>(Scores::get_from_id(self.score_id, &mut executor).await?)
+            .map(|s| s.player_id)
     }
     fn get_submitter_id(&self) -> i32 {
         self.submitter_id
     }
 }
 
-async fn delete_submission(data: web::Json<DeletionData>) -> HttpResponse {
+async fn delete_submission(
+    data: web::Json<DeletionData>,
+) -> Result<HttpResponse, FinalErrorResponse> {
     delete::<Submissions>(
         data,
         Submissions::get_submission_by_id,
@@ -213,7 +189,9 @@ async fn delete_submission(data: web::Json<DeletionData>) -> HttpResponse {
     .await
 }
 
-async fn delete_edit_submission(data: web::Json<DeletionData>) -> HttpResponse {
+async fn delete_edit_submission(
+    data: web::Json<DeletionData>,
+) -> Result<HttpResponse, FinalErrorResponse> {
     delete::<EditSubmissions>(
         data,
         EditSubmissions::get_edit_submission_by_id,
@@ -224,53 +202,41 @@ async fn delete_edit_submission(data: web::Json<DeletionData>) -> HttpResponse {
 
 async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
     data: web::Json<DeletionData>,
-    get_callback: impl AsyncFn(i32, &mut sqlx::PgConnection) -> Result<PgRow, sqlx::Error>,
-    delete_callback: impl AsyncFn(i32, &mut sqlx::PgConnection) -> Result<PgQueryResult, sqlx::Error>,
-) -> HttpResponse {
+    get_callback: impl AsyncFn(i32, &mut sqlx::PgConnection) -> Result<PgRow, FinalErrorResponse>,
+    delete_callback: impl AsyncFn(
+        i32,
+        &mut sqlx::PgConnection,
+    ) -> Result<PgQueryResult, FinalErrorResponse>,
+) -> Result<HttpResponse, FinalErrorResponse> {
     let data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) = is_valid_token(
+    if !is_valid_token(
         &data.validation_data.session_token,
         data.validation_data.user_id,
         &mut executor,
     )
-    .await
+    .await?
     {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
-    let submission = match get_callback(data.data, &mut executor).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    let submission = match decode_row_to_table::<X>(submission) {
-        Ok(v) => v,
-        Err(e) => return e,
-    };
-
-    let player_id = match submission.get_player_id().await {
-        Ok(v) => v,
-        Err(e) => return e,
-    };
+    let submission = decode_row_to_table::<X>(get_callback(data.data, &mut executor).await?)?;
+    let player_id = submission.get_player_id().await?;
 
     let can_delete = match (
-        is_user_admin(data.validation_data.user_id, &mut executor).await,
-        get_user_data(&data.validation_data.session_token, &mut executor).await,
-        Players::get_player_submitters(&mut executor, player_id).await,
+        is_user_admin(data.validation_data.user_id, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        Players::get_player_submitters(&mut executor, player_id).await?,
     ) {
-        (Ok(true), _, _) => true,
-        (_, Ok(Some(Ok(user_data))), _) if user_data.player_id == player_id => true,
-        (_, _, Ok(v))
+        (true, _, _) => true,
+        (_, user_data, _) if user_data.player_id == player_id => true,
+        (_, _, v)
             if submission.get_submitter_id() == data.validation_data.user_id
                 && v.contains(&data.validation_data.user_id) =>
         {
@@ -280,16 +246,14 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
     };
 
     if !can_delete {
-        return EveryReturnedError::InsufficientPermissions.http_response("");
+        return Err(EveryReturnedError::InsufficientPermissions.to_final_error(""));
     }
 
-    if let Err(e) = delete_callback(data.data, &mut executor).await {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    }
+    delete_callback(data.data, &mut executor).await?;
 
-    HttpResponse::Ok()
+    Ok(HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
@@ -309,54 +273,51 @@ pub struct SubmissionCreation {
     pub submitter_note: Option<String>,
 }
 
-async fn create_or_edit_submission(data: web::Json<Data<SubmissionCreation>>) -> HttpResponse {
+async fn create_or_edit_submission(
+    data: web::Json<Data<SubmissionCreation>>,
+) -> Result<HttpResponse, FinalErrorResponse> {
     let data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) = is_valid_token(
+    if !is_valid_token(
         &data.validation_data.session_token,
         data.validation_data.user_id,
         &mut executor,
     )
-    .await
+    .await?
     {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
     if data.data.submitter_id != data.validation_data.user_id {
-        return EveryReturnedError::MismatchedIds.http_response("");
+        return Err(EveryReturnedError::MismatchedIds.to_final_error(""));
     }
 
     let can_submit = match (
-        is_user_admin(data.validation_data.user_id, &mut executor).await,
-        get_user_data(&data.validation_data.session_token, &mut executor).await,
-        Players::get_player_submitters(&mut executor, data.data.player_id).await,
+        is_user_admin(data.validation_data.user_id, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        Players::get_player_submitters(&mut executor, data.data.player_id).await?,
     ) {
-        (Ok(true), _, _) => true,
-        (_, Ok(Some(Ok(user_data))), _) if user_data.player_id == data.data.player_id => true,
-        (_, _, Ok(v)) if v.contains(&data.data.submitter_id) => true,
+        (true, _, _) => true,
+        (_, user_data, _) if user_data.player_id == data.data.player_id => true,
+        (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,
     };
 
     if !can_submit {
-        return EveryReturnedError::InsufficientPermissions.http_response("");
+        return Err(EveryReturnedError::InsufficientPermissions.to_final_error(""));
     }
 
-    if let Err(e) = Submissions::create_or_edit_submission(data.data, &mut executor).await {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    }
+    Submissions::create_or_edit_submission(data.data, &mut executor).await?;
 
-    HttpResponse::Ok()
+    Ok(HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}")
+        .body("{}"))
 }
 
 #[derive(serde::Deserialize)]
@@ -378,41 +339,32 @@ pub struct EditSubmissionCreation {
 
 async fn create_or_edit_edit_submission(
     data: web::Json<Data<EditSubmissionCreation>>,
-) -> HttpResponse {
+) -> Result<HttpResponse, FinalErrorResponse> {
     let mut data = data.0;
 
     let app_state = access_app_state().await;
     let mut executor = {
         let app_state = app_state.read().await;
-        match app_state.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        app_state.acquire_pg_connection().await?
     };
 
-    if let Ok(false) | Err(_) = is_valid_token(
+    if !is_valid_token(
         &data.validation_data.session_token,
         data.validation_data.user_id,
         &mut executor,
     )
-    .await
+    .await?
     {
-        return EveryReturnedError::InvalidSessionToken.http_response("");
+        return Err(EveryReturnedError::InvalidSessionToken.to_final_error(""));
     }
 
     if data.data.submitter_id != data.validation_data.user_id {
-        return EveryReturnedError::MismatchedIds.http_response("");
+        return Err(EveryReturnedError::MismatchedIds.to_final_error(""));
     }
 
-    let score = match Scores::get_from_id(data.data.score_id, &mut executor).await {
-        Ok(v) => v,
-        Err(e) => return EveryReturnedError::GettingFromDatabase.http_response(e),
-    };
-
-    let score = match decode_row_to_table::<Scores>(score) {
-        Ok(v) => v,
-        Err(e) => return e,
-    };
+    let score = decode_row_to_table::<Scores>(
+        Scores::get_from_id(data.data.score_id, &mut executor).await?,
+    )?;
 
     data.data.comment_edited = data.data.comment != score.comment;
     data.data.video_link_edited = data.data.video_link != score.video_link;
@@ -425,29 +377,27 @@ async fn create_or_edit_edit_submission(
         && !data.data.date_edited
         && data.data.edit_submission_id.is_none()
     {
-        return EveryReturnedError::NothingChanged.http_response("");
+        return Err(EveryReturnedError::NothingChanged.to_final_error(""));
     }
 
     let can_submit = match (
-        is_user_admin(data.validation_data.user_id, &mut executor).await,
-        get_user_data(&data.validation_data.session_token, &mut executor).await,
-        Players::get_player_submitters(&mut executor, score.player_id).await,
+        is_user_admin(data.validation_data.user_id, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        Players::get_player_submitters(&mut executor, score.player_id).await?,
     ) {
-        (Ok(true), _, _) => true,
-        (_, Ok(Some(Ok(user_data))), _) if user_data.player_id == score.player_id => true,
-        (_, _, Ok(v)) if v.contains(&data.data.submitter_id) => true,
+        (true, _, _) => true,
+        (_, user_data, _) if user_data.player_id == score.player_id => true,
+        (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,
     };
 
     if !can_submit {
-        return EveryReturnedError::InsufficientPermissions.http_response("");
+        return Err(EveryReturnedError::InsufficientPermissions.to_final_error(""));
     }
 
-    if let Err(e) = EditSubmissions::create_or_edit_submission(data.data, &mut executor).await {
-        return EveryReturnedError::GettingFromDatabase.http_response(e);
-    }
+    EditSubmissions::create_or_edit_submission(data.data, &mut executor).await?;
 
-    HttpResponse::Ok()
+    Ok(HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}")
+        .body("{}"))
 }

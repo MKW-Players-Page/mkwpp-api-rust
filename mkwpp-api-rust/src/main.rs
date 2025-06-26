@@ -67,6 +67,7 @@ async fn main() -> std::io::Result<()> {
                 middleware::TrailingSlash::Trim,
             ))
             .wrap(middleware::Logger::default())
+            .wrap(middleware::Compress::default())
             .service(api::v1::v1())
     })
     .bind(("127.0.0.1", 8080))?

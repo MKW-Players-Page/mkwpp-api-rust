@@ -1,3 +1,5 @@
+use crate::api::errors::FinalErrorResponse;
+
 #[derive(serde::Deserialize, Debug)]
 pub struct Tracks {
     abbr: String,
@@ -10,7 +12,7 @@ impl super::OldFixtureJson for Tracks {
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return crate::sql::tables::tracks::Tracks {
             id: key,
             categories: self

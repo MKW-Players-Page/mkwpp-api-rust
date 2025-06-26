@@ -1,12 +1,14 @@
-/* Ugliest module in the project, needs refactor ASAP */
-
 use std::fmt::Debug;
 
-use sqlx::FromRow;
-
-use crate::sql::tables::{
-    BasicTableQueries,
-    scores::{TimesheetTimesetData, timesets::Timeset},
+use crate::{
+    api::{
+        errors::{EveryReturnedError, FinalErrorResponse},
+        v1::decode_rows_to_table,
+    },
+    sql::tables::{
+        BasicTableQueries,
+        scores::{TimesheetTimesetData, timesets::Timeset},
+    },
 };
 
 use super::timesheet::Timesheet;
@@ -52,12 +54,13 @@ impl MatchupData {
         is_lap: Option<bool>,
         max_date: chrono::NaiveDate,
         region_id: i32,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<Self, FinalErrorResponse> {
         let region_ids =
             crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
 
-        let timeset = sqlx::query(&format!(
-            r#"
+        let timeset = decode_rows_to_table::<TimesheetTimesetData>(
+            sqlx::query(&format!(
+                r#"
                 SELECT
                     id, value, category, is_lap, track_id, 
                     player_id, date, video_link, ghost_link,
@@ -85,23 +88,22 @@ impl MatchupData {
                 WHERE row_n = 1
                 ORDER BY track_id ASC, is_lap ASC, value ASC, date DESC;
                 "#,
-            this_table = super::Scores::TABLE_NAME,
-            players_table = super::PlayersBasic::TABLE_NAME,
-            is_lap = if is_lap.is_some() {
-                "AND is_lap = $2".to_string()
-            } else {
-                String::new()
-            }
-        ))
-        .bind(category)
-        .bind(is_lap)
-        .bind(max_date)
-        .bind(&region_ids)
-        .fetch_all(executor)
-        .await?
-        .into_iter()
-        .map(|score_row| TimesheetTimesetData::from_row(&score_row))
-        .collect::<Result<Vec<TimesheetTimesetData>, sqlx::Error>>()?;
+                this_table = super::Scores::TABLE_NAME,
+                players_table = super::PlayersBasic::TABLE_NAME,
+                is_lap = if is_lap.is_some() {
+                    "AND is_lap = $2".to_string()
+                } else {
+                    String::new()
+                }
+            ))
+            .bind(category)
+            .bind(is_lap)
+            .bind(max_date)
+            .bind(&region_ids)
+            .fetch_all(executor)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?,
+        )?;
 
         let mut timeset_encoder = Timeset::default();
         timeset_encoder.timeset = timeset;

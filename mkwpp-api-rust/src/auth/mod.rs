@@ -1,11 +1,15 @@
 use std::net::IpAddr;
 
-use anyhow::anyhow;
 use base64::Engine;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Row, postgres::PgQueryResult};
+use sqlx::{Row, postgres::PgQueryResult};
 use validated_strings::ValidatedString;
+
+use crate::api::{
+    errors::{EveryReturnedError, FinalErrorResponse},
+    v1::decode_row_to_table,
+};
 
 mod cooldown;
 pub mod validated_strings;
@@ -45,7 +49,7 @@ pub async fn login(
     ip: IpAddr,
     // should be transaction
     executor: &mut sqlx::PgConnection,
-) -> Result<LogInData, anyhow::Error> {
+) -> Result<LogInData, FinalErrorResponse> {
     let data = sqlx::query_as::<_, BareMinimumData>(const_format::formatc!(
         r#"
         SELECT
@@ -56,7 +60,8 @@ pub async fn login(
     ))
     .bind(username.get_inner())
     .fetch_one(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     if cooldown::LogInAttempts::is_on_cooldown(
         cooldown::LogInAttempts::get_from_sql(executor, ip, data.id).await?,
@@ -64,12 +69,12 @@ pub async fn login(
         data.id,
     ) {
         cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
-        return Err(anyhow::anyhow!("Player is on cooldown"));
+        return Err(EveryReturnedError::UserOnCooldown.to_final_error(""));
     };
 
     if !data.is_verified {
         cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
-        return Err(anyhow::anyhow!("Player is not verified"));
+        return Err(EveryReturnedError::UserNotVerified.to_final_error(""));
     };
 
     let hash = password.hash(data.salt.as_bytes());
@@ -77,7 +82,7 @@ pub async fn login(
     match hash == data.password {
         false => {
             cooldown::LogInAttempts::insert(executor, ip, data.id).await?;
-            Err(anyhow::anyhow!("Data is wrong"))
+            Err(EveryReturnedError::InvalidInput.to_final_error(""))
         }
         true => {
             let token_engine = base64::engine::GeneralPurpose::new(
@@ -100,7 +105,8 @@ pub async fn login(
             .bind(data.id)
             .bind(out_string)
             .fetch_one(&mut *executor)
-            .await?;
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
             Ok(log_in_data)
         }
     }
@@ -112,7 +118,7 @@ pub async fn register(
     email: validated_strings::email::Email,
     // This should be a transaction!
     executor: &mut sqlx::PgConnection,
-) -> Result<(), anyhow::Error> {
+) -> Result<(), FinalErrorResponse> {
     let salt =
         argon2::password_hash::SaltString::generate(&mut argon2::password_hash::rand_core::OsRng);
     let hash_string = password.hash(salt.as_str().as_bytes());
@@ -142,7 +148,8 @@ pub async fn register(
     .bind(email.as_str())
     .bind(salt.as_str())
     .fetch_one(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     sqlx::query(const_format::formatc!(
         r#"
@@ -153,7 +160,8 @@ pub async fn register(
     .bind(&out_string)
     .bind(user_id)
     .execute(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     crate::mail::MailService::account_verification(&username, &email, &out_string).await?;
 
@@ -164,7 +172,7 @@ pub async fn password_reset_token_gen(
     email: validated_strings::email::Email,
     // This should be a transaction!
     executor: &mut sqlx::PgConnection,
-) -> Result<(), anyhow::Error> {
+) -> Result<(), FinalErrorResponse> {
     let email = email.get_inner();
 
     let token_engine = base64::engine::GeneralPurpose::new(
@@ -184,7 +192,8 @@ pub async fn password_reset_token_gen(
     )
     .bind(email.as_str())
     .fetch_optional(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     let user = match user {
         Some(v) => v,
@@ -203,7 +212,8 @@ pub async fn password_reset_token_gen(
     .bind(&out_string)
     .bind(id)
     .execute(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     crate::mail::MailService::password_reset(&username, &email, &out_string).await?;
 
@@ -214,7 +224,7 @@ pub async fn reset_password(
     token: &str,
     password: validated_strings::password::Password,
     executor: &mut sqlx::PgConnection,
-) -> Result<(), sqlx::Error> {
+) -> Result<(), FinalErrorResponse> {
     let salt =
         argon2::password_hash::SaltString::generate(&mut argon2::password_hash::rand_core::OsRng);
     let hash_string = password.hash(salt.as_str().as_bytes());
@@ -233,14 +243,16 @@ pub async fn reset_password(
     .bind(hash_string)
     .bind(salt.to_string())
     .execute(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     sqlx::query(
         "DELETE FROM tokens WHERE token = $1 AND token_type = 'password_reset'::token_type",
     )
     .bind(token)
     .execute(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     Ok(())
 }
@@ -248,17 +260,17 @@ pub async fn reset_password(
 pub async fn is_reset_password_token_valid(
     token: &str,
     executor: &mut sqlx::PgConnection,
-) -> Result<bool, sqlx::Error> {
-    let out = sqlx::query(
+) -> Result<bool, FinalErrorResponse> {
+    match sqlx::query(
         r#"
             SELECT user_id FROM tokens WHERE token = $1
         "#,
     )
     .bind(token)
     .fetch_optional(&mut *executor)
-    .await?;
-
-    match out {
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?
+    {
         Some(_) => Ok(true),
         None => Ok(false),
     }
@@ -267,7 +279,7 @@ pub async fn is_reset_password_token_valid(
 pub async fn activate_account(
     activation_token: &str,
     executor: &mut sqlx::PgConnection,
-) -> Result<(), sqlx::Error> {
+) -> Result<(), FinalErrorResponse> {
     sqlx::query(
         r#"
             UPDATE users AS u1
@@ -280,12 +292,14 @@ pub async fn activate_account(
     )
     .bind(activation_token)
     .execute(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     sqlx::query("DELETE FROM tokens WHERE token = $1 AND token_type = 'activation'::token_type")
         .bind(activation_token)
         .execute(&mut *executor)
-        .await?;
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     Ok(())
 }
@@ -296,7 +310,7 @@ pub async fn update_password(
     new_password: validated_strings::password::Password,
     // This should be a transaction!
     executor: &mut sqlx::PgConnection,
-) -> Result<(), anyhow::Error> {
+) -> Result<(), FinalErrorResponse> {
     let data = sqlx::query_as::<_, BareMinimumData>(const_format::formatc!(
         r#"
         SELECT
@@ -307,10 +321,11 @@ pub async fn update_password(
     ))
     .bind(id)
     .fetch_one(&mut *executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     if old_password.hash(data.salt.as_bytes()) != data.password {
-        return Err(anyhow!("Old Password is wrong!"));
+        return Err(EveryReturnedError::InvalidInput.to_final_error(""));
     };
 
     let salt =
@@ -326,7 +341,8 @@ pub async fn update_password(
     .bind(salt.as_str())
     .bind(id)
     .execute(executor)
-    .await?;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?;
 
     Ok(())
 }
@@ -342,7 +358,7 @@ pub async fn is_valid_token(
     session_token: &str,
     user_id: i32,
     executor: &mut sqlx::PgConnection,
-) -> Result<bool, sqlx::Error> {
+) -> Result<bool, FinalErrorResponse> {
     return sqlx::query(const_format::formatc!(
         r#"
             SELECT user_id
@@ -357,13 +373,14 @@ pub async fn is_valid_token(
     .bind(user_id)
     .fetch_optional(executor)
     .await
-    .map(|x| x.is_some());
+    .map(|x| x.is_some())
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
 }
 
 pub async fn is_user_admin(
     user_id: i32,
     executor: &mut sqlx::PgConnection,
-) -> Result<bool, sqlx::Error> {
+) -> Result<bool, FinalErrorResponse> {
     return sqlx::query_scalar(const_format::formatc!(
         r#"
             SELECT is_superuser
@@ -373,7 +390,8 @@ pub async fn is_user_admin(
     ))
     .bind(user_id)
     .fetch_one(executor)
-    .await;
+    .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e));
 }
 
 #[derive(sqlx::FromRow, Deserialize, Serialize)]
@@ -387,9 +405,10 @@ pub struct ClientSideUserData {
 pub async fn get_user_data(
     session_token: &str,
     executor: &mut sqlx::PgConnection,
-) -> Result<Option<Result<ClientSideUserData, sqlx::Error>>, sqlx::Error> {
-    sqlx::query(const_format::formatc!(
-        r#"
+) -> Result<ClientSideUserData, FinalErrorResponse> {
+    decode_row_to_table(
+        sqlx::query(const_format::formatc!(
+            r#"
             SELECT
                 users.player_id,
                 users.id AS user_id,
@@ -401,17 +420,19 @@ pub async fn get_user_data(
                 session_token = $1 AND
                 expiry >= NOW()
         "#
-    ))
-    .bind(session_token)
-    .fetch_optional(executor)
-    .await
-    .map(|x| x.map(|x| ClientSideUserData::from_row(&x)))
+        ))
+        .bind(session_token)
+        .fetch_optional(executor)
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?
+        .ok_or(EveryReturnedError::UserIDDoesntExist.to_final_error(""))?,
+    )
 }
 
 pub async fn get_user_id_from_player_id(
     player_id: i32,
     executor: &mut sqlx::PgConnection,
-) -> Result<Option<i32>, sqlx::Error> {
+) -> Result<i32, FinalErrorResponse> {
     sqlx::query_scalar(const_format::formatc!(
         r#"
             SELECT
@@ -424,12 +445,14 @@ pub async fn get_user_id_from_player_id(
     .bind(player_id)
     .fetch_optional(executor)
     .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))?
+    .ok_or(EveryReturnedError::UserHasNoAssociatedPlayer.to_final_error(""))
 }
 
 pub async fn logout(
     session_token: &str,
     executor: &mut sqlx::PgConnection,
-) -> Result<PgQueryResult, sqlx::Error> {
+) -> Result<PgQueryResult, FinalErrorResponse> {
     sqlx::query(const_format::formatc!(
         r#"
         DELETE FROM auth_tokens
@@ -439,4 +462,5 @@ pub async fn logout(
     .bind(session_token)
     .execute(executor)
     .await
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.to_final_error(e))
 }

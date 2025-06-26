@@ -1,5 +1,5 @@
 use crate::{
-    api::errors::EveryReturnedError,
+    api::errors::FinalErrorResponse,
     sql::tables::{
         BasicTableQueries,
         regions::{
@@ -14,7 +14,9 @@ use std::collections::HashMap;
 
 macro_rules! region_fn {
     ($fn_name:ident, $handle:expr) => {
-        async fn $fn_name(path: web::Path<i32>) -> HttpResponse {
+        async fn $fn_name(
+            path: web::Path<i32>,
+        ) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
             return basic_get_i32(path, $handle).await;
         }
     };
@@ -43,7 +45,7 @@ default_paths_fn!(
 region_fn!(get_ancestors, Regions::get_ancestors);
 region_fn!(get_descendants, Regions::get_descendants);
 
-async fn get_region_type_hashmap() -> HttpResponse {
+async fn get_region_type_hashmap() -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     crate::api::v1::basic_get_with_data_mod::<Regions, HashMap<RegionType, Vec<i32>>>(
         Regions::select_star_query,
         async |data: &[Regions]| {
@@ -69,7 +71,7 @@ async fn get_region_type_hashmap() -> HttpResponse {
 }
 
 // TODO: rewrite more optimally
-async fn get_with_player_count() -> HttpResponse {
+async fn get_with_player_count() -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     crate::api::v1::basic_get_with_data_mod::<RegionsWithPlayerCount, Vec<RegionsWithPlayerCount>>(
         RegionsWithPlayerCount::select_star_query,
         RegionsWithPlayerCount::collapse_counts_of_regions,
@@ -79,34 +81,24 @@ async fn get_with_player_count() -> HttpResponse {
 
 pub async fn basic_get_i32(
     path: web::Path<i32>,
-    rows_function: impl AsyncFnOnce(&mut sqlx::PgConnection, i32) -> Result<Vec<i32>, sqlx::Error>,
-) -> HttpResponse {
+    rows_function: impl AsyncFnOnce(
+        &mut sqlx::PgConnection,
+        i32,
+    ) -> Result<Vec<i32>, FinalErrorResponse>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     let data = crate::app_state::access_app_state().await;
     let mut connection = {
         let data = data.read().await;
-        match data.acquire_pg_connection().await {
-            Ok(conn) => conn,
-            Err(e) => return EveryReturnedError::NoConnectionFromPGPool.http_response(e),
-        }
+        data.acquire_pg_connection().await?
     };
 
-    let rows_request = rows_function(&mut connection, path.into_inner()).await;
-
-    if let Err(e) = crate::api::v1::close_connection(connection).await {
-        return e;
-    }
-
-    let rows = match rows_request {
-        Ok(rows) => rows,
-        Err(e) => {
-            return EveryReturnedError::GettingFromDatabase.http_response(e);
-        }
-    };
+    let rows = rows_function(&mut connection, path.into_inner()).await?;
+    crate::api::v1::close_connection(connection).await?;
 
     crate::api::v1::send_serialized_data(rows)
 }
 
-async fn get_region_child_tree() -> HttpResponse {
+async fn get_region_child_tree() -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     crate::api::v1::basic_get_with_data_mod::<Regions, ChildrenTree>(
         Regions::select_star_query,
         generate_region_tree,
