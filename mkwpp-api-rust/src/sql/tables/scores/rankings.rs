@@ -129,6 +129,7 @@ impl Rankings {
         timeset_encoder.filters.is_lap = is_lap;
         timeset_encoder.filters.max_date = max_date;
         timeset_encoder.filters.player_ids = player_ids;
+        timeset_encoder.filters.whitelist_player_ids = region_id != 1;
 
         let data = match ranking_type {
             RankingType::AverageFinish(_) => {

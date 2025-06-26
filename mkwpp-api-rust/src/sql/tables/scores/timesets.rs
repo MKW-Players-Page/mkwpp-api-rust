@@ -1039,7 +1039,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     region_found_players,
                     region_id_to_index,
                     players_in_region,
-                    region_ever_found: region_found_players_final_filter,
+                    region_ever_found,
                 } => 'value_assignment: {
                     let region_id = time_data.get_player_region_id();
 
@@ -1056,7 +1056,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                             }
 
                             region_found_players[region_index] += 1;
-                            region_found_players_final_filter[region_index] = true;
+                            region_ever_found[region_index] = true;
                             if region_found_players[region_index] == players_in_region[region_index]
                             {
                                 has_found_all_times = region_found_players
@@ -1071,6 +1071,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                             }
 
                             region_found_players[region_index] += 1;
+                            region_ever_found[region_index] = true;
                             if region_found_players[region_index] == *per_region_players {
                                 has_found_all_times = region_found_players
                                     .iter()
