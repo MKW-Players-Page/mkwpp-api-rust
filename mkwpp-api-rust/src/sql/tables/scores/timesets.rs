@@ -91,6 +91,7 @@ enum TimesetOutput {
         per_region_players: i32,
         players_in_region: Vec<i32>,
         region_found_players: Vec<i32>,
+        region_ever_found: Vec<bool>,
         region_id_to_index: HashMap<i32, usize>,
     },
 }
@@ -188,10 +189,11 @@ impl<K: ValidTimesetItem> Timeset<K> {
         self.output = TimesetOutput::CountryRankings {
             region_rank_sums: vec![0.0; valid_regions.len()],
             per_region_players: match players_numbers {
-                x if x <= 0 => 0,
+                x if x < 0 => 0,
                 x => x,
             },
             region_found_players: vec![0; valid_regions.len()],
+            region_ever_found: vec![false; valid_regions.len()],
             region_id_to_index: hashmap,
             players_in_region: valid_regions_player_counts,
         };
@@ -205,21 +207,26 @@ impl<K: ValidTimesetItem> Timeset<K> {
                 region_found_players: _,
                 region_id_to_index: _,
                 players_in_region,
+                region_ever_found,
             } => {
                 let mut x: Vec<(i32, f64)> = valid_regions
                     .into_iter()
                     .zip(region_rank_sums.iter())
                     .zip(players_in_region.iter())
-                    .map(|((region_id, rank_sum), player_count)| {
-                        (
-                            region_id,
-                            rank_sum
-                                / (self.divvie_value
-                                    * (match players_numbers == 0 {
-                                        false => players_numbers as f64,
-                                        true => *player_count as f64,
-                                    })),
-                        )
+                    .zip(region_ever_found.iter())
+                    .filter_map(|(((region_id, rank_sum), player_count), ever_found)| {
+                        match ever_found {
+                            true => Some((
+                                region_id,
+                                rank_sum
+                                    / (self.divvie_value
+                                        * (match players_numbers == 0 {
+                                            false => players_numbers as f64,
+                                            true => *player_count as f64,
+                                        })),
+                            )),
+                            false => None,
+                        }
                     })
                     .collect();
                 x.sort_by(|(_, af1), (_, af2)| af1.total_cmp(af2));
@@ -960,6 +967,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         region_found_players,
                         region_id_to_index: _,
                         players_in_region: _,
+                        region_ever_found: _,
                     } => {
                         *region_found_players = vec![0; region_found_players.len()];
                     }
@@ -1031,6 +1039,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                     region_found_players,
                     region_id_to_index,
                     players_in_region,
+                    region_ever_found: region_found_players_final_filter,
                 } => 'value_assignment: {
                     let region_id = time_data.get_player_region_id();
 
@@ -1047,6 +1056,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                             }
 
                             region_found_players[region_index] += 1;
+                            region_found_players_final_filter[region_index] = true;
                             if region_found_players[region_index] == players_in_region[region_index]
                             {
                                 has_found_all_times = region_found_players
@@ -1302,6 +1312,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         region_found_players,
                         region_id_to_index: _,
                         players_in_region,
+                        region_ever_found: _,
                     } => {
                         let rank = (last_rank + 1) as f64;
                         for ((rank_sum, found_players), alternative_found_players) in
