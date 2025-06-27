@@ -1,0 +1,19 @@
+ALTER TABLE users ALTER COLUMN password TYPE VARCHAR(255);
+ALTER TABLE users ADD COLUMN salt VARCHAR(255) NOT NULL;
+ALTER TABLE users ADD UNIQUE(username);
+ALTER TABLE users ADD UNIQUE(email);
+ALTER TABLE users DROP COLUMN date_joined;
+ALTER TABLE users DROP COLUMN last_login;
+
+CREATE TABLE auth_tokens (
+    created TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    user_id INTEGER REFERENCES users(id),
+    expiry TIMESTAMP WITH TIME ZONE DEFAULT NOW() + INTERVAL '1 month' NOT NULL,
+    session_token VARCHAR(128) UNIQUE NOT NULL
+);
+
+CREATE TABLE ip_request_throttles (
+    ip INET NOT NULL,
+    user_id INTEGER REFERENCES users(id),
+    timestamp TIMESTAMP WITH TIME ZONE NOT NULL
+);

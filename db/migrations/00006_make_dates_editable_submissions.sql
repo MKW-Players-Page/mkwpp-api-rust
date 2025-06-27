@@ -1,0 +1,1 @@
+ALTER TABLE edit_submissions ADD COLUMN date_edited BOOL DEFAULT false NOT NULL;
