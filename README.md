@@ -59,25 +59,3 @@ These parameters can also be passed via command line as Key=Value pairs if the c
 | SMTP_CREDS_NAME | String | The credentials name for the SMTP client |  |
 | SMTP_CREDS_SECRET | String | The credentials secret for the SMTP client |  |
 | SMTP_TLS | bool | Whether the TLS certificate for the SMTP server is valid or not | false |
-
-## TODO
-- Figure out how to import data from old database with just a command :)
-- Admin API / Admin UI
-    - Users UI
-    - Players UI
-    - Submissions UI
-    - Scores UI
-    - Standards UI
-    - Tracks UI
-    - Regions UI
-    - Awards UI
-    - News Updates UI
-    - Logs UI
-- Account Actions
-    - Creating Profiles
-    - Claiming Profiles
-- Hide Country Rankings if Players Found always == 0
-- Rewrite of /api/raw/ to account for HIDING DATA THAT SHOULD NOT BE VISIBLE WITHOUT AUTH
-- Rewrite of Standard Levels / Standards handling to avoid hardcoded values
-- Various optimizations and removing duplicate code
-- Documentation

@@ -65,7 +65,6 @@ async fn main() -> std::io::Result<()> {
 
 #[cfg(feature="import_data")]
 async fn import_data() {
-    println!("- Reading CLI args");
     let app_state = app_state::access_app_state().await;
     let app_state = app_state.write().await;
 
@@ -73,6 +72,7 @@ async fn import_data() {
     let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
 
     if args.contains(&"import") && args.contains(&"old") {
+        println!("- Reading Import CLI Args");
         sql::migrate::old::load_data(&app_state.pg_pool).await;
     }
     if args.contains(&"exit") {
@@ -81,4 +81,6 @@ async fn import_data() {
 }
 
 #[cfg(not(feature="import_data"))]
-async fn import_data() {}
+async fn import_data() {
+    println!("- Importing data was not compiled");
+}
