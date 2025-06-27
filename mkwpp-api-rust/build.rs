@@ -3,9 +3,6 @@ use std::env::set_current_dir;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    // Check custom cfg
-    println!("cargo::rustc-check-cfg=cfg(import_data, values(\"0\"))");
-    
     // build.rs sets current dir to its own directory
     set_current_dir("..")?;
 
@@ -51,7 +48,7 @@ fn run_migrations() -> Result<(), anyhow::Error> {
         ])
         .output()?;
     if !migrations.status.success() {
-        anyhow::bail!("Couldn't run SQLX");
+        anyhow::bail!("Couldn't run SQLX, you probably forgot to run migrations.");
     }
     Ok(())
 }
