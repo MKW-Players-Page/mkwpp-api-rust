@@ -12,6 +12,7 @@ pub struct Players {
     pub name: String,
     pub alias: Option<String>,
     pub bio: Option<String>,
+    pub pronouns: Option<String>,
     pub region_id: i32,
     #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
     pub joined_date: chrono::NaiveDate,
@@ -46,6 +47,10 @@ impl Players {
         player_id: i32,
         bio: &str,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        let bio = match bio.is_empty() {
+            false => Some(bio),
+            true => None,
+        };
         return sqlx::query(const_format::formatc!(
             "UPDATE {} SET bio = $1 WHERE id = $2;",
             Players::TABLE_NAME
@@ -62,11 +67,35 @@ impl Players {
         player_id: i32,
         alias: &str,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        let alias = match alias.is_empty() {
+            false => Some(alias),
+            true => None,
+        };
         return sqlx::query(const_format::formatc!(
             "UPDATE {} SET alias = $1 WHERE id = $2;",
             Players::TABLE_NAME
         ))
         .bind(alias)
+        .bind(player_id)
+        .execute(executor)
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
+
+    pub async fn update_player_pronouns(
+        executor: &mut sqlx::PgConnection,
+        player_id: i32,
+        pronouns: &str,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        let pronouns = match pronouns.is_empty() {
+            false => Some(pronouns),
+            true => None,
+        };
+        return sqlx::query(const_format::formatc!(
+            "UPDATE {} SET pronouns = $1 WHERE id = $2;",
+            Players::TABLE_NAME
+        ))
+        .bind(pronouns)
         .bind(player_id)
         .execute(executor)
         .await
