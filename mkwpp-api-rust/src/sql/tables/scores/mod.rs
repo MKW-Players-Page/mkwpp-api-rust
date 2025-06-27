@@ -100,9 +100,8 @@ impl Scores {
     //     sqlx::query("INSERT INTO scores (id, value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, initial_rank) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);").bind(self.id).bind(self.value).bind(&self.category).bind(self.is_lap).bind(self.player_id).bind(self.track_id).bind(self.date).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(self.initial_rank).execute(executor).await
     // }
 
-    
     // Feature only required because it's only used to import data currently
-    #[cfg(feature="import_data")]
+    #[cfg(feature = "import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

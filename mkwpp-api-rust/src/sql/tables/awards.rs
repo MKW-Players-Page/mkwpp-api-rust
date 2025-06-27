@@ -1,7 +1,7 @@
 use crate::custom_serde::DateAsTimestampNumber;
 
 // Feature only required because it's only used to import data currently
-#[cfg(feature="import_data")]
+#[cfg(feature = "import_data")]
 use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 #[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
@@ -49,7 +49,7 @@ impl Awards {
     // }
 
     // Feature only required because it's only used to import data currently
-    #[cfg(feature="import_data")]
+    #[cfg(feature = "import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
