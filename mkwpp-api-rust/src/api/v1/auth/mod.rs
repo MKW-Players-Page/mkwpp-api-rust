@@ -3,10 +3,10 @@ use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 use crate::{
     api::{
         errors::{EveryReturnedError, FinalErrorResponse},
-        v1::send_serialized_data,
+        v1::{close_connection, send_serialized_data},
     },
     auth::{
-        BareMinimumValidationData, activate_account, is_valid_token,
+        BareMinimumValidationData, activate_account, is_user_admin, is_valid_token,
         validated_strings::ValidatedString,
     },
 };
@@ -19,15 +19,16 @@ pub fn auth() -> impl HttpServiceFactory {
         .route("/register", web::put().to(register))
         .route("/login", web::put().to(login))
         .route("/logout", web::put().to(logout))
+        .route("/is_admin", web::post().to(is_admin))
         .route("/activate", web::put().to(activate))
         .route("/user_data", web::post().to(user_data))
-        .route("/password_forgot", web::post().to(password_forgot))
-        .route("/password_reset", web::post().to(password_reset))
+        .route("/password_forgot", web::put().to(password_forgot))
+        .route("/password_reset", web::put().to(password_reset))
         .route(
             "/password_reset_check_token",
             web::post().to(password_reset_check_token),
         )
-        .route("/update_password", web::post().to(update_password))
+        .route("/update_password", web::put().to(update_password))
         .service(player::player())
         .service(submissions::submissions())
         .default_service(web::get().to(default))
@@ -343,4 +344,30 @@ async fn password_reset_check_token(
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body("{}"))
+}
+
+async fn is_admin(
+    body: web::Json<UserDataBody>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    let body = body.into_inner();
+
+    let data = crate::app_state::access_app_state().await;
+    let mut connection = {
+        let data = data.read().await;
+        data.acquire_pg_connection().await?
+    };
+
+    let is_admin = is_user_admin(
+        crate::auth::get_user_data(&body.session_token, &mut connection)
+            .await?
+            .user_id,
+        &mut connection,
+    )
+    .await?;
+
+    close_connection(connection).await?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(format!(r#"{{"isAdmin":{is_admin}}}"#)))
 }

@@ -383,7 +383,7 @@ pub async fn is_user_admin(
 ) -> Result<bool, FinalErrorResponse> {
     return sqlx::query_scalar(const_format::formatc!(
         r#"
-            SELECT is_superuser
+            SELECT is_staff
             FROM users
             WHERE id = $1
         "#
