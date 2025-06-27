@@ -1,0 +1,2 @@
+ALTER TABLE blog_posts ADD PRIMARY KEY (id); 
+ALTER TABLE tokens ADD PRIMARY KEY (token); 
