@@ -1,0 +1,1 @@
+ALTER TABLE players ADD COLUMN pronouns VARCHAR(30);

@@ -15,10 +15,11 @@ use crate::{
 
 pub fn player() -> impl HttpServiceFactory {
     web::scope("/player")
-        .route("/updbio", web::post().to(update_player_bio))
-        .route("/updalias", web::post().to(update_player_alias))
-        .route("/remsubmitter", web::post().to(remove_submitter))
-        .route("/addsubmitter", web::post().to(add_submitter))
+        .route("/updbio", web::put().to(update_player_bio))
+        .route("/updalias", web::put().to(update_player_alias))
+        .route("/updpronouns", web::put().to(update_player_pronouns))
+        .route("/remsubmitter", web::put().to(remove_submitter))
+        .route("/addsubmitter", web::put().to(add_submitter))
         .route("/submitters", web::post().to(get_submitters))
         .route("/submittees", web::post().to(get_submittees))
         .default_service(web::get().to(default))
@@ -88,6 +89,11 @@ async fn update_player_alias(
     data: web::Json<UpdateData>,
 ) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     update_data(data, Players::update_player_alias).await
+}
+async fn update_player_pronouns(
+    data: web::Json<UpdateData>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    update_data(data, Players::update_player_pronouns).await
 }
 
 async fn get_submitters(
