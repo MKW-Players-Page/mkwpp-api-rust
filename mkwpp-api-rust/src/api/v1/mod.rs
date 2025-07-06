@@ -24,12 +24,14 @@ macro_rules! default_paths_fn {
 pub mod auth;
 mod custom;
 mod raw;
+mod admin;
 
 pub fn v1() -> impl HttpServiceFactory {
     web::scope("/v1")
         .service(raw::raw())
         .service(custom::custom())
         .service(auth::auth())
+        .service(admin::admin())
         .service(
             web::scope("/doc")
                 .route("/style.css", web::get().to(doc_css))
