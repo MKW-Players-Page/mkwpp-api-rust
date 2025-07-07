@@ -2,13 +2,17 @@ use actix_web::{dev::HttpServiceFactory, web, HttpResponse};
 
 use crate::{api::{errors::FinalErrorResponse, v1::close_connection}, auth::is_user_admin};
 
+mod regions;
+
 pub fn admin() -> impl HttpServiceFactory {
     web::scope("/admin")
         .route("/is_admin", web::post().to(is_admin))
+        .service(regions::regions())
         .default_service(web::get().to(default))
 }
 default_paths_fn!(
-    "/is_admin"
+    "/is_admin",
+    "/regions"
 );
 
 #[derive(serde::Deserialize)]
