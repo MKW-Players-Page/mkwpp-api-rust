@@ -1,13 +1,13 @@
-use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
-
 use crate::{
     api::{
         errors::{EveryReturnedError, FinalErrorResponse},
         v1::close_connection,
     },
     auth::is_user_admin,
+    custom_serde::DateAsTimestampNumber,
     sql::tables::players::Players,
 };
+use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 
 pub fn players() -> impl HttpServiceFactory {
     web::scope("/players")
@@ -54,7 +54,9 @@ struct InsertOrEditBody {
     bio: Option<String>,
     pronouns: Option<String>,
     region_id: i32,
+    #[serde(deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp")]
     joined_date: chrono::NaiveDate,
+    #[serde(deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp")]
     last_activity: chrono::NaiveDate,
     submitters: Vec<i32>,
     session_token: String,

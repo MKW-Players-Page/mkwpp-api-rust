@@ -65,7 +65,7 @@ impl Players {
                 sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);", table_name = Players::TABLE_NAME))
             }
             Some(id) => {
-                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters) = ($2, $3, $4, $5, $6, $7, $, $9) WHERE id = $1;", table_name = Players::TABLE_NAME)).bind(id)
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters) = ($2, $3, $4, $5, $6, $7, $8, $9) WHERE id = $1;", table_name = Players::TABLE_NAME)).bind(id)
 
             }
         }
