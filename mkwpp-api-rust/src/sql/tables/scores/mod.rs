@@ -9,7 +9,7 @@ pub mod with_player;
 use crate::{
     api::errors::{EveryReturnedError, FinalErrorResponse},
     custom_serde::DateAsTimestampNumber,
-    sql::tables::players::players_basic::PlayersBasic,
+    sql::tables::{BasicTableQueries, players::players_basic::PlayersBasic},
 };
 
 #[either_field::make_template(
@@ -110,6 +110,56 @@ impl Scores {
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return sqlx::query("INSERT INTO scores (id, value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, initial_rank) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO UPDATE SET value = $2, category = $3, is_lap = $4, player_id = $5, track_id = $6, date = $7, video_link = $8, ghost_link = $9, comment = $10, admin_note = $11, initial_rank = $12 WHERE scores.id = $1;").bind(self.id).bind(self.value).bind(self.category).bind(self.is_lap).bind(self.player_id).bind(self.track_id).bind(self.date).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(self.initial_rank).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
+
+    pub async fn filter_by_track(
+        track_id: i32,
+
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
+        return sqlx::query("SELECT * FROM scores WHERE track_id = $1")
+            .bind(track_id)
+            .fetch_all(executor)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
+
+    pub async fn insert_or_edit(
+        id: Option<i32>,
+        value: i32,
+        category: super::Category,
+        is_lap: bool,
+        player_id: i32,
+        track_id: i32,
+        date: Option<chrono::NaiveDate>,
+        video_link: Option<String>,
+        ghost_link: Option<String>,
+        comment: Option<String>,
+        admin_note: Option<String>,
+        initial_rank: Option<i32>,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        match id {
+            None => {
+                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, initial_rank) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);", table_name = Scores::TABLE_NAME))
+            }
+            Some(id) => {
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, initial_rank) = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) WHERE id = $1;", table_name = Scores::TABLE_NAME)).bind(id)
+
+            }
+        }
+        .bind(value)
+        .bind(category)
+        .bind(is_lap)
+        .bind(player_id)
+        .bind(track_id)
+        .bind(date)
+        .bind(video_link)
+        .bind(ghost_link)
+        .bind(comment)
+        .bind(admin_note)
+        .bind(initial_rank)
+        .execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))
     }
 
     pub async fn get_from_id(
