@@ -79,7 +79,10 @@ pub struct ScoresTemplate {
     pub player_id: either_field::either!(() | i32),
     pub region_id: either_field::either!(() | i32),
     pub track_id: either_field::either!(i32 | ()),
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub date: either_field::either!(Option<chrono::NaiveDate> | ()),
     pub video_link: either_field::either!(Option<String> | ()),
     pub ghost_link: either_field::either!(Option<String> | ()),

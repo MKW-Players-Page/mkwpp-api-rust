@@ -107,7 +107,10 @@ pub struct Submissions {
     pub is_lap: bool,
     pub player_id: i32,
     pub track_id: i32,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub date: Option<chrono::NaiveDate>,
     pub video_link: Option<String>,
     pub ghost_link: Option<String>,
@@ -116,11 +119,17 @@ pub struct Submissions {
     pub status: SubmissionStatus,
     pub submitter_id: i32,
     pub submitter_note: Option<String>,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub submitted_at: chrono::DateTime<chrono::Utc>,
     pub reviewer_id: Option<i32>,
     pub reviewer_note: Option<String>,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub reviewed_at: Option<chrono::DateTime<chrono::Utc>>,
     pub score_id: Option<i32>,
 }

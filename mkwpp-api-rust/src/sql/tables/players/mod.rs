@@ -14,9 +14,15 @@ pub struct Players {
     pub bio: Option<String>,
     pub pronouns: Option<String>,
     pub region_id: i32,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub joined_date: chrono::NaiveDate,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub last_activity: chrono::NaiveDate,
     pub submitters: Vec<i32>,
 }
