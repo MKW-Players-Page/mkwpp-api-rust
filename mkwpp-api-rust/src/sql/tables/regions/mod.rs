@@ -153,20 +153,6 @@ impl Regions {
         return sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET code = $2, region_type = $3, parent_id = $4, is_ranked = $5 WHERE {table_name}.id = $1;", table_name = Regions::TABLE_NAME)).bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
-    pub async fn delete_by_id(
-        executor: &mut sqlx::PgConnection,
-        id: i32,
-    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query(const_format::formatcp!(
-            "DELETE FROM {table_name} WHERE id = $1;",
-            table_name = Regions::TABLE_NAME
-        ))
-        .bind(id)
-        .execute(executor)
-        .await
-        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
-    }
-
     pub async fn insert_or_edit(
         executor: &mut sqlx::PgConnection,
         id: Option<i32>,
@@ -177,7 +163,6 @@ impl Regions {
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         match id {
             None => {
-                println!("{id:#?}, {code:#?}, {region_type:#?}, {parent_id:#?}, {is_ranked:#?}");
                 sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (code, region_type, parent_id, is_ranked) VALUES ($1, $2, $3, $4);", table_name = Regions::TABLE_NAME))
             }
             Some(id) => {

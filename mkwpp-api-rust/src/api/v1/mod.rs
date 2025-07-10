@@ -1,5 +1,6 @@
 use crate::{
     api::errors::{EveryReturnedError, FinalErrorResponse},
+    auth::is_user_admin,
     sql::tables::BasicTableQueries,
 };
 use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
@@ -21,10 +22,10 @@ macro_rules! default_paths_fn {
         };
 }
 
+mod admin;
 pub mod auth;
 mod custom;
 mod raw;
-mod admin;
 
 pub fn v1() -> impl HttpServiceFactory {
     web::scope("/v1")
@@ -143,4 +144,44 @@ pub async fn get_star_query<
     Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + BasicTableQueries,
 >() -> actix_web::Result<HttpResponse, FinalErrorResponse> {
     basic_get::<Table>(Table::select_star_query).await
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct DeleteBody {
+    id: i32,
+    session_token: String,
+}
+
+async fn delete_by_id<
+    Table: for<'a> sqlx::FromRow<'a, sqlx::postgres::PgRow> + serde::Serialize + BasicTableQueries,
+>(
+    body: web::Json<DeleteBody>,
+) -> Result<HttpResponse, FinalErrorResponse> {
+    let body = body.into_inner();
+
+    let data = crate::app_state::access_app_state().await;
+    let mut connection = {
+        let data = data.read().await;
+        data.acquire_pg_connection().await?
+    };
+
+    if !is_user_admin(
+        crate::auth::get_user_data(&body.session_token, &mut connection)
+            .await?
+            .user_id,
+        &mut connection,
+    )
+    .await?
+    {
+        return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
+    }
+
+    Table::delete_by_id(body.id, &mut connection).await?;
+
+    close_connection(connection).await?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(r#"{"success":true}"#))
 }

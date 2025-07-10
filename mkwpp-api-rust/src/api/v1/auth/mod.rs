@@ -3,7 +3,7 @@ use actix_web::{HttpRequest, HttpResponse, dev::HttpServiceFactory, web};
 use crate::{
     api::{
         errors::{EveryReturnedError, FinalErrorResponse},
-        v1::{send_serialized_data},
+        v1::send_serialized_data,
     },
     auth::{
         BareMinimumValidationData, activate_account, is_valid_token,
