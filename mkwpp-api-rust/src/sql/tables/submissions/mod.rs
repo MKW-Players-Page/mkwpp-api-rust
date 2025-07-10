@@ -7,8 +7,8 @@ use crate::api::v1::auth::submissions::SubmissionCreation;
 use crate::custom_serde::DateAsTimestampNumber;
 use crate::sql::tables::BasicTableQueries;
 
-#[derive(sqlx::Type, Debug)]
-#[sqlx(type_name = "submission_status", rename_all = "lowercase")]
+#[derive(sqlx::Type, Debug, PartialEq, Clone)]
+#[sqlx(type_name = "submission_status", rename_all = "snake_case")]
 pub enum SubmissionStatus {
     Pending,
     Accepted,
@@ -157,10 +157,19 @@ impl Submissions {
 
     pub async fn create_or_edit_submission(
         data: SubmissionCreation,
+        add_admin_note: bool,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        match data.submission_id {
-            None => sqlx::query(
+        match (data.submission_id, add_admin_note, data.reviewer_id) {
+            (_, false, Some(_)) => {
+                return Err(EveryReturnedError::InsufficientPermissions
+                    .into_final_error("reviewer_id cannot be true if you're not a moderator"));
+            }
+            (None, _, Some(_)) => {
+                return Err(EveryReturnedError::InvalidInput
+                    .into_final_error("reviewer_id cannot be true on first submission"));
+            }
+            (None, false, None) => sqlx::query(
                 r#"
                 INSERT INTO
                     submissions 
@@ -172,7 +181,7 @@ impl Submissions {
                 ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
                 "#,
             ),
-            Some(id) => sqlx::query(
+            (Some(id), false, None) => sqlx::query(
                 r#"
                 UPDATE
                     submissions 
@@ -186,6 +195,74 @@ impl Submissions {
                 "#,
             )
             .bind(id),
+            (None, true, None) => sqlx::query(
+                r#"
+                    INSERT INTO
+                        submissions 
+                    (
+                        value, category, is_lap,
+                        player_id, track_id, date,
+                        video_link, ghost_link, comment,
+                        submitter_id, submitter_note,
+                        admin_note
+                    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
+                    "#,
+            ),
+            (Some(id), true, None) => {
+                if data.status.is_none()
+                    || data.reviewer_note.is_none()
+                    || data.admin_note.is_none()
+                {
+                    return Err(
+                        EveryReturnedError::InvalidInput.into_final_error("Partially missing data")
+                    );
+                }
+                sqlx::query(
+                    r#"
+                    UPDATE
+                        submissions 
+                    SET
+                        value = $2, category = $3,
+                        is_lap = $4, player_id = $5,
+                        track_id = $6, date = $7,
+                        video_link = $8, ghost_link = $9,
+                        comment = $10, submitter_note = $12,
+                        admin_note = $13, reviewer_note = $14,
+                        status = $15
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(id)
+            }
+            (Some(id), true, Some(reviewer_id)) => {
+                if data.status.is_none()
+                    || data.reviewer_note.is_none()
+                    || data.admin_note.is_none()
+                {
+                    return Err(
+                        EveryReturnedError::InvalidInput.into_final_error("Partially missing data")
+                    );
+                }
+
+                sqlx::query(
+                    r#"
+                    UPDATE
+                        submissions 
+                    SET
+                        value = $3, category = $4,
+                        is_lap = $5, player_id = $6,
+                        track_id = $7, date = $8,
+                        video_link = $9, ghost_link = $10,
+                        comment = $11, submitter_note = $13,
+                        admin_note = $14, reviewer_note = $15,
+                        status = $16, reviewer_id = $2,
+                        reviewed_at = NOW()
+                    WHERE id = $1
+                    "#,
+                )
+                .bind(id)
+                .bind(reviewer_id)
+            }
         }
         .bind(data.value)
         .bind(data.category)
@@ -198,6 +275,9 @@ impl Submissions {
         .bind(&data.comment)
         .bind(data.submitter_id)
         .bind(&data.submitter_note)
+        .bind(data.admin_note)
+        .bind(data.reviewer_note)
+        .bind(data.status)
         .execute(executor)
         .await
         .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))

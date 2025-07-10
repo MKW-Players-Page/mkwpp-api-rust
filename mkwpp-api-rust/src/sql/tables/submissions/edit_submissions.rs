@@ -64,10 +64,19 @@ impl EditSubmissions {
 
     pub async fn create_or_edit_submission(
         data: EditSubmissionCreation,
+        add_admin_note: bool,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        match data.edit_submission_id {
-            None => sqlx::query(
+        match (data.edit_submission_id, add_admin_note, data.reviewer_id) {
+            (_, false, Some(_)) => {
+                return Err(EveryReturnedError::InsufficientPermissions
+                    .into_final_error("reviewer_id cannot be set if you're not a moderator"));
+            }
+            (None, _, Some(_)) => {
+                return Err(EveryReturnedError::InvalidInput
+                    .into_final_error("reviewer_id cannot be set on first submission"));
+            }
+            (None, false, None) => sqlx::query(
                 r#"
                     INSERT INTO
                         edit_submissions
@@ -86,7 +95,7 @@ impl EditSubmissions {
                     ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
                 "#,
             ),
-            Some(id) => sqlx::query(
+            (Some(id), false, None) => sqlx::query(
                 r#"
                     UPDATE
                         edit_submissions
@@ -106,6 +115,95 @@ impl EditSubmissions {
                 "#,
             )
             .bind(id),
+            (None, true, None) => sqlx::query(
+                r#"
+                    INSERT INTO
+                        edit_submissions
+                    (
+                        submitter_note,
+                        submitter_id,
+                        score_id,
+                        video_link,
+                        video_link_edited,
+                        ghost_link,
+                        ghost_link_edited,
+                        comment_edited,
+                        comment,
+                        date_edited,
+                        date,
+                        admin_note
+                    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
+                "#,
+            ),
+            (Some(id), true, None) => {
+                if data.status.is_none()
+                    || data.reviewer_note.is_none()
+                    || data.admin_note.is_none()
+                {
+                    return Err(
+                        EveryReturnedError::InvalidInput.into_final_error("Partially missing data")
+                    );
+                }
+                sqlx::query(
+                    r#"
+                        UPDATE
+                            edit_submissions
+                        SET
+                            submitter_note = $2,
+                            submitter_id = $3,
+                            score_id = $4,
+                            video_link = $5,
+                            video_link_edited = $6,
+                            ghost_link = $7,
+                            ghost_link_edited = $8,
+                            comment_edited = $9,
+                            comment = $10,
+                            date_edited = $11,
+                            date = $12,
+                            admin_note = $13,
+                            reviewer_note = $14,
+                            status = $15
+                        WHERE id = $1
+                    "#,
+                )
+                .bind(id)
+            }
+            (Some(id), true, Some(reviewer_id)) => {
+                if data.status.is_none()
+                    || data.reviewer_note.is_none()
+                    || data.admin_note.is_none()
+                {
+                    return Err(
+                        EveryReturnedError::InvalidInput.into_final_error("Partially missing data")
+                    );
+                }
+                sqlx::query(
+                    r#"
+                        UPDATE
+                            edit_submissions
+                        SET
+                            submitter_note = $3,
+                            submitter_id = $4,
+                            score_id = $5,
+                            video_link = $6,
+                            video_link_edited = $7,
+                            ghost_link = $8,
+                            ghost_link_edited = $9,
+                            comment_edited = $10,
+                            comment = $11,
+                            date_edited = $12,
+                            date = $13,
+                            admin_note = $14,
+                            reviewer_note = $15,
+                            status = $16,
+                            reviewer_id = $2,
+                            reviewed_at = NOW()
+                        WHERE id = $1
+                    "#,
+                )
+                .bind(id)
+                .bind(reviewer_id)
+            }
         }
         .bind(data.submitter_note)
         .bind(data.submitter_id)
@@ -118,6 +216,9 @@ impl EditSubmissions {
         .bind(data.comment)
         .bind(data.date_edited)
         .bind(data.date)
+        .bind(data.admin_note)
+        .bind(data.reviewer_note)
+        .bind(data.status)
         .execute(executor)
         .await
         .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))

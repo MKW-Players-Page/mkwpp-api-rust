@@ -1,7 +1,7 @@
 use crate::{
     api::{
         errors::{EveryReturnedError, FinalErrorResponse},
-        v1::close_connection,
+        v1::{DeleteBody, close_connection, decode_row_to_table, send_serialized_data},
     },
     auth::is_user_admin,
     custom_serde::DateAsTimestampNumber,
@@ -12,6 +12,7 @@ use actix_web::{HttpResponse, dev::HttpServiceFactory, web};
 pub fn scores() -> impl HttpServiceFactory {
     web::scope("/scores")
         .route("/list", web::post().to(list))
+        .route("/id", web::post().to(get_by_id))
         .route("/insert", web::put().to(insert_or_edit))
         .route("/edit", web::patch().to(insert_or_edit))
         .route(
@@ -20,7 +21,7 @@ pub fn scores() -> impl HttpServiceFactory {
         )
         .default_service(web::get().to(default))
 }
-default_paths_fn!("/list", "/insert", "/edit", "/delete");
+default_paths_fn!("/list", "/id", "/insert", "/edit", "/delete");
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -116,4 +117,30 @@ async fn insert_or_edit(
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(r#"{"success":true}"#))
+}
+
+async fn get_by_id(body: web::Json<DeleteBody>) -> Result<HttpResponse, FinalErrorResponse> {
+    let body = body.into_inner();
+
+    let data = crate::app_state::access_app_state().await;
+    let mut connection = {
+        let data = data.read().await;
+        data.acquire_pg_connection().await?
+    };
+
+    if !is_user_admin(
+        crate::auth::get_user_data(&body.session_token, &mut connection)
+            .await?
+            .user_id,
+        &mut connection,
+    )
+    .await?
+    {
+        return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
+    }
+
+    let data = Scores::get_from_id(body.id, &mut connection).await?;
+
+    close_connection(connection).await?;
+    send_serialized_data(decode_row_to_table::<Scores>(data)?)
 }

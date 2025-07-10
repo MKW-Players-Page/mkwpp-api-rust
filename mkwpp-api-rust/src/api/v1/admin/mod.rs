@@ -8,6 +8,7 @@ use crate::{
 mod players;
 mod regions;
 mod scores;
+mod submissions;
 
 pub fn admin() -> impl HttpServiceFactory {
     web::scope("/admin")
@@ -15,6 +16,7 @@ pub fn admin() -> impl HttpServiceFactory {
         .service(regions::regions())
         .service(players::players())
         .service(scores::scores())
+        .service(submissions::submissions())
         .default_service(web::get().to(default))
 }
 default_paths_fn!("/is_admin", "/players", "/regions");
