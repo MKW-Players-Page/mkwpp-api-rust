@@ -47,7 +47,7 @@ tokio = { version = "1", features = ["full"] }
 
 [features]
 default = []
-import_data = []
+import_data_old = []
 
 [lints]
 workspace = true

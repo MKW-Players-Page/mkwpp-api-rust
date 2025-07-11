@@ -37,7 +37,7 @@ This will be actually faster, by the nature of not being an interpreted language
 These can be enabled by compiling with `--features=<feature_name>,<feature_name2>,...`
 | Feature | Description |
 |-|-|
-| import_data | this enables the CLI arguments which allow for importing of fixtures. |
+| import_data_old | this enables the CLI arguments which allow for importing of fixtures. |
 
 ## Possible .env Parameters
 These parameters can also be passed via command line as Key=Value pairs if the command line has been passed the argument `envline`
