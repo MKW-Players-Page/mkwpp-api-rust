@@ -9,6 +9,7 @@ mod players;
 mod regions;
 mod scores;
 mod submissions;
+mod users;
 
 pub fn admin() -> impl HttpServiceFactory {
     web::scope("/admin")
@@ -16,6 +17,7 @@ pub fn admin() -> impl HttpServiceFactory {
         .service(regions::regions())
         .service(players::players())
         .service(scores::scores())
+        .service(users::users())
         .service(submissions::submissions())
         .default_service(web::get().to(default))
 }

@@ -111,9 +111,13 @@ async fn get<
         return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
-    let player_id = get_user_data(&data.session_token, &mut executor)
+    let player_id = match get_user_data(&data.session_token, &mut executor)
         .await?
-        .player_id;
+        .player_id
+    {
+        Some(v) => v,
+        None => return Err(EveryReturnedError::NoAssociatedPlayer.into_final_error("")),
+    };
 
     let mut data =
         decode_rows_to_table::<T>(callback(data.user_id, player_id, &mut executor).await?)?;
@@ -232,11 +236,13 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
 
     let can_delete = match (
         is_user_admin(data.validation_data.user_id, &mut executor).await?,
-        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor)
+            .await?
+            .player_id,
         Players::get_player_submitters(&mut executor, player_id).await?,
     ) {
         (true, _, _) => true,
-        (_, user_data, _) if user_data.player_id == player_id => true,
+        (_, Some(user_player_id), _) if user_player_id == player_id => true,
         (_, _, v)
             if submission.get_submitter_id() == data.validation_data.user_id
                 && v.contains(&data.validation_data.user_id) =>
@@ -308,14 +314,16 @@ async fn create_or_edit_submission(
 
     let can_submit = match (
         is_user_admin(data.validation_data.user_id, &mut executor).await?,
-        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor)
+            .await?
+            .player_id,
         Players::get_player_submitters(&mut executor, data.data.player_id).await?,
     ) {
         (true, _, _) => {
             is_admin = true;
             true
         }
-        (_, user_data, _) if user_data.player_id == data.data.player_id => true,
+        (_, Some(user_player_id), _) if user_player_id == data.data.player_id => true,
         (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,
     };
@@ -422,14 +430,16 @@ async fn create_or_edit_edit_submission(
 
     let can_submit = match (
         is_user_admin(data.validation_data.user_id, &mut executor).await?,
-        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor)
+            .await?
+            .player_id,
         Players::get_player_submitters(&mut executor, score.player_id).await?,
     ) {
         (true, _, _) => {
             is_admin = true;
             true
         }
-        (_, user_data, _) if user_data.player_id == score.player_id => true,
+        (_, Some(user_player_id), _) if user_player_id == score.player_id => true,
         (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,
     };

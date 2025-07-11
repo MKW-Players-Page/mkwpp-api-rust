@@ -82,6 +82,7 @@ pub enum EveryReturnedError {
     SendingEmail,
     UserNotVerified,
     UserOnCooldown,
+    NoAssociatedPlayer,
 }
 
 impl From<EveryReturnedError> for u64 {
@@ -120,6 +121,7 @@ impl From<EveryReturnedError> for u64 {
             EveryReturnedError::SendingEmail => 30,
             EveryReturnedError::UserNotVerified => 31,
             EveryReturnedError::UserOnCooldown => 32,
+            EveryReturnedError::NoAssociatedPlayer => 33,
         }
     }
 }
@@ -357,6 +359,12 @@ impl EveryReturnedError {
                 self.into(),
                 StatusCode::BAD_REQUEST,
                 vec![String::from("User is on cooldown")],
+                HashMap::new(),
+            ),
+            Self::NoAssociatedPlayer => FinalErrorResponse::new(
+                self.into(),
+                StatusCode::INTERNAL_SERVER_ERROR,
+                vec![String::from("There is no associated player")],
                 HashMap::new(),
             ),
         };

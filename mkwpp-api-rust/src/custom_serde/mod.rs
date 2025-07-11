@@ -55,7 +55,7 @@ impl DateAsTimestampNumber for Option<chrono::NaiveDate> {
     {
         let x: Option<i64> = serde::de::Deserialize::deserialize(deserializer)?;
         match x {
-            None => return Ok(None),
+            None => Ok(None),
             Some(x) => chrono::DateTime::from_timestamp(x, 0)
                 .ok_or(serde::de::Error::custom(
                     "Could not convert timestamp to date",
@@ -103,12 +103,52 @@ impl DateAsTimestampNumber for Option<chrono::DateTime<chrono::Utc>> {
     {
         let x: Option<i64> = serde::de::Deserialize::deserialize(deserializer)?;
         match x {
-            None => return Ok(None),
+            None => Ok(None),
             Some(x) => chrono::DateTime::from_timestamp(x, 0)
                 .ok_or(serde::de::Error::custom(
                     "Could not convert timestamp to date",
                 ))
-                .map(|x| Some(x)),
+                .map(Some),
         }
+    }
+}
+
+impl DateAsTimestampNumber for chrono::DateTime<chrono::Local> {
+    fn serialize_as_timestamp<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        s.serialize_i64(x.timestamp())
+    }
+
+    fn deserialize_from_timestamp<'de, D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+        Self: Sized,
+    {
+        let x: chrono::DateTime<chrono::Utc> = serde::de::Deserialize::deserialize(deserializer)?;
+        Ok(x.with_timezone(&chrono::Local))
+    }
+}
+
+impl DateAsTimestampNumber for Option<chrono::DateTime<chrono::Local>> {
+    fn serialize_as_timestamp<S>(x: &Self, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match x {
+            Some(v) => chrono::DateTime::<chrono::Local>::serialize_as_timestamp(v, s),
+            None => s.serialize_none(),
+        }
+    }
+
+    fn deserialize_from_timestamp<'de, D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+        Self: Sized,
+    {
+        let x: Option<chrono::DateTime<chrono::Utc>> =
+            serde::de::Deserialize::deserialize(deserializer)?;
+        Ok(x.map(|x| x.with_timezone(&chrono::Local)))
     }
 }

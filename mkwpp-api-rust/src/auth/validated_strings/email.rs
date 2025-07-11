@@ -2,7 +2,7 @@ use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 use super::ValidatedString;
 
-#[derive(sqlx::FromRow)]
+#[derive(serde::Serialize)]
 pub struct Email(String);
 
 impl ValidatedString for Email {

@@ -67,9 +67,13 @@ async fn update_data(
         EveryReturnedError::InvalidSessionToken.into_final_error("");
     }
 
-    let player_id = get_user_data(&data.validation_data.session_token, &mut executor)
+    let player_id = match get_user_data(&data.validation_data.session_token, &mut executor)
         .await?
-        .player_id;
+        .player_id
+    {
+        Some(v) => v,
+        None => return Err(EveryReturnedError::NoAssociatedPlayer.into_final_error("")),
+    };
 
     callback(&mut executor, player_id, &data.data).await?;
 
@@ -111,9 +115,13 @@ async fn get_submitters(
         return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
-    let player_id = get_user_data(&data.session_token, &mut executor)
+    let player_id = match get_user_data(&data.session_token, &mut executor)
         .await?
-        .player_id;
+        .player_id
+    {
+        Some(v) => v,
+        None => return Err(EveryReturnedError::NoAssociatedPlayer.into_final_error("")),
+    };
 
     let data = Players::get_player_submitters(&mut executor, player_id).await?;
     let data = Players::get_player_ids_from_user_ids(&mut executor, &data).await?;
@@ -195,9 +203,13 @@ async fn update_submitter_list(
         return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
-    let player_id = get_user_data(&data.validation_data.session_token, &mut executor)
+    let player_id = match get_user_data(&data.validation_data.session_token, &mut executor)
         .await?
-        .player_id;
+        .player_id
+    {
+        Some(v) => v,
+        None => return Err(EveryReturnedError::NoAssociatedPlayer.into_final_error("")),
+    };
     let associated_user_id = get_user_id_from_player_id(data.player_id, &mut executor).await?;
     let mut submitters_list = Players::get_player_submitters(&mut executor, player_id).await?;
 
