@@ -9,7 +9,10 @@ use crate::{api::v1::auth::submissions::EditSubmissionCreation, sql::tables::Bas
 #[serde(rename_all = "camelCase")]
 pub struct EditSubmissions {
     pub id: i32,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub date: Option<chrono::NaiveDate>,
     pub video_link: Option<String>,
     pub ghost_link: Option<String>,
@@ -22,11 +25,17 @@ pub struct EditSubmissions {
     pub status: super::SubmissionStatus,
     pub submitter_id: i32,
     pub submitter_note: Option<String>,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub submitted_at: chrono::DateTime<chrono::Utc>,
     pub reviewer_id: Option<i32>,
     pub reviewer_note: Option<String>,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub reviewed_at: Option<chrono::DateTime<chrono::Utc>>,
     pub score_id: i32,
 }
@@ -43,9 +52,8 @@ impl EditSubmissions {
     //     sqlx::query("INSERT INTO edit_submissions (id, video_link_edited, ghost_link_edited, comment_edited, video_link, ghost_link, comment, admin_note, status, submitter_id, submitter_note, submitted_at, reviewer_id, reviewer_note, reviewed_at, score_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16);").bind(self.id).bind(self.video_link_edited).bind(&self.ghost_link_edited).bind(self.comment_edited).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(&self.status).bind(self.submitter_id).bind(&self.submitter_note).bind(self.submitted_at).bind(self.reviewer_id).bind(&self.reviewer_note).bind(self.reviewed_at).bind(self.score_id).execute(executor).await
     // }
 
-    
     // Feature only required because it's only used to import data currently
-    #[cfg(feature="import_data")]
+    #[cfg(feature = "import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
@@ -56,10 +64,19 @@ impl EditSubmissions {
 
     pub async fn create_or_edit_submission(
         data: EditSubmissionCreation,
+        add_admin_note: bool,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        match data.edit_submission_id {
-            None => sqlx::query(
+        match (data.edit_submission_id, add_admin_note, data.reviewer_id) {
+            (_, false, Some(_)) => {
+                return Err(EveryReturnedError::InsufficientPermissions
+                    .into_final_error("reviewer_id cannot be set if you're not a moderator"));
+            }
+            (None, _, Some(_)) => {
+                return Err(EveryReturnedError::InvalidInput
+                    .into_final_error("reviewer_id cannot be set on first submission"));
+            }
+            (None, false, None) => sqlx::query(
                 r#"
                     INSERT INTO
                         edit_submissions
@@ -78,7 +95,7 @@ impl EditSubmissions {
                     ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
                 "#,
             ),
-            Some(id) => sqlx::query(
+            (Some(id), false, None) => sqlx::query(
                 r#"
                     UPDATE
                         edit_submissions
@@ -98,6 +115,95 @@ impl EditSubmissions {
                 "#,
             )
             .bind(id),
+            (None, true, None) => sqlx::query(
+                r#"
+                    INSERT INTO
+                        edit_submissions
+                    (
+                        submitter_note,
+                        submitter_id,
+                        score_id,
+                        video_link,
+                        video_link_edited,
+                        ghost_link,
+                        ghost_link_edited,
+                        comment_edited,
+                        comment,
+                        date_edited,
+                        date,
+                        admin_note
+                    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
+                "#,
+            ),
+            (Some(id), true, None) => {
+                if data.status.is_none()
+                    || data.reviewer_note.is_none()
+                    || data.admin_note.is_none()
+                {
+                    return Err(
+                        EveryReturnedError::InvalidInput.into_final_error("Partially missing data")
+                    );
+                }
+                sqlx::query(
+                    r#"
+                        UPDATE
+                            edit_submissions
+                        SET
+                            submitter_note = $2,
+                            submitter_id = $3,
+                            score_id = $4,
+                            video_link = $5,
+                            video_link_edited = $6,
+                            ghost_link = $7,
+                            ghost_link_edited = $8,
+                            comment_edited = $9,
+                            comment = $10,
+                            date_edited = $11,
+                            date = $12,
+                            admin_note = $13,
+                            reviewer_note = $14,
+                            status = $15
+                        WHERE id = $1
+                    "#,
+                )
+                .bind(id)
+            }
+            (Some(id), true, Some(reviewer_id)) => {
+                if data.status.is_none()
+                    || data.reviewer_note.is_none()
+                    || data.admin_note.is_none()
+                {
+                    return Err(
+                        EveryReturnedError::InvalidInput.into_final_error("Partially missing data")
+                    );
+                }
+                sqlx::query(
+                    r#"
+                        UPDATE
+                            edit_submissions
+                        SET
+                            submitter_note = $3,
+                            submitter_id = $4,
+                            score_id = $5,
+                            video_link = $6,
+                            video_link_edited = $7,
+                            ghost_link = $8,
+                            ghost_link_edited = $9,
+                            comment_edited = $10,
+                            comment = $11,
+                            date_edited = $12,
+                            date = $13,
+                            admin_note = $14,
+                            reviewer_note = $15,
+                            status = $16,
+                            reviewer_id = $2,
+                            reviewed_at = NOW()
+                        WHERE id = $1
+                    "#,
+                )
+                .bind(id)
+                .bind(reviewer_id)
+            }
         }
         .bind(data.submitter_note)
         .bind(data.submitter_id)
@@ -110,6 +216,9 @@ impl EditSubmissions {
         .bind(data.comment)
         .bind(data.date_edited)
         .bind(data.date)
+        .bind(data.admin_note)
+        .bind(data.reviewer_note)
+        .bind(data.status)
         .execute(executor)
         .await
         .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))

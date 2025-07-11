@@ -21,13 +21,13 @@ pub fn auth() -> impl HttpServiceFactory {
         .route("/logout", web::put().to(logout))
         .route("/activate", web::put().to(activate))
         .route("/user_data", web::post().to(user_data))
-        .route("/password_forgot", web::post().to(password_forgot))
-        .route("/password_reset", web::post().to(password_reset))
+        .route("/password_forgot", web::put().to(password_forgot))
+        .route("/password_reset", web::put().to(password_reset))
         .route(
             "/password_reset_check_token",
             web::post().to(password_reset_check_token),
         )
-        .route("/update_password", web::post().to(update_password))
+        .route("/update_password", web::put().to(update_password))
         .service(player::player())
         .service(submissions::submissions())
         .default_service(web::get().to(default))

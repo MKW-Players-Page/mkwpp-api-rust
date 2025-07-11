@@ -118,4 +118,15 @@ pub trait BasicTableQueries {
             .await
             .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
+
+    async fn delete_by_id(
+        id: i32,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        return sqlx::query(&format!("DELETE FROM {} WHERE id = $1;", Self::TABLE_NAME))
+            .bind(id)
+            .execute(executor)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
 }

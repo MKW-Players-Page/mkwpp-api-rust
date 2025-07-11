@@ -14,9 +14,15 @@ pub struct Players {
     pub bio: Option<String>,
     pub pronouns: Option<String>,
     pub region_id: i32,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub joined_date: chrono::NaiveDate,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub last_activity: chrono::NaiveDate,
     pub submitters: Vec<i32>,
 }
@@ -34,12 +40,44 @@ impl Players {
     // }
 
     // Feature only required because it's only used to import data currently
-    #[cfg(feature="import_data")]
+    #[cfg(feature = "import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return sqlx::query("INSERT INTO players (id, name, alias, bio, region_id, joined_date, last_activity, submitters) VALUES($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (id) DO UPDATE SET name = $2, alias = $3, bio = $4, region_id = $5, joined_date = $6, last_activity = $7, submitters = $8 WHERE players.id = $1;").bind(self.id).bind(&self.name).bind(&self.alias).bind(&self.bio).bind(self.region_id).bind(self.joined_date).bind(self.last_activity).bind(&self.submitters).execute(executor).await.map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
+
+    pub async fn insert_or_edit(
+        executor: &mut sqlx::PgConnection,
+        id: Option<i32>,
+        name: String,
+        alias: Option<String>,
+        bio: Option<String>,
+        pronouns: Option<String>,
+        region_id: i32,
+        joined_date: chrono::NaiveDate,
+        last_activity: chrono::NaiveDate,
+        submitters: Vec<i32>,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        match id {
+            None => {
+                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);", table_name = Players::TABLE_NAME))
+            }
+            Some(id) => {
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters) = ($2, $3, $4, $5, $6, $7, $8, $9) WHERE id = $1;", table_name = Players::TABLE_NAME)).bind(id)
+
+            }
+        }
+        .bind(name)
+        .bind(alias)
+        .bind(bio)
+        .bind(pronouns)
+        .bind(region_id)
+        .bind(joined_date)
+        .bind(last_activity)
+        .bind(submitters)
+        .execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))
     }
 
     pub async fn update_player_bio(

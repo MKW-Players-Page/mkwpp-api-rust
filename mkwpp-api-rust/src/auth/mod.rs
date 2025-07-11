@@ -6,26 +6,80 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Row, postgres::PgQueryResult};
 use validated_strings::ValidatedString;
 
-use crate::api::{
-    errors::{EveryReturnedError, FinalErrorResponse},
-    v1::decode_row_to_table,
+use crate::{
+    api::{
+        errors::{EveryReturnedError, FinalErrorResponse},
+        v1::decode_row_to_table,
+    },
+    sql::tables::BasicTableQueries,
 };
 
 mod cooldown;
 pub mod validated_strings;
 
-struct _Users {
+#[derive(serde::Serialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct Users {
     id: i32,
-    username: validated_strings::username::Username,
-    password: validated_strings::password::Password,
-    email: validated_strings::email::Email,
-    last_login: Option<chrono::DateTime<chrono::Local>>,
+    username: String,
+    #[serde(skip_serializing)]
+    #[sqlx(skip)]
+    _password: String,
+    email: String,
     is_superuser: bool,
     is_staff: bool,
     is_active: bool,
     is_verified: bool,
-    date_joined: chrono::DateTime<chrono::Local>,
-    player_id: i32,
+    player_id: Option<i32>,
+}
+
+impl BasicTableQueries for Users {
+    const TABLE_NAME: &'static str = "users";
+}
+
+impl Users {
+    pub async fn insert_or_edit(
+        id: Option<i32>,
+        username: validated_strings::username::Username,
+        password: Option<validated_strings::password::Password>,
+        email: validated_strings::email::Email,
+        is_superuser: bool,
+        is_staff: bool,
+        is_active: bool,
+        is_verified: bool,
+        player_id: Option<i32>,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        let hash_and_salt = password.map(|x| {
+            let salt = argon2::password_hash::SaltString::generate(
+                &mut argon2::password_hash::rand_core::OsRng,
+            );
+            (x.hash(salt.as_str().as_bytes()), salt)
+        });
+
+        match (id, hash_and_salt) {
+            (None, None) => {
+                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (username, email, is_superuser, is_staff, is_active, is_verified, player_id) VALUES ($1, $2, $3, $4, $5, $6, $7);", table_name = Users::TABLE_NAME))
+            }
+            (Some(id), None) => {
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (username, email, is_superuser, is_staff, is_active, is_verified, player_id) = ($2, $3, $4, $5, $6, $7, $8) WHERE id = $1;", table_name = Users::TABLE_NAME)).bind(id)
+            }
+            (None, Some((hash, salt))) => {
+                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (password, salt, username, email, is_superuser, is_staff, is_active, is_verified, player_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);", table_name = Users::TABLE_NAME)).bind(hash).bind(salt.as_str().to_owned())
+            }
+            (Some(id), Some((hash, salt))) => {
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (password, salt, username, email, is_superuser, is_staff, is_active, is_verified, player_id) = ($2, $3, $4, $5, $6, $7, $8, $9, $10) WHERE id = $1;", table_name = Users::TABLE_NAME)).bind(id).bind(hash).bind(salt.as_str().to_owned())
+            }
+        }
+        .bind(username.get_inner())
+        .bind(email.get_inner())
+        .bind(is_superuser)
+        .bind(is_staff)
+        .bind(is_active)
+        .bind(is_verified)
+        .bind(player_id)
+        .execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))
+    }
 }
 
 #[derive(sqlx::FromRow)]
@@ -359,7 +413,7 @@ pub async fn is_valid_token(
     user_id: i32,
     executor: &mut sqlx::PgConnection,
 ) -> Result<bool, FinalErrorResponse> {
-    return sqlx::query(const_format::formatc!(
+    sqlx::query(
         r#"
             SELECT user_id
             FROM auth_tokens
@@ -367,14 +421,14 @@ pub async fn is_valid_token(
                 session_token = $1 AND
                 user_id = $2 AND
                 expiry >= NOW()
-        "#
-    ))
+        "#,
+    )
     .bind(session_token)
     .bind(user_id)
     .fetch_optional(executor)
     .await
     .map(|x| x.is_some())
-    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))
 }
 
 pub async fn is_user_admin(
@@ -383,7 +437,7 @@ pub async fn is_user_admin(
 ) -> Result<bool, FinalErrorResponse> {
     return sqlx::query_scalar(const_format::formatc!(
         r#"
-            SELECT is_superuser
+            SELECT is_staff
             FROM users
             WHERE id = $1
         "#
@@ -397,7 +451,7 @@ pub async fn is_user_admin(
 #[derive(sqlx::FromRow, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClientSideUserData {
-    pub player_id: i32,
+    pub player_id: Option<i32>,
     pub user_id: i32,
     pub username: String,
 }

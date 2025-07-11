@@ -4,7 +4,7 @@ use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 use super::ValidatedString;
 
-#[derive(sqlx::FromRow, Clone)]
+#[derive(Clone, serde::Serialize)]
 pub struct Password(String);
 
 impl ValidatedString for Password {

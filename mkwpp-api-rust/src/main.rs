@@ -63,7 +63,7 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-#[cfg(feature="import_data")]
+#[cfg(feature = "import_data")]
 async fn import_data() {
     let app_state = app_state::access_app_state().await;
     let app_state = app_state.write().await;
@@ -80,7 +80,7 @@ async fn import_data() {
     }
 }
 
-#[cfg(not(feature="import_data"))]
+#[cfg(not(feature = "import_data"))]
 async fn import_data() {
     println!("- Importing data was not compiled");
 }

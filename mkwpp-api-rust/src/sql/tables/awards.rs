@@ -1,7 +1,7 @@
 use crate::custom_serde::DateAsTimestampNumber;
 
 // Feature only required because it's only used to import data currently
-#[cfg(feature="import_data")]
+#[cfg(feature = "import_data")]
 use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 #[derive(sqlx::Type, serde::Serialize, serde::Deserialize, Debug)]
@@ -30,7 +30,10 @@ impl TryFrom<&str> for AwardType {
 pub struct Awards {
     pub id: i32,
     pub player_id: i32,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub date: chrono::NaiveDate,
     pub description: String,
     pub player_award_type: AwardType,
@@ -49,7 +52,7 @@ impl Awards {
     // }
 
     // Feature only required because it's only used to import data currently
-    #[cfg(feature="import_data")]
+    #[cfg(feature = "import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

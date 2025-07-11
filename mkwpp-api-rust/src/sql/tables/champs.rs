@@ -12,7 +12,10 @@ pub struct Champs {
     pub id: i32,
     pub player_id: i32,
     pub category: super::Category,
-    #[serde(serialize_with = "DateAsTimestampNumber::serialize_as_timestamp")]
+    #[serde(
+        serialize_with = "DateAsTimestampNumber::serialize_as_timestamp",
+        deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
+    )]
     pub date_instated: chrono::NaiveDate,
 }
 
@@ -28,9 +31,8 @@ impl Champs {
     //     sqlx::query("INSERT INTO site_champs (id, player_id, category, date_instated) VALUES($1, $2, $3, $4);").bind(self.id).bind(self.player_id).bind(&self.category).bind(self.date_instated).execute(executor).await
     // }
 
-    
     // Feature only required because it's only used to import data currently
-    #[cfg(feature="import_data")]
+    #[cfg(feature = "import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,

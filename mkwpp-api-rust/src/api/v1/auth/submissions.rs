@@ -11,11 +11,12 @@ use crate::{
     },
     app_state::access_app_state,
     auth::{BareMinimumValidationData, get_user_data, is_user_admin, is_valid_token},
+    custom_serde::DateAsTimestampNumber,
     sql::tables::{
         Category,
         players::Players,
         scores::Scores,
-        submissions::{Submissions, edit_submissions::EditSubmissions},
+        submissions::{SubmissionStatus, Submissions, edit_submissions::EditSubmissions},
     },
 };
 
@@ -110,9 +111,13 @@ async fn get<
         return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
     }
 
-    let player_id = get_user_data(&data.session_token, &mut executor)
+    let player_id = match get_user_data(&data.session_token, &mut executor)
         .await?
-        .player_id;
+        .player_id
+    {
+        Some(v) => v,
+        None => return Err(EveryReturnedError::NoAssociatedPlayer.into_final_error("")),
+    };
 
     let mut data =
         decode_rows_to_table::<T>(callback(data.user_id, player_id, &mut executor).await?)?;
@@ -231,11 +236,13 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
 
     let can_delete = match (
         is_user_admin(data.validation_data.user_id, &mut executor).await?,
-        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor)
+            .await?
+            .player_id,
         Players::get_player_submitters(&mut executor, player_id).await?,
     ) {
         (true, _, _) => true,
-        (_, user_data, _) if user_data.player_id == player_id => true,
+        (_, Some(user_player_id), _) if user_player_id == player_id => true,
         (_, _, v)
             if submission.get_submitter_id() == data.validation_data.user_id
                 && v.contains(&data.validation_data.user_id) =>
@@ -256,7 +263,7 @@ async fn delete<X: Deletable + for<'a> FromRow<'a, PgRow>>(
         .body("{}"))
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SubmissionCreation {
     pub submission_id: Option<i32>,
@@ -265,12 +272,17 @@ pub struct SubmissionCreation {
     pub is_lap: bool,
     pub player_id: i32,
     pub track_id: i32,
+    #[serde(deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp")]
     pub date: Option<chrono::NaiveDate>,
     pub video_link: Option<String>,
     pub ghost_link: Option<String>,
     pub comment: Option<String>,
     pub submitter_id: i32,
     pub submitter_note: Option<String>,
+    pub admin_note: Option<String>,
+    pub reviewer_note: Option<String>,
+    pub status: Option<SubmissionStatus>,
+    pub reviewer_id: Option<i32>,
 }
 
 async fn create_or_edit_submission(
@@ -298,13 +310,20 @@ async fn create_or_edit_submission(
         return Err(EveryReturnedError::MismatchedIds.into_final_error(""));
     }
 
+    let mut is_admin = false;
+
     let can_submit = match (
         is_user_admin(data.validation_data.user_id, &mut executor).await?,
-        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor)
+            .await?
+            .player_id,
         Players::get_player_submitters(&mut executor, data.data.player_id).await?,
     ) {
-        (true, _, _) => true,
-        (_, user_data, _) if user_data.player_id == data.data.player_id => true,
+        (true, _, _) => {
+            is_admin = true;
+            true
+        }
+        (_, Some(user_player_id), _) if user_player_id == data.data.player_id => true,
         (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,
     };
@@ -313,17 +332,40 @@ async fn create_or_edit_submission(
         return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
     }
 
-    Submissions::create_or_edit_submission(data.data, &mut executor).await?;
+    Submissions::create_or_edit_submission(data.data.clone(), is_admin, &mut executor).await?;
+
+    if is_admin
+        && let Some(status) = data.data.status
+        && status == SubmissionStatus::Accepted
+    {
+        Scores::insert_or_edit(
+            None,
+            data.data.value,
+            data.data.category,
+            data.data.is_lap,
+            data.data.player_id,
+            data.data.track_id,
+            data.data.date,
+            data.data.video_link,
+            data.data.ghost_link,
+            data.data.comment,
+            None,
+            None,
+            &mut executor,
+        )
+        .await?;
+    }
 
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body("{}"))
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct EditSubmissionCreation {
     pub edit_submission_id: Option<i32>,
+    #[serde(deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp")]
     pub date: Option<chrono::NaiveDate>,
     pub video_link: Option<String>,
     pub ghost_link: Option<String>,
@@ -335,6 +377,10 @@ pub struct EditSubmissionCreation {
     pub submitter_id: i32,
     pub submitter_note: Option<String>,
     pub score_id: i32,
+    pub admin_note: Option<String>,
+    pub reviewer_note: Option<String>,
+    pub status: Option<SubmissionStatus>,
+    pub reviewer_id: Option<i32>,
 }
 
 async fn create_or_edit_edit_submission(
@@ -380,13 +426,20 @@ async fn create_or_edit_edit_submission(
         return Err(EveryReturnedError::NothingChanged.into_final_error(""));
     }
 
+    let mut is_admin = false;
+
     let can_submit = match (
         is_user_admin(data.validation_data.user_id, &mut executor).await?,
-        get_user_data(&data.validation_data.session_token, &mut executor).await?,
+        get_user_data(&data.validation_data.session_token, &mut executor)
+            .await?
+            .player_id,
         Players::get_player_submitters(&mut executor, score.player_id).await?,
     ) {
-        (true, _, _) => true,
-        (_, user_data, _) if user_data.player_id == score.player_id => true,
+        (true, _, _) => {
+            is_admin = true;
+            true
+        }
+        (_, Some(user_player_id), _) if user_player_id == score.player_id => true,
         (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,
     };
@@ -395,7 +448,32 @@ async fn create_or_edit_edit_submission(
         return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
     }
 
-    EditSubmissions::create_or_edit_submission(data.data, &mut executor).await?;
+    EditSubmissions::create_or_edit_submission(data.data.clone(), is_admin, &mut executor).await?;
+
+    if is_admin
+        && let Some(status) = data.data.status
+        && status == SubmissionStatus::Accepted
+    {
+        let score = decode_row_to_table::<Scores>(
+            Scores::get_from_id(data.data.score_id, &mut executor).await?,
+        )?;
+        Scores::insert_or_edit(
+            Some(data.data.score_id),
+            score.value,
+            score.category,
+            score.is_lap,
+            score.player_id,
+            score.track_id,
+            data.data.date,
+            data.data.video_link,
+            data.data.ghost_link,
+            data.data.comment,
+            score.admin_note,
+            score.initial_rank,
+            &mut executor,
+        )
+        .await?;
+    }
 
     Ok(HttpResponse::Ok()
         .content_type("application/json")

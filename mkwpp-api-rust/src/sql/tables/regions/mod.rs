@@ -145,12 +145,31 @@ impl Regions {
     // }
 
     // Feature only required because it's only used to import data currently
-    #[cfg(feature="import_data")]
+    #[cfg(feature = "import_data")]
     pub async fn insert_or_replace_query(
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET code = $2, region_type = $3, parent_id = $4, is_ranked = $5 WHERE {table_name}.id = $1;", table_name = Regions::TABLE_NAME)).bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
+
+    pub async fn insert_or_edit(
+        executor: &mut sqlx::PgConnection,
+        id: Option<i32>,
+        code: &str,
+        region_type: RegionType,
+        parent_id: Option<i32>,
+        is_ranked: bool,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        match id {
+            None => {
+                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (code, region_type, parent_id, is_ranked) VALUES ($1, $2, $3, $4);", table_name = Regions::TABLE_NAME))
+            }
+            Some(id) => {
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (code, region_type, parent_id, is_ranked) = ($2, $3, $4, $5) WHERE id = $1;", table_name = Regions::TABLE_NAME)).bind(id)
+
+            }
+        }.bind(code).bind(region_type).bind(parent_id).bind(is_ranked).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))
     }
 
     pub async fn get_ancestors(
@@ -171,7 +190,7 @@ impl Regions {
                 WHERE id = $1
                 UNION
                     SELECT e.id, e.parent_id
-                    FROM {regions_table} e 
+                    FROM {regions_table} e
                 INNER JOIN descendants s
                     ON s.id = e.parent_id
             ) SELECT id FROM descendants;
