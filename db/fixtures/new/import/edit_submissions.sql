@@ -1,0 +1,1 @@
+id	date	video_link	video_link_edited	ghost_link	ghost_link_edited	comment	comment_edited	admin_note	status	submitter_id	submitter_note	submitted_at	reviewer_id	reviewer_note	reviewed_at	score_id	date_edited

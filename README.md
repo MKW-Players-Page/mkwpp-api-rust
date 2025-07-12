@@ -22,10 +22,10 @@ To run migrations, you'll have to type (this will be run every time the package 
 sqlx database setup --source db/migrations --database-url database_url
 ```
 
-To import Fixtures instead, you should run the executable with the arguments `import old` for Fixtures created by the old Django Database (This will only work if you have compiled it with the correct features enabled)
+To import Fixtures instead, you should run the executable with the arguments `import` for Fixtures created by the old Django Database (This will only work if you have compiled it with the correct features enabled)
 
 ```bash
-./mkwpp-api-rust import old
+./mkwpp-api-rust import
 ```
 
 ## Extra info
@@ -37,7 +37,8 @@ This will be actually faster, by the nature of not being an interpreted language
 These can be enabled by compiling with `--features=<feature_name>,<feature_name2>,...`
 | Feature | Description |
 |-|-|
-| import_data_old | this enables the CLI arguments which allow for importing of fixtures. |
+| import_data_old | this enables the CLI arguments which allow for importing of old Python database json fixtures. |
+| import_data_new | this enables the CLI arguments which allow for importing and exporting of newer text-based fixtures. |
 
 ## Possible .env Parameters
 These parameters can also be passed via command line as Key=Value pairs if the command line has been passed the argument `envline`

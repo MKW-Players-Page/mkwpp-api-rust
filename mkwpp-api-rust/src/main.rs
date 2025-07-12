@@ -79,8 +79,30 @@ async fn import_data() {
         std::process::exit(0);
     }
 }
+#[cfg(feature = "import_data_new")]
+async fn import_data() {
+    let app_state = app_state::access_app_state().await;
+    let app_state = app_state.write().await;
 
-#[cfg(not(feature = "import_data_old"))]
+    let args: Vec<String> = std::env::args().collect();
+    let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
+
+    if args.contains(&"export") {
+        println!("- Exporting data");
+        sql::migrate::new::export_data(&app_state.pg_pool).await;
+    }
+
+    if args.contains(&"import") {
+        println!("- Importing data");
+        sql::migrate::new::import_data(&app_state.pg_pool).await;
+    }
+
+    if args.contains(&"exit") {
+        std::process::exit(0);
+    }
+}
+
+#[cfg(not(any(feature = "import_data_old", feature = "import_data_new")))]
 async fn import_data() {
     println!("- Importing data was not compiled");
 }
