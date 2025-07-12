@@ -15,7 +15,7 @@ pub struct BlogPosts {
         deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp"
     )]
     pub published_at: chrono::DateTime<chrono::Utc>,
-    pub author_id: i32,
+    pub author_id: Option<i32>,
 }
 
 impl BasicTableQueries for BlogPosts {
