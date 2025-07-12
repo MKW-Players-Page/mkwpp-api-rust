@@ -333,7 +333,7 @@
     "model": "core.blogpost",
     "pk": 31,
     "fields": {
-        "author": "William",
+        "author": "Shadow",
         "title": "A break from the norm",
         "content": "<p>Yo!<br>I've done up a video for this weeks update instead of the usual text. Check it out here:<br><object width=\"425\" height=\"350\"> <param name=\"movie\" value=\"http://www.youtube.com/v/mgkoto_vPY4\"> </param> <embed src=\"http://www.youtube.com/v/mgkoto_vPY4\" type=\"application/x-shockwave-flash\" width=\"425\" height=\"350\"> </embed> </object><br>-William</p>",
         "is_published": true,
