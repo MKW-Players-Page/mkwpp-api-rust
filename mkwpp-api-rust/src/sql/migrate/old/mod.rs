@@ -1,6 +1,7 @@
 use crate::api::errors::FinalErrorResponse;
 
 mod awards;
+mod blog_posts;
 mod champs;
 mod edit_submissions;
 mod players;
@@ -26,7 +27,8 @@ fn enforce_file_order(file_name: &str) -> u8 {
         "standards.json" => 8,
         "sitechampions.json" => 9,
         "playerawards.json" => 10,
-        _ => 11,
+        "blogposts.json" => 11,
+        _ => 12,
     }
 }
 
@@ -96,6 +98,10 @@ pub async fn load_data(pool: &sqlx::Pool<sqlx::Postgres>) {
             }
             "scores.json" => {
                 scores::Scores::read_file(&file_name, &mut String::new(), &mut transaction).await
+            }
+            "blogposts.json" => {
+                blog_posts::BlogPosts::read_file(&file_name, &mut String::new(), &mut transaction)
+                    .await
             }
             "scoresubmissions.json" => {
                 println!("Fixture file skipped because it can't be imported");
