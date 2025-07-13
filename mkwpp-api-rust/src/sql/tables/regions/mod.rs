@@ -137,22 +137,6 @@ impl super::BasicTableQueries for Regions {
 }
 
 impl Regions {
-    // pub async fn insert_query(
-    //     &self,
-    //     executor: &mut sqlx::PgConnection,
-    // ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-    //     sqlx::query("INSERT INTO regions (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5);").bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await
-    // }
-
-    // Feature only required because it's only used to import data currently
-    #[cfg(feature = "import_data_old")]
-    pub async fn insert_or_replace_query(
-        &self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET code = $2, region_type = $3, parent_id = $4, is_ranked = $5 WHERE {table_name}.id = $1;", table_name = Regions::TABLE_NAME)).bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
-    }
-
     pub async fn insert_or_edit(
         executor: &mut sqlx::PgConnection,
         id: Option<i32>,

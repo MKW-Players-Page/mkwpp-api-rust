@@ -1,4 +1,5 @@
-use crate::api::errors::FinalErrorResponse;
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
+use crate::sql::tables::BasicTableQueries;
 
 #[derive(serde::Deserialize, Debug)]
 pub struct Regions {
@@ -10,6 +11,8 @@ pub struct Regions {
 }
 
 impl super::OldFixtureJson for Regions {
+    const FILENAME: &str = "regions.json";
+
     async fn add_to_db(
         self,
         key: i32,
@@ -51,5 +54,14 @@ impl super::OldFixtureJson for Regions {
                 return a.pk.cmp(&b.pk);
             }
         }
+    }
+}
+
+impl crate::sql::tables::regions::Regions {
+    pub async fn insert_or_replace_query(
+        &self,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        return sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (id, code, region_type, parent_id, is_ranked) VALUES($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET code = $2, region_type = $3, parent_id = $4, is_ranked = $5 WHERE {table_name}.id = $1;", table_name = crate::sql::tables::regions::Regions::TABLE_NAME)).bind(self.id).bind(&self.code).bind(&self.region_type).bind(self.parent_id).bind(self.is_ranked).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }

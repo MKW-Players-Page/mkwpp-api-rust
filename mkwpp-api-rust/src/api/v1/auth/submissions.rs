@@ -310,19 +310,15 @@ async fn create_or_edit_submission(
         return Err(EveryReturnedError::MismatchedIds.into_final_error(""));
     }
 
-    let mut is_admin = false;
-
+    let is_admin = is_user_admin(data.validation_data.user_id, &mut executor).await?;
     let can_submit = match (
-        is_user_admin(data.validation_data.user_id, &mut executor).await?,
+        is_admin,
         get_user_data(&data.validation_data.session_token, &mut executor)
             .await?
             .player_id,
         Players::get_player_submitters(&mut executor, data.data.player_id).await?,
     ) {
-        (true, _, _) => {
-            is_admin = true;
-            true
-        }
+        (true, _, _) => true,
         (_, Some(user_player_id), _) if user_player_id == data.data.player_id => true,
         (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,
@@ -426,19 +422,16 @@ async fn create_or_edit_edit_submission(
         return Err(EveryReturnedError::NothingChanged.into_final_error(""));
     }
 
-    let mut is_admin = false;
+    let is_admin = is_user_admin(data.validation_data.user_id, &mut executor).await?;
 
     let can_submit = match (
-        is_user_admin(data.validation_data.user_id, &mut executor).await?,
+        is_admin,
         get_user_data(&data.validation_data.session_token, &mut executor)
             .await?
             .player_id,
         Players::get_player_submitters(&mut executor, score.player_id).await?,
     ) {
-        (true, _, _) => {
-            is_admin = true;
-            true
-        }
+        (true, _, _) => true,
         (_, Some(user_player_id), _) if user_player_id == score.player_id => true,
         (_, _, v) if v.contains(&data.data.submitter_id) => true,
         _ => false,

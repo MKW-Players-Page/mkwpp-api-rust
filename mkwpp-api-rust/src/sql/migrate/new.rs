@@ -69,7 +69,7 @@ pub async fn import_data(pool: &sqlx::Pool<sqlx::Postgres>) {
             ))
             .await
             .expect("Couldn't copy in data raw");
-        
+
         copy_stream
             .send(file_read.as_slice())
             .await
@@ -109,6 +109,8 @@ pub async fn import_data(pool: &sqlx::Pool<sqlx::Postgres>) {
 
         println!("| Rows affected: {}", rows.rows_affected());
     }
+
+    super::reset_sequences(&mut transaction).await;
 
     transaction
         .commit()

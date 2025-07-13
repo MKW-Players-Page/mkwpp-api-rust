@@ -10,21 +10,30 @@ pub struct BlogPosts {
 }
 
 impl super::OldFixtureJson for BlogPosts {
+    const FILENAME: &str = "blogposts.json";
+
     async fn add_to_db(
         self,
         key: i32,
         transaction: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        let user_id: Option<i32> = sqlx::query_scalar("SELECT id FROM users WHERE username = $1").bind(&self.author).fetch_optional(&mut *transaction).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
-        
+        let user_id: Option<i32> = sqlx::query_scalar("SELECT id FROM users WHERE username = $1")
+            .bind(&self.author)
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
+
         let user_id = match user_id {
             Some(v) => v,
-            None => { 
-                println!("Skipped importing blog post: User by name of {} doesn't exist, please create it.", self.author);
+            None => {
+                println!(
+                    "Skipped importing blog post: User by name of {} doesn't exist, please create it.",
+                    self.author
+                );
                 return Ok(sqlx::postgres::PgQueryResult::default());
             }
         };
-        
+
         return crate::sql::tables::blog_posts::BlogPosts {
             id: key,
             title: self.title,
@@ -34,7 +43,7 @@ impl super::OldFixtureJson for BlogPosts {
                 chrono::NaiveDateTime::parse_from_str(&self.published_at, "%FT%T%.3fZ").unwrap(),
                 chrono::Utc,
             ),
-            author_id: user_id,
+            author_id: Some(user_id),
         }
         .upsert(transaction)
         .await;

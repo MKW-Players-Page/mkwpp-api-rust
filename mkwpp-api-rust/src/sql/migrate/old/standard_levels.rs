@@ -1,4 +1,4 @@
-use crate::api::errors::FinalErrorResponse;
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 
 #[derive(serde::Deserialize, Debug)]
 pub struct StandardLevels {
@@ -8,6 +8,8 @@ pub struct StandardLevels {
 }
 
 impl super::OldFixtureJson for StandardLevels {
+    const FILENAME: &str = "standardlevels.json";
+
     async fn add_to_db(
         self,
         key: i32,
@@ -21,5 +23,14 @@ impl super::OldFixtureJson for StandardLevels {
         }
         .insert_or_replace_query(transaction)
         .await;
+    }
+}
+
+impl crate::sql::tables::standard_levels::StandardLevels {
+    pub async fn insert_or_replace_query(
+        &self,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        return sqlx::query("INSERT INTO standard_levels (id, code, value, is_legacy) VALUES($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET code = $2, value = $3, is_legacy = $4 WHERE standard_levels.id = $1;").bind(self.id).bind(&self.code).bind(self.value).bind(self.is_legacy).execute(executor).await.map_err(| e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }
