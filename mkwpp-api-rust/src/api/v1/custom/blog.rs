@@ -35,11 +35,9 @@ async fn get_list(req: HttpRequest) -> actix_web::Result<HttpResponse, FinalErro
     )?;
 
     for post in data.iter_mut() {
-        if let Some(author_id) = post.author_id  {
-           post.author_id = match Players::get_player_id_from_user_id(&mut executor, author_id).await {
-               Ok(v) => Some(v),
-               Err(_) => None
-           };
+        if let Some(author_id) = post.author_id {
+            post.author_id =
+                (Players::get_player_id_from_user_id(&mut executor, author_id).await).ok();
         }
     }
 
@@ -57,14 +55,11 @@ async fn get_by_id(path: web::Path<i32>) -> actix_web::Result<HttpResponse, Fina
     let mut data = decode_row_to_table::<BlogPosts>(
         BlogPosts::get_by_id(path.into_inner(), &mut executor).await?,
     )?;
-    
-    if let Some(author_id) = data.author_id  {
-       data.author_id = match Players::get_player_id_from_user_id(&mut executor, author_id).await {
-           Ok(v) => Some(v),
-           Err(_) => None
-       };
+
+    if let Some(author_id) = data.author_id {
+        data.author_id = (Players::get_player_id_from_user_id(&mut executor, author_id).await).ok();
     }
-    
+
     crate::api::v1::close_connection(executor).await?;
     send_serialized_data(data)
 }

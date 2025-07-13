@@ -24,22 +24,6 @@ impl super::BasicTableQueries for Champs {
 }
 
 impl Champs {
-    // pub async fn insert_query(
-    //     &self,
-    //     executor: &mut sqlx::PgConnection,
-    // ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-    //     sqlx::query("INSERT INTO site_champs (id, player_id, category, date_instated) VALUES($1, $2, $3, $4);").bind(self.id).bind(self.player_id).bind(&self.category).bind(self.date_instated).execute(executor).await
-    // }
-
-    // Feature only required because it's only used to import data currently
-    #[cfg(feature = "import_data_old")]
-    pub async fn insert_or_replace_query(
-        &self,
-        executor: &mut sqlx::PgConnection,
-    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query("INSERT INTO site_champs (id, player_id, category, date_instated) VALUES($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET player_id = $2, category = $3, date_instated = $4 WHERE site_champs.id = $1;").bind(self.id).bind(self.player_id).bind(self.category).bind(self.date_instated).execute(executor).await.map_err(| e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
-    }
-
     pub async fn filter_by_category(
         category: Category,
         executor: &mut sqlx::PgConnection,

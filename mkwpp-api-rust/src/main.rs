@@ -73,7 +73,7 @@ async fn import_data() {
 
     if args.contains(&"import") {
         println!("- Importing old data");
-        sql::migrate::old::load_data(&app_state.pg_pool).await;
+        sql::migrate::old::import_data(&app_state.pg_pool).await;
     }
     if args.contains(&"exit") {
         std::process::exit(0);

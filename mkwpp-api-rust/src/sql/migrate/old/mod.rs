@@ -3,264 +3,87 @@ use crate::api::errors::FinalErrorResponse;
 mod awards;
 mod blog_posts;
 mod champs;
-mod edit_submissions;
 mod players;
 mod regions;
 mod scores;
 mod standard_levels;
 mod standards;
-mod submissions;
 mod tracks;
 
-const OLD_FIXTURES_PATH: &str = "./db/fixtures/old/";
+const PATH: &str = "./db/fixtures/old/";
 
-fn enforce_file_order(file_name: &str) -> u8 {
-    match file_name {
-        "regions.json" => 0,
-        "players.json" => 1,
-        "trackcups.json" => 2,
-        "tracks.json" => 3,
-        "scores.json" => 4,
-        "scoresubmissions.json" => 5,
-        "editscoresubmissions.json" => 6,
-        "standardlevels.json" => 7,
-        "standards.json" => 8,
-        "sitechampions.json" => 9,
-        "playerawards.json" => 10,
-        "blogposts.json" => 11,
-        _ => 12,
-    }
+use super::TABLE_NAMES;
+
+use awards::Awards;
+use blog_posts::BlogPosts;
+use champs::Champs;
+use players::Players;
+use regions::Regions;
+use scores::Scores;
+use standard_levels::StandardLevels;
+use standards::Standards;
+use tracks::Tracks;
+
+macro_rules! call_fn {
+    ($structName: ident, $transaction: ident) => {
+        $structName::read_file(&mut $transaction).await
+    };
 }
 
-pub async fn load_data(pool: &sqlx::Pool<sqlx::Postgres>) {
-    let transaction = pool.begin();
+pub async fn import_data(pool: &sqlx::Pool<sqlx::Postgres>) {
+    let mut transaction = pool
+        .begin()
+        .await
+        .expect("Couldn't start Postgres Transaction");
 
-    let mut file_paths = match std::fs::read_dir(std::path::Path::new(OLD_FIXTURES_PATH)) {
-        Err(e) => {
-            println!("Error reading folder for fixtures");
-            println!("{e}");
-            println!();
-            println!("Exiting the process");
-            std::process::exit(0);
+    for table_name in TABLE_NAMES.into_iter() {
+        if table_name == "edit_submissions" || table_name == "submissions" || table_name == "users"
+        {
+            continue;
         }
-        Ok(dir_read) => dir_read
-            .into_iter()
-            .filter_map(|dir_entry_result| match dir_entry_result {
-                Err(e) => {
-                    println!("Error reading file from folder for fixtures");
-                    println!("{e}");
-                    println!();
-                    println!("Exiting the process");
-                    std::process::exit(0);
-                }
-                Ok(file) => match file.file_name().to_str() {
-                    None => {
-                        println!("Error reading file path from folder for fixtures");
-                        println!();
-                        println!("Exiting the process");
-                        std::process::exit(0);
-                    }
-                    Some(path) => {
-                        if !path.ends_with(".json") {
-                            return None;
-                        }
-                        Some(String::from(path))
-                    }
-                },
-            })
-            .collect::<Vec<String>>(),
-    };
 
-    file_paths.sort_by_key(|a| enforce_file_order(a));
+        println!("Loading fixture for {table_name}");
 
-    let mut transaction = match transaction.await {
-        Ok(v) => v,
-        Err(e) => {
-            println!("Couldn't start Postgres Transaction");
-            println!("{e}");
-            println!();
-            println!("Exiting the process");
-            std::process::exit(0);
-        }
-    };
-
-    for file_name in file_paths {
-        println!("Loading fixture {file_name}");
-        if let Err(e) = match file_name.as_str() {
-            "regions.json" => {
-                regions::Regions::read_file(&file_name, &mut String::new(), &mut transaction).await
-            }
-            "players.json" => {
-                players::Players::read_file(&file_name, &mut String::new(), &mut transaction).await
-            }
-            "tracks.json" => {
-                tracks::Tracks::read_file(&file_name, &mut String::new(), &mut transaction).await
-            }
-            "scores.json" => {
-                scores::Scores::read_file(&file_name, &mut String::new(), &mut transaction).await
-            }
-            "blogposts.json" => {
-                blog_posts::BlogPosts::read_file(&file_name, &mut String::new(), &mut transaction)
-                    .await
-            }
-            "scoresubmissions.json" => {
-                println!("Fixture file skipped because it can't be imported");
-                continue;
-                // submissions::Submissions::read_file(
-                //     &file_name,
-                //     &mut String::new(),
-                //     &mut transaction,
-                // )
-                // .await
-            }
-            "editscoresubmissions.json" => {
-                println!("Fixture file skipped because it can't be imported");
-                continue;
-                // edit_submissions::EditSubmissions::read_file(
-                //     &file_name,
-                //     &mut String::new(),
-                //     &mut transaction,
-                // )
-                // .await
-            }
-            "standardlevels.json" => {
-                standard_levels::StandardLevels::read_file(
-                    &file_name,
-                    &mut String::new(),
-                    &mut transaction,
-                )
-                .await
-            }
-            "standards.json" => {
-                standards::Standards::read_file(&file_name, &mut String::new(), &mut transaction)
-                    .await
-            }
-            "sitechampions.json" => {
-                champs::Champs::read_file(&file_name, &mut String::new(), &mut transaction).await
-            }
-            "playerawards.json" => {
-                awards::Awards::read_file(&file_name, &mut String::new(), &mut transaction).await
-            }
+        let result: Result<(), FinalErrorResponse> = match table_name {
+            "regions" => call_fn!(Regions, transaction),
+            "players" => call_fn!(Players, transaction),
+            "tracks" => call_fn!(Tracks, transaction),
+            "scores" => call_fn!(Scores, transaction),
+            "blog_posts" => call_fn!(BlogPosts, transaction),
+            "standard_levels" => call_fn!(StandardLevels, transaction),
+            "standards" => call_fn!(Standards, transaction),
+            "site_champs" => call_fn!(Champs, transaction),
+            "player_awards" => call_fn!(Awards, transaction),
             _ => {
                 println!("Fixture file skipped");
                 continue;
             }
-        } {
-            println!("Error reading data. Rolling back transaction.");
-            println!("{e}");
-            match transaction.rollback().await {
-                Ok(_) => std::process::exit(0),
-                Err(e) => println!("Error rolling back transaction. You're fucked. :)\n{e}"),
-            };
-            std::process::exit(0);
-        }
+        };
+
+        result.expect("Couldn't load data");
     }
 
-    sqlx::query(
-        "SELECT setval('regions_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM regions));",
-    )
-    .execute(&mut *transaction)
-    .await
-    .expect("Should've reset the minimum id for regions");
+    super::reset_sequences(&mut transaction).await;
 
-    sqlx::query(
-        "SELECT setval('blog_posts_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM blog_posts));",
-    )
-    .execute(&mut *transaction)
-    .await
-    .expect("Should've reset the minimum id for blog_posts");
-
-    sqlx::query("SELECT setval('edit_submission_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM edit_submissions));").execute(&mut *transaction).await.expect("Should've reset the minimum id for edit_submissions");
-
-    sqlx::query("SELECT setval('player_awards_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM player_awards));").execute(&mut *transaction).await.expect("Should've reset the minimum id for player_awards");
-
-    sqlx::query(
-        "SELECT setval('players_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM players));",
-    )
-    .execute(&mut *transaction)
-    .await
-    .expect("Should've reset the minimum id for players");
-
-    sqlx::query(
-        "SELECT setval('players_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM players));",
-    )
-    .execute(&mut *transaction)
-    .await
-    .expect("Should've reset the minimum id for players");
-
-    sqlx::query("SELECT setval('scores_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM scores));")
-        .execute(&mut *transaction)
+    transaction
+        .commit()
         .await
-        .expect("Should've reset the minimum id for scores");
-
-    sqlx::query(
-        "SELECT setval('site_champs_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM site_champs));",
-    )
-    .execute(&mut *transaction)
-    .await
-    .expect("Should've reset the minimum id for site_champs");
-
-    sqlx::query("SELECT setval('standard_levels_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM standard_levels));").execute(&mut *transaction).await.expect("Should've reset the minimum id for standard_levels");
-
-    sqlx::query(
-        "SELECT setval('standards_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM standards));",
-    )
-    .execute(&mut *transaction)
-    .await
-    .expect("Should've reset the minimum id for standards");
-
-    sqlx::query(
-        "SELECT setval('submissions_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM submissions));",
-    )
-    .execute(&mut *transaction)
-    .await
-    .expect("Should've reset the minimum id for submissions");
-
-    sqlx::query("SELECT setval('tracks_id_seq', (SELECT COALESCE(MAX(id),1) AS id FROM tracks));")
-        .execute(&mut *transaction)
-        .await
-        .expect("Should've reset the minimum id for tracks");
-
-    match transaction.commit().await {
-        Ok(_) => println!("Transaction went through!"),
-        Err(e) => {
-            println!("Transaction failed.\n{e}\nExiting the process");
-            std::process::exit(0)
-        }
-    }
+        .expect("Transaction didn't go through");
 }
 
 trait OldFixtureJson: std::fmt::Debug {
+    const FILENAME: &str;
+
     // buffer is because of lifetime. You can't declare the string within the function sadly enough.
-    async fn read_file<'d>(
-        file_name: &str,
-        buffer: &'d mut String,
-        transaction: &mut sqlx::PgConnection,
-    ) -> Result<(), FinalErrorResponse>
+    async fn read_file(transaction: &mut sqlx::PgConnection) -> Result<(), FinalErrorResponse>
     where
-        Self: Sized + serde::Deserialize<'d> + std::marker::Sync + std::marker::Send,
+        Self: for<'d> serde::Deserialize<'d> + std::marker::Sync + std::marker::Send,
     {
-        let file_path = format!("{OLD_FIXTURES_PATH}{file_name}");
-        match std::fs::read_to_string(&file_path) {
-            Ok(v) => *buffer = v,
-            Err(e) => {
-                println!("Error reading file {file_path} from old fixtures");
-                println!("{e}");
-                println!();
-                println!("Exiting the process");
-                std::process::exit(0);
-            }
-        };
-        let mut vec: Vec<OldFixtureWrapper<Self>> = match serde_json::from_str(buffer) {
-            Ok(v) => v,
-            Err(e) => {
-                println!("Error converting fixture {file_path} from JSON");
-                println!("{e}");
-                println!();
-                println!("Exiting the process");
-                std::process::exit(0);
-            }
-        };
+        let file_path = format!("{PATH}{}", Self::FILENAME);
+        let string =
+            std::fs::read_to_string(&file_path).expect("Error reading file from old fixtures");
+        let mut vec: Vec<OldFixtureWrapper<Self>> =
+            serde_json::from_str(&string).expect("Error converting fixture from JSON");
 
         vec.sort_by(Self::get_sort());
 
