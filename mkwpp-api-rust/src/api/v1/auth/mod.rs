@@ -342,5 +342,5 @@ async fn password_reset_check_token(
         .map_err(|e| EveryReturnedError::CommitPGTransaction.into_final_error(e))?;
     Ok(HttpResponse::Ok()
         .content_type("application/json")
-        .body("{}"))
+        .body(r#"{"is_valid":true}"#))
 }
