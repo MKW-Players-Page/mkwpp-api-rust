@@ -68,7 +68,7 @@ pub async fn import_data(pool: &sqlx::Pool<sqlx::Postgres>) {
     transaction
         .commit()
         .await
-        .expect("Transaction didn't go through")
+        .expect("Transaction didn't go through");
 }
 
 trait OldFixtureJson: std::fmt::Debug {
