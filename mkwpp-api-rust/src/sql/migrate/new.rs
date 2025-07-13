@@ -10,7 +10,7 @@ pub async fn export_data(pool: &sqlx::Pool<sqlx::Postgres>) {
 
     let path = std::path::Path::new(PATH);
     if !path.exists() {
-        std::fs::create_dir_all(path).expect("Could not create directory")
+        std::fs::create_dir_all(path).expect("Could not create directory");
     }
 
     let mut transaction = transaction.await.expect("Couldn't begin transaction");
@@ -25,11 +25,11 @@ pub async fn export_data(pool: &sqlx::Pool<sqlx::Postgres>) {
             .await
             .expect("Couldn't copy out data raw");
 
-        let file = std::fs::File::create(&format!("{PATH}{table_name}.sql"))
-            .expect("Couldn't create file");
+        let file =
+            std::fs::File::create(format!("{PATH}{table_name}.sql")).expect("Couldn't create file");
         let mut bufwriter = std::io::BufWriter::new(file);
         while let Some(Ok(data)) = copy_stream.next().await {
-            bufwriter.write(&data).expect("Couldn't write data");
+            bufwriter.write_all(&data).expect("Couldn't write data");
         }
     }
 }
@@ -40,7 +40,7 @@ pub async fn import_data(pool: &sqlx::Pool<sqlx::Postgres>) {
     let transaction = pool.begin();
     let path = std::path::Path::new(PATH);
     if !path.exists() {
-        std::fs::create_dir_all(path).expect("Could not create directory")
+        std::fs::create_dir_all(path).expect("Could not create directory");
     }
 
     let mut transaction = transaction.await.expect("Couldn't begin transaction");
@@ -48,7 +48,7 @@ pub async fn import_data(pool: &sqlx::Pool<sqlx::Postgres>) {
     for table_name in TABLE_NAMES {
         println!("| Importing {table_name}");
 
-        let file_read = match std::fs::read(format!("{}/{table_name}.sql", PATH)) {
+        let file_read = match std::fs::read(format!("{PATH}/{table_name}.sql")) {
             Ok(v) => v,
             Err(e) => {
                 println!("Error reading file {table_name}.sql: {e}");
