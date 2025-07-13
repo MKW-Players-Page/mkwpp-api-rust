@@ -9,7 +9,7 @@ pub mod with_player;
 use crate::{
     api::errors::{EveryReturnedError, FinalErrorResponse},
     custom_serde::DateAsTimestampNumber,
-    sql::tables::{BasicTableQueries, players::players_basic::PlayersBasic},
+    sql::tables::{BasicTableQueries, Category, players::players_basic::PlayersBasic},
 };
 
 #[either_field::make_template(
@@ -143,7 +143,38 @@ impl Scores {
         .bind(comment)
         .bind(admin_note)
         .bind(initial_rank)
-        .execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))
+        .execute(&mut *executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
+        
+        Self::update_initial_rank(track_id, category, is_lap, executor).await
+    }
+
+    pub async fn update_initial_rank(
+        track_id: i32,
+        category: Category,
+        is_lap: bool,
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        return sqlx::query(include_str!(
+            "../../../../../db/queries/update_initial_rank.sql"
+        ))
+        .bind(track_id)
+        .bind(category)
+        .bind(is_lap)
+        .execute(executor)
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
+
+    /// Stupid slow implementation, only use this when migrating
+    pub async fn update_initial_rank_all(
+        executor: &mut sqlx::PgConnection,
+    ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
+        return sqlx::query(include_str!(
+            "../../../../../db/queries/update_initial_rank_all.sql"
+        ))
+        .execute(executor)
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
     pub async fn get_from_id(
