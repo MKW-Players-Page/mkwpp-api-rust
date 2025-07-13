@@ -25,7 +25,7 @@ sqlx database setup --source db/migrations --database-url database_url
 To import Fixtures instead, you should run the executable with the arguments `import` for Fixtures created by the old Django Database (This will only work if you have compiled it with the correct features enabled)
 
 ```bash
-./mkwpp-api-rust import
+mkwpp-api-rust import
 ```
 
 ## Extra info
