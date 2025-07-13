@@ -63,6 +63,7 @@ These parameters can also be passed via command line as Key=Value pairs if the c
 | SRV_CLIENT_REQUEST_TIMEOUT | u64 | Max time a request should take before being dropped | 120000 |
 | SRV_PORT | u16 | The open port for the server | 8080 |
 | SRV_IP | String | The ip used by the server | 127.0.0.1 |
+| SRV_DNS | String | The DNS used by the server, mostly used in strings of text. | https://mariokart64.com |
 | CACHE_TIMEOUT | u64 | Time it should take for each cache refresh loop | 1200 |
 | SMTP_HOST | String | The hostname for the SMTP server |  |
 | SMTP_PORT | u16 | The port for the SMTP server | 25 |

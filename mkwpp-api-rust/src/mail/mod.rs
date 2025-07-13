@@ -2,7 +2,10 @@ use mail_send::{
     Credentials, SmtpClientBuilder, mail_builder::MessageBuilder, smtp::message::IntoMessage,
 };
 
-use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
+use crate::{
+    ENV_VARS,
+    api::errors::{EveryReturnedError, FinalErrorResponse},
+};
 
 const MKWPP_NAME: &str = "Mario Kart Wii Players' Page";
 const MKWPP_EMAIL: &str = "no-reply@mariokart64.com";
@@ -45,17 +48,10 @@ impl MailService {
                 .to((username, email))
                 .subject("Account Verification")
                 .text_body(format!(
-                    r#"
-                    Hi {username},
-
-                    Your Mario Kart Wii Players' Page account has been successfully created.
-
-                    To activate your account, please visit the following link:
-
-                    https://mariokart64.com/mkw/activate?tkn={token}
-
-                    Happy karting!
-                    "#
+                    include_str!("../../../email_text/verify_account.txt"),
+                    username = username,
+                    token = token,
+                    dns = ENV_VARS.server_dns
                 )),
         )
         .await
@@ -72,20 +68,10 @@ impl MailService {
                 .to((username, email))
                 .subject("Account Verification")
                 .text_body(format!(
-                    r#"
-                    Hi {username},
-
-                    Someone requested a password reset on your Mario Kart Wii Players' Page account.
-                    If you did not perform this action, you may safely ignore this email.
-
-                    To reset your password, please visit the following link:
-
-                    https://mariokart64.com/mkw/password/reset?tkn={token}
-
-                    Please note this link will expire in 15 minutes.
-
-                    Happy karting!
-                    "#
+                    include_str!("../../../email_text/password_reset.txt"),
+                    username = username,
+                    token = token,
+                    dns = ENV_VARS.server_dns
                 )),
         )
         .await
