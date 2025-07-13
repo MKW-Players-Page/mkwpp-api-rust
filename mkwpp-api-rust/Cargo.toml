@@ -6,7 +6,6 @@ edition = "2024"
 description = "The Rust API for MKWPP"
 readme = true
 homepage = "https://mariokart64.com/mkw/"
-build = true
 
 [dependencies]
 actix-cors = "0.7.0"
@@ -36,14 +35,6 @@ sqlx = { version = "0.8.3", features = [
 ] }
 tokio = { version = "1", features = ["full"] }
 typetag = "0.2.19"
-
-[build-dependencies]
-anyhow = "1.0.97"
-env_handler = { path = "../env_handler" }
-sqlx = { version = "0.8.3", features = [
-  "postgres",
-] }
-tokio = { version = "1", features = ["full"] }
 
 [features]
 default = []
