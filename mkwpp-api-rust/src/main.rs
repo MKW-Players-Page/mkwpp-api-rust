@@ -34,6 +34,24 @@ async fn main() -> std::io::Result<()> {
     println!("| SERVER CONNECTION KEEP ALIVE: {}", ENV_VARS.keep_alive);
 
     import_data().await;
+    {
+        let args: Vec<String> = std::env::args().collect();
+        let args: Vec<&str> = args.iter().map(|v| v.as_str()).collect();
+        if args.contains(&"recalc_ranks") {
+            println!("- Recalculating all initial ranks");
+
+            let app_state = app_state::access_app_state().await;
+            let mut app_state = app_state
+                .read()
+                .await
+                .acquire_pg_connection()
+                .await
+                .expect("Postgres connection failed");
+            sql::tables::scores::Scores::update_initial_rank_all(&mut *app_state)
+                .await
+                .expect("Error updating all ranks");
+        }
+    }
 
     println!("- Starting Cache Update Loop");
     tokio::task::spawn(app_state::cache::update_loop());
