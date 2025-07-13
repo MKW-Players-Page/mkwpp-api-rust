@@ -45,6 +45,16 @@ pub struct EnvSettings {
     #[description = "Max time a request should take before being dropped"]
     pub client_request_timeout: u64,
 
+    #[key = "SRV_PORT"]
+    #[value = 8080]
+    #[description = "The open port for the server"]
+    pub server_port: u16,
+
+    #[key = "SRV_IP"]
+    #[value = "127.0.0.1"]
+    #[description = "The ip used by the server"]
+    pub server_ip: String,
+
     #[key = "CACHE_TIMEOUT"]
     #[value = 1200]
     #[description = "Time it should take for each cache refresh loop"]

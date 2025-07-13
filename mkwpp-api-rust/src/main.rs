@@ -72,7 +72,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Compress::default())
             .service(api::v1::v1())
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind((ENV_VARS.server_ip.as_str(), ENV_VARS.server_port))?
     .client_request_timeout(std::time::Duration::from_micros(
         ENV_VARS.client_request_timeout * 1000,
     ))
