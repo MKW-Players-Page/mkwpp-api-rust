@@ -40,6 +40,13 @@ These can be enabled by compiling with `--features=<feature_name>,<feature_name2
 | import_data_old | this enables the CLI arguments which allow for importing of old Python database json fixtures. |
 | import_data_new | this enables the CLI arguments which allow for importing and exporting of newer text-based fixtures. |
 
+## CLI Arguments
+| argument | description | requirements |
+|-|-|-|
+| import | imports data | requires compiling with either features `import_data_old` or `import_data_new` |
+| export | exports data, always runs before importing | requires compiling with feature `import_data_new` |
+| recalc_ranks | recalculates all initial ranks when starting the backend, can take several minutes | None |
+
 ## Possible .env Parameters
 These parameters can also be passed via command line as Key=Value pairs if the command line has been passed the argument `envline`
 
