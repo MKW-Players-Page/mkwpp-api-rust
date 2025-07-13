@@ -47,7 +47,7 @@ async fn main() -> std::io::Result<()> {
                 .acquire_pg_connection()
                 .await
                 .expect("Postgres connection failed");
-            sql::tables::scores::Scores::update_initial_rank_all(&mut *app_state)
+            sql::tables::scores::Scores::update_initial_rank_all(&mut app_state)
                 .await
                 .expect("Error updating all ranks");
         }
