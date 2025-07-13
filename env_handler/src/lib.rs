@@ -55,6 +55,11 @@ pub struct EnvSettings {
     #[description = "The ip used by the server"]
     pub server_ip: String,
 
+    #[key = "SRV_DNS"]
+    #[value = "https://mariokart64.com"]
+    #[description = "The DNS used by the server, mostly used in strings of text."]
+    pub server_dns: String,
+
     #[key = "CACHE_TIMEOUT"]
     #[value = 1200]
     #[description = "Time it should take for each cache refresh loop"]
