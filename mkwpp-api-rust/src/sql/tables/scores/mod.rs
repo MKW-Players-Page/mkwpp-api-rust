@@ -144,7 +144,7 @@ impl Scores {
         .bind(admin_note)
         .bind(initial_rank)
         .execute(&mut *executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
-        
+
         Self::update_initial_rank(track_id, category, is_lap, executor).await
     }
 
