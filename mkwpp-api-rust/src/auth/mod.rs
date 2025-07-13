@@ -82,6 +82,17 @@ impl Users {
     }
 }
 
+pub async fn get_username_by_id(
+    id: i32,
+    executor: &mut sqlx::PgConnection,
+) -> Result<String, FinalErrorResponse> {
+    sqlx::query_scalar("SELECT username FROM users WHERE id = $1")
+        .bind(id)
+        .fetch_one(executor)
+        .await
+        .map_err(|e| EveryReturnedError::UserIDDoesntExist.into_final_error(e))
+}
+
 #[derive(sqlx::FromRow)]
 struct BareMinimumData {
     id: i32,
