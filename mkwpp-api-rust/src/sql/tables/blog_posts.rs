@@ -16,6 +16,7 @@ pub struct BlogPosts {
     )]
     pub published_at: chrono::DateTime<chrono::Utc>,
     pub author_id: Option<i32>,
+    pub username: Option<String>,
 }
 
 impl BasicTableQueries for BlogPosts {
