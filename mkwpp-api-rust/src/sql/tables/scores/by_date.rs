@@ -1,8 +1,5 @@
+use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
 pub use crate::sql::tables::BasicTableQueries;
-use crate::{
-    api::errors::{EveryReturnedError, FinalErrorResponse},
-    sql::tables::players::players_basic::PlayersBasic,
-};
 
 pub use super::ScoresByDate;
 
@@ -10,6 +7,7 @@ impl BasicTableQueries for ScoresByDate {
     const TABLE_NAME: &'static str = super::Scores::TABLE_NAME;
 }
 
+#[derive(PartialEq)]
 enum OrderType {
     All,
     Records,
@@ -35,32 +33,11 @@ impl ScoresByDate {
         order_type: OrderType,
         limit: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
-        return sqlx::query(&format!(
-            r#"
-            SELECT
-                {scores_table}.id AS s_id,
-                value, category,
-                is_lap, track_id,
-                date, {players_basic_table}.id, name,
-                alias, region_id
-            FROM {scores_table}
-            LEFT JOIN {players_basic_table} ON {scores_table}.player_id = {players_basic_table}.id
-            WHERE
-                date IS NOT NULL
-                {order_type}
-            ORDER BY date DESC
-            LIMIT $1;
-            "#,
-            scores_table = super::Scores::TABLE_NAME,
-            players_basic_table = PlayersBasic::TABLE_NAME,
-            order_type = match order_type {
-                OrderType::All => "",
-                OrderType::Records => "AND initial_rank = 1",
-            }
-        ))
-        .bind(limit)
-        .fetch_all(executor)
-        .await
-        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+        return sqlx::query(include_str!("../../../../../db/queries/by_date.sql"))
+            .bind(limit)
+            .bind(order_type == OrderType::Records)
+            .fetch_all(executor)
+            .await
+            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }
