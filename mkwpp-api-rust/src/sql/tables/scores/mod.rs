@@ -154,9 +154,10 @@ impl Scores {
         is_lap: bool,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query(include_str!(
-            "../../../../../db/queries/update_initial_rank.sql"
-        ))
+        return sqlx::query(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../db/queries/update_initial_rank.sql"
+        )))
         .bind(track_id)
         .bind(category)
         .bind(is_lap)
@@ -169,9 +170,10 @@ impl Scores {
     pub async fn update_initial_rank_all(
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query(include_str!(
-            "../../../../../db/queries/update_initial_rank_all.sql"
-        ))
+        return sqlx::query(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../db/queries/update_initial_rank_all.sql"
+        )))
         .execute(executor)
         .await
         .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));

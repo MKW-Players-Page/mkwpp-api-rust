@@ -48,7 +48,10 @@ impl MailService {
                 .to((username, email))
                 .subject("Account Verification")
                 .text_body(format!(
-                    include_str!("../../../email_text/verify_account.txt"),
+                    include_str!(concat!(
+                        env!("CARGO_MANIFEST_DIR"),
+                        "/../email_text/verify_account.txt"
+                    )),
                     username = username,
                     token = token,
                     dns = ENV_VARS.server_dns
@@ -68,7 +71,10 @@ impl MailService {
                 .to((username, email))
                 .subject("Account Verification")
                 .text_body(format!(
-                    include_str!("../../../email_text/password_reset.txt"),
+                    include_str!(concat!(
+                        env!("CARGO_MANIFEST_DIR"),
+                        "/../email_text/password_reset.txt"
+                    )),
                     username = username,
                     token = token,
                     dns = ENV_VARS.server_dns
