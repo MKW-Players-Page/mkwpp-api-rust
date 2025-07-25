@@ -34,61 +34,10 @@ impl ScoresWithPlayer {
         let region_ids =
             crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
 
-        return sqlx::query(&format!(
-            r#"
-                SELECT *
-                FROM (
-                    SELECT *,
-                        (RANK() OVER(ORDER BY value ASC))::INTEGER AS rank,
-                        ((FIRST_VALUE(value) OVER(ORDER BY value ASC))::FLOAT8 / value::FLOAT8) AS prwr
-                    FROM (
-                        SELECT *
-                        FROM (
-                            SELECT
-                                {0}.id AS s_id,
-                                {0}.value,
-                                {0}.category,
-                                {0}.is_lap,
-                                {0}.track_id,
-                                ROW_NUMBER() OVER(
-                                    PARTITION BY {1}.id
-                                    ORDER BY {0}.value ASC, {3}.value ASC
-                                ) AS row_n,
-                                date,
-                                video_link,
-                                ghost_link,
-                                comment,
-                                initial_rank,
-                                {1}.id,
-                                COALESCE({3}.code, 'NW') AS std_lvl_code,
-                                name,
-                                alias,
-                                region_id FROM {0}
-                            LEFT JOIN {1} ON
-                                {0}.player_id = {1}.id
-                            LEFT JOIN {2} ON
-                                {0}.track_id = {2}.track_id AND
-                                {0}.value <= {2}.value AND
-                                {2}.category <= {0}.category AND
-                                {2}.is_lap = {0}.is_lap
-                            LEFT JOIN {3} ON
-                                {3}.id = {2}.standard_level_id
-                            WHERE
-                                {0}.track_id = $1 AND
-                                {0}.category <= $2 AND
-                                {0}.is_lap = $3 AND
-                                {0}.date <= $4 AND
-                                {1}.region_id = ANY($5) 
-                            ORDER BY value ASC, {3}.value ASC
-                        ) WHERE row_n = 1
-                    ) ORDER BY value ASC, date DESC
-                ) WHERE rank <= $6;
-                "#,
-            super::Scores::TABLE_NAME,
-            PlayersBasic::TABLE_NAME,
-            crate::sql::tables::standards::Standards::TABLE_NAME,
-            crate::sql::tables::standard_levels::StandardLevels::TABLE_NAME,
-        ))
+        return sqlx::query(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../db/queries/filter_charts.sql"
+        )))
         .bind(track_id)
         .bind(category)
         .bind(is_lap)
@@ -96,7 +45,31 @@ impl ScoresWithPlayer {
         .bind(region_ids)
         .bind(limit)
         .fetch_all(executor)
-        .await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
+
+    pub async fn filter_charts_dates(
+        executor: &mut sqlx::PgConnection,
+        track_id: i32,
+        category: crate::sql::tables::Category,
+        is_lap: bool,
+        region_id: i32,
+    ) -> Result<Vec<chrono::NaiveDate>, FinalErrorResponse> {
+        let region_ids =
+            crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
+
+        return sqlx::query_scalar(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../db/queries/filter_charts_dates.sql"
+        )))
+        .bind(track_id)
+        .bind(category)
+        .bind(is_lap)
+        .bind(region_ids)
+        .fetch_all(executor)
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
     // TODO: Hardcoded value for Newbie Code

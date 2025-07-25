@@ -33,11 +33,14 @@ impl ScoresByDate {
         order_type: OrderType,
         limit: i32,
     ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
-        return sqlx::query(include_str!("../../../../../db/queries/by_date.sql"))
-            .bind(limit)
-            .bind(order_type == OrderType::Records)
-            .fetch_all(executor)
-            .await
-            .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+        return sqlx::query(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../db/queries/by_date.sql"
+        )))
+        .bind(limit)
+        .bind(order_type == OrderType::Records)
+        .fetch_all(executor)
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }
