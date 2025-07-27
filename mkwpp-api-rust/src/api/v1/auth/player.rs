@@ -20,6 +20,7 @@ pub fn player() -> impl HttpServiceFactory {
         .route("/updpronouns", web::put().to(update_player_pronouns))
         .route("/remsubmitter", web::put().to(remove_submitter))
         .route("/addsubmitter", web::put().to(add_submitter))
+        .route("/setsubmitters", web::put().to(set_submitters))
         .route("/submitters", web::post().to(get_submitters))
         .route("/submittees", web::post().to(get_submittees))
         .default_service(web::get().to(default))
@@ -229,4 +230,54 @@ async fn update_submitter_list(
     close_connection(executor).await?;
 
     send_serialized_data(submitters_list)
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct SetSubmitters {
+    player_ids: Vec<i32>,
+    #[serde(flatten)]
+    validation_data: BareMinimumValidationData,
+}
+
+async fn set_submitters(
+    data: web::Json<SetSubmitters>,
+) -> actix_web::Result<HttpResponse, FinalErrorResponse> {
+    let data = data.0;
+
+    let app_state = access_app_state().await;
+    let mut executor = {
+        let app_state = app_state.read().await;
+        app_state.acquire_pg_connection().await?
+    };
+
+    if !is_valid_token(
+        &data.validation_data.session_token,
+        data.validation_data.user_id,
+        &mut executor,
+    )
+    .await?
+    {
+        return Err(EveryReturnedError::InvalidSessionToken.into_final_error(""));
+    }
+
+    let player_id = match get_user_data(&data.validation_data.session_token, &mut executor)
+        .await?
+        .player_id
+    {
+        Some(v) => v,
+        None => return Err(EveryReturnedError::NoAssociatedPlayer.into_final_error("")),
+    };
+
+    let mut submitter_ids = vec![0; data.player_ids.len()];
+
+    for (index, player_id) in data.player_ids.into_iter().enumerate() {
+        submitter_ids[index] = get_user_id_from_player_id(player_id, &mut executor).await?;
+    }
+
+    Players::update_player_submitters(&mut executor, player_id, &submitter_ids).await?;
+
+    close_connection(executor).await?;
+
+    send_serialized_data(&submitter_ids)
 }
