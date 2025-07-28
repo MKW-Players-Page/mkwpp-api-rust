@@ -28,7 +28,13 @@ jobs:
       run: rustup --version
     - name: Clippy Version
       run: cargo clippy --version
+    - name: cargo-fmt version
+      run: cargo fmt --version
     - name: Clippy
       run: cargo clippy --verbose -- -D warnings
+    - name: Clippy --features=import_data_new
+      run: cargo clippy --features=import_data_new --verbose -- -D warnings
+    - name: Clippy --features=import_data_old
+      run: cargo clippy --features=import_data_old --verbose -- -D warnings
     - name: Format
       run: cargo fmt --check --verbose
