@@ -20,7 +20,7 @@ jobs:
       run: rustup --version
     - name: Clippy Version
       run: cargo clippy --version
-    - name: cargo-fmt version
+    - name: rustfmt version
       run: cargo fmt --version
     - name: Clippy
       run: cargo clippy --verbose -- -D warnings
