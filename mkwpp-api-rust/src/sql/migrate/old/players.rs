@@ -36,6 +36,7 @@ impl super::OldFixtureJson for Players {
                 .map(|time_str| chrono::NaiveDate::parse_from_str(&time_str, "%F").unwrap())
                 .unwrap_or(joined_date),
             submitters: Vec::with_capacity(0),
+            chadsoft_ids: Vec::with_capacity(0),
         }
         .insert_or_replace_query(transaction)
         .await;

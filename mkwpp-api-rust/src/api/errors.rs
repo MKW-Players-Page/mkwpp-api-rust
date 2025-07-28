@@ -83,6 +83,7 @@ pub enum EveryReturnedError {
     UserNotVerified,
     UserOnCooldown,
     NoAssociatedPlayer,
+    InvalidChadsoftID,
 }
 
 impl From<EveryReturnedError> for u64 {
@@ -122,6 +123,7 @@ impl From<EveryReturnedError> for u64 {
             EveryReturnedError::UserNotVerified => 31,
             EveryReturnedError::UserOnCooldown => 32,
             EveryReturnedError::NoAssociatedPlayer => 33,
+            EveryReturnedError::InvalidChadsoftID => 34,
         }
     }
 }
@@ -365,6 +367,12 @@ impl EveryReturnedError {
                 self.into(),
                 StatusCode::INTERNAL_SERVER_ERROR,
                 vec![String::from("There is no associated player")],
+                HashMap::new(),
+            ),
+            Self::InvalidChadsoftID => FinalErrorResponse::new(
+                self.into(),
+                StatusCode::BAD_REQUEST,
+                vec![String::from("Chadsoft ID is not valid")],
                 HashMap::new(),
             ),
         };

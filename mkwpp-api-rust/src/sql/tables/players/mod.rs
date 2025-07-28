@@ -1,5 +1,5 @@
 use crate::api::errors::{EveryReturnedError, FinalErrorResponse};
-use crate::custom_serde::DateAsTimestampNumber;
+use crate::custom_serde::{ChadsoftIDConversion, DateAsTimestampNumber};
 use crate::sql::tables::BasicTableQueries;
 
 pub mod players_basic;
@@ -25,6 +25,11 @@ pub struct Players {
     )]
     pub last_activity: chrono::NaiveDate,
     pub submitters: Vec<i32>,
+    #[serde(
+        serialize_with = "ChadsoftIDConversion::serialize_as_string",
+        deserialize_with = "ChadsoftIDConversion::deserialize_from_string"
+    )]
+    pub chadsoft_ids: Vec<i64>,
 }
 
 impl BasicTableQueries for Players {
@@ -43,13 +48,14 @@ impl Players {
         joined_date: chrono::NaiveDate,
         last_activity: chrono::NaiveDate,
         submitters: Vec<i32>,
+        chadsoft_ids: Vec<i64>,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         match id {
             None => {
-                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);", table_name = Players::TABLE_NAME))
+                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters, chadsoft_ids) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);", table_name = Players::TABLE_NAME))
             }
             Some(id) => {
-                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters) = ($2, $3, $4, $5, $6, $7, $8, $9) WHERE id = $1;", table_name = Players::TABLE_NAME)).bind(id)
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (name, alias, bio, pronouns, region_id, joined_date, last_activity, submitters, chadsoft_ids) = ($2, $3, $4, $5, $6, $7, $8, $9, $10) WHERE id = $1;", table_name = Players::TABLE_NAME)).bind(id)
 
             }
         }
@@ -61,6 +67,7 @@ impl Players {
         .bind(joined_date)
         .bind(last_activity)
         .bind(submitters)
+        .bind(chadsoft_ids)
         .execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))
     }
 
