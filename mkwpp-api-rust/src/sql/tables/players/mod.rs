@@ -91,16 +91,12 @@ impl Players {
         .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
-    pub async fn asd() {
-        
-        println!("INSANELY LONG LINE THAT I WILL REFUSE TO FIX ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD ASD")
-        
-        
-    }
-
     pub async fn update_player_alias(
         executor: &mut sqlx::PgConnection,
         player_id: i32,
+        
+        
+        
         alias: &str,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         let alias = match alias.is_empty() {
