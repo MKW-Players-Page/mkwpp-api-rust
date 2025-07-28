@@ -1,0 +1,1 @@
+ALTER TABLE players ADD COLUMN chadsoft_ids BIGINT[] DEFAULT '{}' NOT NULL;

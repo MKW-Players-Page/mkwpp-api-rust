@@ -59,6 +59,7 @@ struct InsertOrEditBody {
     #[serde(deserialize_with = "DateAsTimestampNumber::deserialize_from_timestamp")]
     last_activity: chrono::NaiveDate,
     submitters: Vec<i32>,
+    chadsoft_ids: Vec<String>,
     session_token: String,
 }
 
@@ -84,6 +85,16 @@ async fn insert_or_edit(
         return Err(EveryReturnedError::InsufficientPermissions.into_final_error(""));
     }
 
+    let chadsoft_ids = body
+        .chadsoft_ids
+        .iter()
+        .map(|number| {
+            u64::from_str_radix(number, 16)
+                .map(|num| num as i64)
+                .map_err(|err| EveryReturnedError::InvalidChadsoftID.into_final_error(err))
+        })
+        .collect::<Result<Vec<i64>, FinalErrorResponse>>()?;
+
     Players::insert_or_edit(
         &mut connection,
         body.id,
@@ -95,6 +106,7 @@ async fn insert_or_edit(
         body.joined_date,
         body.last_activity,
         body.submitters,
+        chadsoft_ids,
     )
     .await?;
 

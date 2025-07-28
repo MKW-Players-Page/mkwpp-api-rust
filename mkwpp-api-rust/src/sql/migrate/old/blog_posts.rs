@@ -44,6 +44,7 @@ impl super::OldFixtureJson for BlogPosts {
                 chrono::Utc,
             ),
             author_id: Some(user_id),
+            username: None,
         }
         .upsert(transaction)
         .await;
