@@ -13,7 +13,6 @@ actix-web = "4.10.2"
 anyhow = "1.0.97"
 argon2 = "0.5.3"
 base64 = "0.22.1"
-cached = "0.55.1"
 chrono = { version = "0.4.39", features = ["serde"] }
 const_format = { version = "0.2.34", features = ["fmt"] }
 either_field = "1.2.0"
@@ -38,8 +37,8 @@ typetag = "0.2.19"
 
 [features]
 default = []
-import_data_old = []
 import_data_new = []
+import_data_old = []
 
 [lints]
 workspace = true

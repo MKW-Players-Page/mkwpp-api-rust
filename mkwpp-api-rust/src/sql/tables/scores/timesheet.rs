@@ -135,4 +135,27 @@ impl Timesheet {
 
         timeset_encoder.timesheet(player_id).await
     }
+
+    pub async fn filter_player_dates(
+        executor: &mut sqlx::PgConnection,
+        player_id: i32,
+        category: crate::sql::tables::Category,
+        is_lap: bool,
+        region_id: i32,
+    ) -> Result<Vec<chrono::NaiveDate>, FinalErrorResponse> {
+        let region_ids =
+            crate::sql::tables::regions::Regions::get_descendants(executor, region_id).await?;
+
+        return sqlx::query_scalar(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../db/queries/filter_player_dates.sql"
+        )))
+        .bind(player_id)
+        .bind(category)
+        .bind(is_lap)
+        .bind(region_ids)
+        .fetch_all(executor)
+        .await
+        .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
+    }
 }
