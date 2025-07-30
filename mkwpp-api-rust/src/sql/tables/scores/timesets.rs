@@ -105,7 +105,7 @@ pub trait ValidTimesetItem {
     fn get_player_id(&self) -> i32;
     fn get_player_region_id(&self) -> i32;
     fn get_date(&self) -> Option<chrono::NaiveDate>;
-    fn get_initial_rank(&self) -> Option<i32>;
+    fn get_was_wr(&self) -> bool;
     fn get_category(&self) -> Category;
     fn get_video_link(&self) -> Option<String>;
     fn get_ghost_link(&self) -> Option<String>;
@@ -1231,7 +1231,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         video_link: time_data.get_video_link(),
                         ghost_link: time_data.get_ghost_link(),
                         comment: time_data.get_comment(),
-                        initial_rank: time_data.get_initial_rank(),
+                        was_wr: time_data.get_was_wr(),
                     });
 
                     *rank_sum += last_rank as f64;
@@ -1302,7 +1302,7 @@ impl<K: ValidTimesetItem> Timeset<K> {
                         video_link: time_data.get_video_link(),
                         ghost_link: time_data.get_ghost_link(),
                         comment: time_data.get_comment(),
-                        initial_rank: time_data.get_initial_rank(),
+                        was_wr: time_data.get_was_wr(),
                     });
 
                     rank_sums[player_index] += last_rank as f64;

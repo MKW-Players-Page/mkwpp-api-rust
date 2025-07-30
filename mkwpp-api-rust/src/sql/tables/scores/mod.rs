@@ -39,14 +39,14 @@ use crate::{
         video_link: (),
         ghost_link: (),
         comment: (),
-        initial_rank: ()
+        was_wr: ()
     ],
     pub RankingsTimesetData: [
         id: (),
         category: (),
         player_id: i32,
         date: (),
-        initial_rank: (),
+        was_wr: (),
         video_link: (),
         ghost_link: (),
         comment: ()
@@ -57,7 +57,7 @@ use crate::{
         player_id: i32,
         region_id: i32,
         date: (),
-        initial_rank: (),
+        was_wr: (),
         video_link: (),
         ghost_link: (),
         comment: ()
@@ -88,7 +88,7 @@ pub struct ScoresTemplate {
     pub ghost_link: either_field::either!(Option<String> | ()),
     pub comment: either_field::either!(Option<String> | ()),
     pub admin_note: either_field::either!(() | Option<String>),
-    pub initial_rank: either_field::either!(Option<i32> | ()),
+    pub was_wr: either_field::either!(bool | ()),
 }
 
 impl super::BasicTableQueries for Scores {
@@ -120,15 +120,14 @@ impl Scores {
         ghost_link: Option<String>,
         comment: Option<String>,
         admin_note: Option<String>,
-        initial_rank: Option<i32>,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         match id {
             None => {
-                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, initial_rank) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);", table_name = Scores::TABLE_NAME))
+                sqlx::query(const_format::formatcp!("INSERT INTO {table_name} (value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);", table_name = Scores::TABLE_NAME))
             }
             Some(id) => {
-                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, initial_rank) = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) WHERE id = $1;", table_name = Scores::TABLE_NAME)).bind(id)
+                sqlx::query(const_format::formatcp!("UPDATE {table_name} SET (value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note) = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11) WHERE id = $1;", table_name = Scores::TABLE_NAME)).bind(id)
 
             }
         }
@@ -142,13 +141,12 @@ impl Scores {
         .bind(ghost_link)
         .bind(comment)
         .bind(admin_note)
-        .bind(initial_rank)
         .execute(&mut *executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e))?;
 
-        Self::update_initial_rank(track_id, category, is_lap, executor).await
+        Self::update_was_wr(track_id, category, is_lap, executor).await
     }
 
-    pub async fn update_initial_rank(
+    pub async fn update_was_wr(
         track_id: i32,
         category: Category,
         is_lap: bool,
@@ -156,7 +154,7 @@ impl Scores {
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return sqlx::query(include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../db/queries/update_initial_rank.sql"
+            "/../db/queries/update_was_wr.sql"
         )))
         .bind(track_id)
         .bind(category)
@@ -166,13 +164,13 @@ impl Scores {
         .map_err(|e| EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 
-    /// Stupid slow implementation, only use this when migrating
-    pub async fn update_initial_rank_all(
+    /// Only use this when migrating, not fast enough
+    pub async fn update_was_wr_all(
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
         return sqlx::query(include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../db/queries/update_initial_rank_all.sql"
+            "/../db/queries/update_was_wr_all.sql"
         )))
         .execute(executor)
         .await

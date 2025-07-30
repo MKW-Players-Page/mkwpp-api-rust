@@ -11,7 +11,7 @@ impl BasicTableQueries for ScoresWithPlayer {
         executor: &mut sqlx::PgConnection,
     ) -> Result<Vec<sqlx::postgres::PgRow>, FinalErrorResponse> {
         return sqlx::query(const_format::formatc!(
-            "SELECT {scores_table}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, initial_rank, {players_table}.id, name, alias, region_id FROM {scores_table} LEFT JOIN {players_table} ON {scores_table}.player_id = {players_table}.id;",
+            "SELECT {scores_table}.id AS s_id, value, category, is_lap, track_id, date, video_link, ghost_link, comment, was_wr, {players_table}.id, name, alias, region_id FROM {scores_table} LEFT JOIN {players_table} ON {scores_table}.player_id = {players_table}.id;",
             scores_table = super::Scores::TABLE_NAME,
             players_table = PlayersBasic::TABLE_NAME,
         ))
@@ -105,7 +105,7 @@ impl ScoresWithPlayer {
                             video_link,
                             ghost_link,
                             comment,
-                            initial_rank,
+                            was_wr,
                             {players_table}.id,
                             COALESCE({standard_level_table}.code, 'NW') AS std_lvl_code,
                             name,

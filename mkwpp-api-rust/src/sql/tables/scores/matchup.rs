@@ -64,13 +64,13 @@ impl MatchupData {
                 SELECT
                     id, value, category, is_lap, track_id, 
                     player_id, date, video_link, ghost_link,
-                    comment, initial_rank
+                    comment, was_wr
                 FROM (
                     SELECT
                         {this_table}.id, value,
                         category, is_lap, track_id,
                         {players_table}.id AS player_id,
-                        date, video_link, ghost_link, comment, initial_rank,
+                        date, video_link, ghost_link, comment, was_wr,
                         ROW_NUMBER() OVER(
                             PARTITION BY player_id, track_id, is_lap
                             ORDER BY value ASC, date DESC
