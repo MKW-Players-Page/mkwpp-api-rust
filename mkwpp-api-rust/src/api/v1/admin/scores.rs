@@ -69,7 +69,6 @@ struct InsertOrEditBody {
     ghost_link: Option<String>,
     comment: Option<String>,
     admin_note: Option<String>,
-    initial_rank: Option<i32>,
     session_token: String,
 }
 
@@ -107,7 +106,6 @@ async fn insert_or_edit(
         body.ghost_link,
         body.comment,
         body.admin_note,
-        body.initial_rank,
         &mut connection,
     )
     .await?;

@@ -55,8 +55,8 @@ impl ValidTimesetItem for TimesheetTimesetData {
     fn get_video_link(&self) -> Option<String> {
         self.video_link.clone()
     }
-    fn get_initial_rank(&self) -> Option<i32> {
-        self.initial_rank
+    fn get_was_wr(&self) -> bool {
+        self.was_wr
     }
     fn get_player_region_id(&self) -> i32 {
         0
@@ -86,13 +86,13 @@ impl Timesheet {
                 SELECT
                     id, value, category, is_lap, track_id, 
                     player_id, date, video_link, ghost_link,
-                    comment, initial_rank
+                    comment, was_wr
                 FROM (
                     SELECT
                         {this_table}.id, value,
                         category, is_lap, track_id,
                         {players_table}.id AS player_id,
-                        date, video_link, ghost_link, comment, initial_rank,
+                        date, video_link, ghost_link, comment, was_wr,
                         ROW_NUMBER() OVER(
                             PARTITION BY player_id, track_id, is_lap
                             ORDER BY value ASC, date DESC

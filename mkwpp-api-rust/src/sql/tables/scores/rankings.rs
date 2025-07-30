@@ -56,8 +56,8 @@ impl ValidTimesetItem for RankingsTimesetData {
     fn get_video_link(&self) -> Option<String> {
         None
     }
-    fn get_initial_rank(&self) -> Option<i32> {
-        None
+    fn get_was_wr(&self) -> bool {
+        false
     }
     fn get_player_region_id(&self) -> i32 {
         0

@@ -346,7 +346,6 @@ async fn create_or_edit_submission(
             data.data.ghost_link,
             data.data.comment,
             None,
-            None,
             &mut executor,
         )
         .await?;
@@ -462,7 +461,6 @@ async fn create_or_edit_edit_submission(
             data.data.ghost_link,
             data.data.comment,
             score.admin_note,
-            score.initial_rank,
             &mut executor,
         )
         .await?;

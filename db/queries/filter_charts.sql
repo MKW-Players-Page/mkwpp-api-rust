@@ -27,7 +27,7 @@ FROM (
                 video_link,
                 ghost_link,
                 comment,
-                initial_rank,
+                was_wr,
                 players.id,
                 COALESCE(standard_levels.code, 'NW') AS std_lvl_code,
                 name,

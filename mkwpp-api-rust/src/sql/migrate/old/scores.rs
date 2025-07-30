@@ -37,7 +37,7 @@ impl super::OldFixtureJson for Scores {
             ghost_link: self.ghost_link,
             comment: self.comment,
             admin_note: self.admin_note,
-            initial_rank: self.initial_rank,
+            was_wr: matches!(self.initial_rank, Some(1)),
         }
         .insert_or_replace_query(transaction)
         .await;
@@ -49,6 +49,6 @@ impl crate::sql::tables::scores::Scores {
         &self,
         executor: &mut sqlx::PgConnection,
     ) -> Result<sqlx::postgres::PgQueryResult, FinalErrorResponse> {
-        return sqlx::query("INSERT INTO scores (id, value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, initial_rank) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO UPDATE SET value = $2, category = $3, is_lap = $4, player_id = $5, track_id = $6, date = $7, video_link = $8, ghost_link = $9, comment = $10, admin_note = $11, initial_rank = $12 WHERE scores.id = $1;").bind(self.id).bind(self.value).bind(self.category).bind(self.is_lap).bind(self.player_id).bind(self.track_id).bind(self.date).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(self.initial_rank).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
+        return sqlx::query("INSERT INTO scores (id, value, category, is_lap, player_id, track_id, date, video_link, ghost_link, comment, admin_note, was_wr) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO UPDATE SET value = $2, category = $3, is_lap = $4, player_id = $5, track_id = $6, date = $7, video_link = $8, ghost_link = $9, comment = $10, admin_note = $11, was_wr = $12 WHERE scores.id = $1;").bind(self.id).bind(self.value).bind(self.category).bind(self.is_lap).bind(self.player_id).bind(self.track_id).bind(self.date).bind(&self.video_link).bind(&self.ghost_link).bind(&self.comment).bind(&self.admin_note).bind(self.was_wr).execute(executor).await.map_err(| e | EveryReturnedError::GettingFromDatabase.into_final_error(e));
     }
 }
