@@ -17,6 +17,7 @@ SET
             inn.date <= og.date
         ORDER BY
             inn.value
+        LIMIT 1
     )
 WHERE
     og.track_id = $1 AND
